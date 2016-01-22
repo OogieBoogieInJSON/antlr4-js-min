@@ -1,0 +1,28 @@
+{
+  "name": "antlr4-js-min",
+  "version": "1.0.0",
+  "description": "The minified/concatenated antlr4 javascript package",
+  "main": "antlr4.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OogieBoogieInJSON/antlr4-js-min.git"
+  },
+  "keywords": [
+    "antlr4",
+    "antlr4",
+    "minified",
+    "antlr4",
+    "mangled",
+    "antlr4",
+    "uglified"
+  ],
+  "author": "Mircea Pop",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OogieBoogieInJSON/antlr4-js-min/issues"
+  },
+  "homepage": "https://github.com/OogieBoogieInJSON/antlr4-js-min#readme"
+}

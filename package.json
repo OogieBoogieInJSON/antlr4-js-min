@@ -12,12 +12,9 @@
   },
   "keywords": [
     "antlr4",
-    "antlr4",
-    "minified",
-    "antlr4",
-    "mangled",
-    "antlr4",
-    "uglified"
+    "antlr4 minified",
+    "antlr4 mangled",
+    "antlr4 uglified"
   ],
   "author": "Mircea Pop",
   "license": "MIT",

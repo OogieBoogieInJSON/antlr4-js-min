@@ -1,6 +1,6 @@
 {
   "name": "antlr4-js-min",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The minified/concatenated antlr4 javascript package",
   "main": "antlr4.min.js",
   "scripts": {

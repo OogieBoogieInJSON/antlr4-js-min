@@ -1,204 +1,205 @@
-var cachedModules=[], exports = {};
+var antlr4 = exports = {};
+var cachedModules=[];
 cachedModules[1849]={exports:{}};
 (function(module,exports) {function arrayToString(a) {
-	return "[" + a.join(", ") + "]";
+  return "[" + a.join(", ") + "]";
 }
 
 String.prototype.hashCode = function(s) {
-	var hash = 0;
-	if (this.length === 0) {
-		return hash;
-	}
-	for (var i = 0; i < this.length; i++) {
-		var character = this.charCodeAt(i);
-		hash = ((hash << 5) - hash) + character;
-		hash = hash & hash; // Convert to 32bit integer
-	}
-	return hash;
+  var hash = 0;
+  if (this.length === 0) {
+    return hash;
+  }
+  for (var i = 0; i < this.length; i++) {
+    var character = this.charCodeAt(i);
+    hash = ((hash << 5) - hash) + character;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return hash;
 };
 
 function standardEqualsFunction(a,b) {
-	return a.equals(b);
+  return a.equals(b);
 }
 
 function standardHashFunction(a) {
-	return a.hashString();
+  return a.hashString();
 }
 
 function Set(hashFunction, equalsFunction) {
-	this.data = {};
-	this.hashFunction = hashFunction || standardHashFunction;
-	this.equalsFunction = equalsFunction || standardEqualsFunction;
-	return this;
+  this.data = {};
+  this.hashFunction = hashFunction || standardHashFunction;
+  this.equalsFunction = equalsFunction || standardEqualsFunction;
+  return this;
 }
 
 Object.defineProperty(Set.prototype, "length", {
-	get : function() {
-		return this.values().length;
-	}
+  get : function() {
+    return this.values().length;
+  }
 });
 
 Set.prototype.add = function(value) {
-	var hash = this.hashFunction(value);
-	var key = "hash_" + hash.hashCode();
-	if(key in this.data) {
-		var i;
-		var values = this.data[key];
-		for(i=0;i<values.length; i++) {
-			if(this.equalsFunction(value, values[i])) {
-				return values[i];
-			}
-		}
-		values.push(value);
-		return value;
-	} else {
-		this.data[key] = [ value ];
-		return value;
-	}
+  var hash = this.hashFunction(value);
+  var key = "hash_" + hash.hashCode();
+  if(key in this.data) {
+    var i;
+    var values = this.data[key];
+    for(i=0;i<values.length; i++) {
+      if(this.equalsFunction(value, values[i])) {
+        return values[i];
+      }
+    }
+    values.push(value);
+    return value;
+  } else {
+    this.data[key] = [ value ];
+    return value;
+  }
 };
 
 Set.prototype.contains = function(value) {
-	var hash = this.hashFunction(value);
-	var key = hash.hashCode();
-	if(key in this.data) {
-		var i;
-		var values = this.data[key];
-		for(i=0;i<values.length; i++) {
-			if(this.equalsFunction(value, values[i])) {
-				return true;
-			}
-		}
-	}
-	return false;
+  var hash = this.hashFunction(value);
+  var key = hash.hashCode();
+  if(key in this.data) {
+    var i;
+    var values = this.data[key];
+    for(i=0;i<values.length; i++) {
+      if(this.equalsFunction(value, values[i])) {
+        return true;
+      }
+    }
+  }
+  return false;
 };
 
 Set.prototype.values = function() {
-	var l = [];
-	for(var key in this.data) {
-		if(key.indexOf("hash_")===0) {
-			l = l.concat(this.data[key]);
-		}
-	}
-	return l;
+  var l = [];
+  for(var key in this.data) {
+    if(key.indexOf("hash_")===0) {
+      l = l.concat(this.data[key]);
+    }
+  }
+  return l;
 };
 
 Set.prototype.toString = function() {
-	return arrayToString(this.values());
+  return arrayToString(this.values());
 };
 
 function BitSet() {
-	this.data = [];
-	return this;
+  this.data = [];
+  return this;
 }
 
 BitSet.prototype.add = function(value) {
-	this.data[value] = true;
+  this.data[value] = true;
 };
 
 BitSet.prototype.or = function(set) {
-	var bits = this;
-	Object.keys(set.data).map( function(alt) { bits.add(alt); });
+  var bits = this;
+  Object.keys(set.data).map( function(alt) { bits.add(alt); });
 };
 
 BitSet.prototype.remove = function(value) {
-	delete this.data[value];
+  delete this.data[value];
 };
 
 BitSet.prototype.contains = function(value) {
-	return this.data[value] === true;
+  return this.data[value] === true;
 };
 
 BitSet.prototype.values = function() {
-	return Object.keys(this.data);
+  return Object.keys(this.data);
 };
 
 BitSet.prototype.minValue = function() {
-	return Math.min.apply(null, this.values());
+  return Math.min.apply(null, this.values());
 };
 
 BitSet.prototype.hashString = function() {
-	return this.values().toString();
+  return this.values().toString();
 };
 
 BitSet.prototype.equals = function(other) {
-	if(!(other instanceof BitSet)) {
-		return false;
-	}
-	return this.hashString()===other.hashString();
+  if(!(other instanceof BitSet)) {
+    return false;
+  }
+  return this.hashString()===other.hashString();
 };
 
 Object.defineProperty(BitSet.prototype, "length", {
-	get : function() {
-		return this.values().length;
-	}
+  get : function() {
+    return this.values().length;
+  }
 });
 
 BitSet.prototype.toString = function() {
-	return "{" + this.values().join(", ") + "}";
+  return "{" + this.values().join(", ") + "}";
 };
 
 function AltDict() {
-	this.data = {};
-	return this;
+  this.data = {};
+  return this;
 }
 
 AltDict.prototype.get = function(key) {
-	key = "k-" + key;
-	if(key in this.data){
-		return this.data[key];
-	} else {
-		return null;
-	}
+  key = "k-" + key;
+  if(key in this.data){
+    return this.data[key];
+  } else {
+    return null;
+  }
 };
 
 AltDict.prototype.put = function(key, value) {
-	key = "k-" + key;
-	this.data[key] = value;
+  key = "k-" + key;
+  this.data[key] = value;
 };
 
 AltDict.prototype.values = function() {
-	var data = this.data;
-	var keys = Object.keys(this.data);
-	return keys.map(function(key) {
-		return data[key];
-	});
+  var data = this.data;
+  var keys = Object.keys(this.data);
+  return keys.map(function(key) {
+    return data[key];
+  });
 };
 
 function DoubleDict() {
-	return this;
+  return this;
 }
 
 DoubleDict.prototype.get = function(a, b) {
-	var d = this[a] || null;
-	return d===null ? null : (d[b] || null);
+  var d = this[a] || null;
+  return d===null ? null : (d[b] || null);
 };
 
 DoubleDict.prototype.set = function(a, b, o) {
-	var d = this[a] || null;
-	if(d===null) {
-		d = {};
-		this[a] = d;
-	}
-	d[b] = o;
+  var d = this[a] || null;
+  if(d===null) {
+    d = {};
+    this[a] = d;
+  }
+  d[b] = o;
 };
 
 
 function escapeWhitespace(s, escapeSpaces) {
-	s = s.replace("\t","\\t");
-	s = s.replace("\n","\\n");
-	s = s.replace("\r","\\r");
-	if(escapeSpaces) {
-		s = s.replace(" ","\u00B7");
-	}
-	return s;
+  s = s.replace("\t","\\t");
+  s = s.replace("\n","\\n");
+  s = s.replace("\r","\\r");
+  if(escapeSpaces) {
+    s = s.replace(" ","\u00B7");
+  }
+  return s;
 }
 
 exports.isArray = function (entity) {
-	return Object.prototype.toString.call( entity ) === '[object Array]'
+  return Object.prototype.toString.call( entity ) === '[object Array]'
 };
 
 exports.titleCase = function(str) {
-	return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1);});
+  return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1);});
 };
 
 exports.Set = Set;
@@ -244,16 +245,16 @@ cachedModules[155]={exports:{}};
 // we obtained this token.
 
 function Token() {
-	this.source = null;
-	this.type = null; // token type of the token
-	this.channel = null; // The parser ignores everything not on DEFAULT_CHANNEL
-	this.start = null; // optional; return -1 if not implemented.
-	this.stop = null; // optional; return -1 if not implemented.
-	this.tokenIndex = null; // from 0..n-1 of the token object in the input stream
-	this.line = null; // line=1..n of the 1st character
-	this.column = null; // beginning of the line at which it occurs, 0..n-1
-	this._text = null; // text of the token.
-	return this;
+  this.source = null;
+  this.type = null; // token type of the token
+  this.channel = null; // The parser ignores everything not on DEFAULT_CHANNEL
+  this.start = null; // optional; return -1 if not implemented.
+  this.stop = null; // optional; return -1 if not implemented.
+  this.tokenIndex = null; // from 0..n-1 of the token object in the input stream
+  this.line = null; // line=1..n of the 1st character
+  this.column = null; // beginning of the line at which it occurs, 0..n-1
+  this._text = null; // text of the token.
+  return this;
 }
 
 Token.INVALID_TYPE = 0;
@@ -286,37 +287,37 @@ Token.HIDDEN_CHANNEL = 1;
 // of the token.
 
 Object.defineProperty(Token.prototype, "text", {
-	get : function() {
-		return this._text;
-	},
-	set : function(text) {
-		this._text = text;
-	}
+  get : function() {
+    return this._text;
+  },
+  set : function(text) {
+    this._text = text;
+  }
 });
 
 Token.prototype.getTokenSource = function() {
-	return this.source[0];
+  return this.source[0];
 };
 
 Token.prototype.getInputStream = function() {
-	return this.source[1];
+  return this.source[1];
 };
 
 function CommonToken(source, type, channel, start, stop) {
-	Token.call(this);
-	this.source = source !== undefined ? source : CommonToken.EMPTY_SOURCE;
-	this.type = type !== undefined ? type : null;
-	this.channel = channel !== undefined ? channel : Token.DEFAULT_CHANNEL;
-	this.start = start !== undefined ? start : -1;
-	this.stop = stop !== undefined ? stop : -1;
-	this.tokenIndex = -1;
-	if (this.source[0] !== null) {
-		this.line = source[0].line;
-		this.column = source[0].column;
-	} else {
-		this.column = -1;
-	}
-	return this;
+  Token.call(this);
+  this.source = source !== undefined ? source : CommonToken.EMPTY_SOURCE;
+  this.type = type !== undefined ? type : null;
+  this.channel = channel !== undefined ? channel : Token.DEFAULT_CHANNEL;
+  this.start = start !== undefined ? start : -1;
+  this.stop = stop !== undefined ? stop : -1;
+  this.tokenIndex = -1;
+  if (this.source[0] !== null) {
+    this.line = source[0].line;
+    this.column = source[0].column;
+  } else {
+    this.column = -1;
+  }
+  return this;
 }
 
 CommonToken.prototype = Object.create(Token.prototype);
@@ -339,47 +340,47 @@ CommonToken.EMPTY_SOURCE = [ null, null ];
 // @param oldToken The token to copy.
 //
 CommonToken.prototype.clone = function() {
-	var t = new CommonToken(this.source, this.type, this.channel, this.start,
-			this.stop);
-	t.tokenIndex = this.tokenIndex;
-	t.line = this.line;
-	t.column = this.column;
-	t.text = this.text;
-	return t;
+  var t = new CommonToken(this.source, this.type, this.channel, this.start,
+      this.stop);
+  t.tokenIndex = this.tokenIndex;
+  t.line = this.line;
+  t.column = this.column;
+  t.text = this.text;
+  return t;
 };
 
 Object.defineProperty(CommonToken.prototype, "text", {
-	get : function() {
-		if (this._text !== null) {
-			return this._text;
-		}
-		var input = this.getInputStream();
-		if (input === null) {
-			return null;
-		}
-		var n = input.size;
-		if (this.start < n && this.stop < n) {
-			return input.getText(this.start, this.stop);
-		} else {
-			return "<EOF>";
-		}
-	},
-	set : function(text) {
-		this._text = text;
-	}
+  get : function() {
+    if (this._text !== null) {
+      return this._text;
+    }
+    var input = this.getInputStream();
+    if (input === null) {
+      return null;
+    }
+    var n = input.size;
+    if (this.start < n && this.stop < n) {
+      return input.getText(this.start, this.stop);
+    } else {
+      return "<EOF>";
+    }
+  },
+  set : function(text) {
+    this._text = text;
+  }
 });
 
 CommonToken.prototype.toString = function() {
-	var txt = this.text;
-	if (txt !== null) {
-		txt = txt.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
-	} else {
-		txt = "<no text>";
-	}
-	return "[@" + this.tokenIndex + "," + this.start + ":" + this.stop + "='" +
-			txt + "',<" + this.type + ">" +
-			(this.channel > 0 ? ",channel=" + this.channel : "") + "," +
-			this.line + ":" + this.column + "]";
+  var txt = this.text;
+  if (txt !== null) {
+    txt = txt.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
+  } else {
+    txt = "<no text>";
+  }
+  return "[@" + this.tokenIndex + "," + this.start + ":" + this.stop + "='" +
+      txt + "',<" + this.type + ">" +
+      (this.channel > 0 ? ",channel=" + this.channel : "") + "," +
+      this.line + ":" + this.column + "]";
 };
 
 exports.Token = Token;
@@ -526,7 +527,7 @@ ATNState.serializationNames = [
 ATNState.INVALID_STATE_NUMBER = -1;
 
 ATNState.prototype.toString = function() {
-	return this.stateNumber;
+  return this.stateNumber;
 };
 
 ATNState.prototype.equals = function(other) {
@@ -543,9 +544,9 @@ ATNState.prototype.isNonGreedyExitState = function() {
 
 
 ATNState.prototype.addTransition = function(trans, index) {
-	if(index===undefined) {
-		index = -1;
-	}
+  if(index===undefined) {
+    index = -1;
+  }
     if (this.transitions.length===0) {
         this.epsilonOnlyTransitions = trans.isEpsilon;
     } else if(this.epsilonOnlyTransitions !== trans.isEpsilon) {
@@ -559,7 +560,7 @@ ATNState.prototype.addTransition = function(trans, index) {
 };
 
 function BasicState() {
-	ATNState.call(this);
+  ATNState.call(this);
     this.stateType = ATNState.BASIC;
     return this;
 }
@@ -569,7 +570,7 @@ BasicState.prototype.constructor = BasicState;
 
 
 function DecisionState() {
-	ATNState.call(this);
+  ATNState.call(this);
     this.decision = -1;
     this.nonGreedy = false;
     return this;
@@ -581,9 +582,9 @@ DecisionState.prototype.constructor = DecisionState;
 
 //  The start of a regular {@code (...)} block.
 function BlockStartState() {
-	DecisionState.call(this);
-	this.endState = null;
-	return this;
+  DecisionState.call(this);
+  this.endState = null;
+  return this;
 }
 
 BlockStartState.prototype = Object.create(DecisionState.prototype);
@@ -591,9 +592,9 @@ BlockStartState.prototype.constructor = BlockStartState;
 
 
 function BasicBlockStartState() {
-	BlockStartState.call(this);
-	this.stateType = ATNState.BLOCK_START;
-	return this;
+  BlockStartState.call(this);
+  this.stateType = ATNState.BLOCK_START;
+  return this;
 }
 
 BasicBlockStartState.prototype = Object.create(BlockStartState.prototype);
@@ -602,8 +603,8 @@ BasicBlockStartState.prototype.constructor = BasicBlockStartState;
 
 // Terminal node of a simple {@code (a|b|c)} block.
 function BlockEndState() {
-	ATNState.call(this);
-	this.stateType = ATNState.BLOCK_END;
+  ATNState.call(this);
+  this.stateType = ATNState.BLOCK_END;
     this.startState = null;
     return this;
 }
@@ -618,7 +619,7 @@ BlockEndState.prototype.constructor = BlockEndState;
 //  error handling.
 //
 function RuleStopState() {
-	ATNState.call(this);
+  ATNState.call(this);
     this.stateType = ATNState.RULE_STOP;
     return this;
 }
@@ -627,11 +628,11 @@ RuleStopState.prototype = Object.create(ATNState.prototype);
 RuleStopState.prototype.constructor = RuleStopState;
 
 function RuleStartState() {
-	ATNState.call(this);
-	this.stateType = ATNState.RULE_START;
-	this.stopState = null;
-	this.isPrecedenceRule = false;
-	return this;
+  ATNState.call(this);
+  this.stateType = ATNState.RULE_START;
+  this.stopState = null;
+  this.isPrecedenceRule = false;
+  return this;
 }
 
 RuleStartState.prototype = Object.create(ATNState.prototype);
@@ -641,9 +642,9 @@ RuleStartState.prototype.constructor = RuleStartState;
 //  one to the loop back to start of the block and one to exit.
 //
 function PlusLoopbackState() {
-	DecisionState.call(this);
-	this.stateType = ATNState.PLUS_LOOP_BACK;
-	return this;
+  DecisionState.call(this);
+  this.stateType = ATNState.PLUS_LOOP_BACK;
+  return this;
 }
 
 PlusLoopbackState.prototype = Object.create(DecisionState.prototype);
@@ -656,8 +657,8 @@ PlusLoopbackState.prototype.constructor = PlusLoopbackState;
 //  real decision-making note for {@code A+}.
 //
 function PlusBlockStartState() {
-	BlockStartState.call(this);
-	this.stateType = ATNState.PLUS_BLOCK_START;
+  BlockStartState.call(this);
+  this.stateType = ATNState.PLUS_BLOCK_START;
     this.loopBackState = null;
     return this;
 }
@@ -667,9 +668,9 @@ PlusBlockStartState.prototype.constructor = PlusBlockStartState;
 
 // The block that begins a closure loop.
 function StarBlockStartState() {
-	BlockStartState.call(this);
-	this.stateType = ATNState.STAR_BLOCK_START;
-	return this;
+  BlockStartState.call(this);
+  this.stateType = ATNState.STAR_BLOCK_START;
+  return this;
 }
 
 StarBlockStartState.prototype = Object.create(BlockStartState.prototype);
@@ -677,9 +678,9 @@ StarBlockStartState.prototype.constructor = StarBlockStartState;
 
 
 function StarLoopbackState() {
-	ATNState.call(this);
-	this.stateType = ATNState.STAR_LOOP_BACK;
-	return this;
+  ATNState.call(this);
+  this.stateType = ATNState.STAR_LOOP_BACK;
+  return this;
 }
 
 StarLoopbackState.prototype = Object.create(ATNState.prototype);
@@ -687,8 +688,8 @@ StarLoopbackState.prototype.constructor = StarLoopbackState;
 
 
 function StarLoopEntryState() {
-	DecisionState.call(this);
-	this.stateType = ATNState.STAR_LOOP_ENTRY;
+  DecisionState.call(this);
+  this.stateType = ATNState.STAR_LOOP_ENTRY;
     this.loopBackState = null;
     // Indicates whether this state can benefit from a precedence DFA during SLL decision making.
     this.precedenceRuleDecision = null;
@@ -701,10 +702,10 @@ StarLoopEntryState.prototype.constructor = StarLoopEntryState;
 
 // Mark the end of a * or + loop.
 function LoopEndState() {
-	ATNState.call(this);
-	this.stateType = ATNState.LOOP_END;
-	this.loopBackState = null;
-	return this;
+  ATNState.call(this);
+  this.stateType = ATNState.LOOP_END;
+  this.loopBackState = null;
+  return this;
 }
 
 LoopEndState.prototype = Object.create(ATNState.prototype);
@@ -713,9 +714,9 @@ LoopEndState.prototype.constructor = LoopEndState;
 
 // The Tokens rule start state linking to each lexer rule start state */
 function TokensStartState() {
-	DecisionState.call(this);
-	this.stateType = ATNState.TOKEN_START;
-	return this;
+  DecisionState.call(this);
+  this.stateType = ATNState.TOKEN_START;
+  return this;
 }
 
 TokensStartState.prototype = Object.create(DecisionState.prototype);
@@ -780,7 +781,7 @@ cachedModules[6211]={exports:{}};
 var Set = cachedModules[1849].exports.Set;
 
 function SemanticContext() {
-	return this;
+  return this;
 }
 
 // For context independent predicates, we evaluate them without a local
@@ -817,48 +818,48 @@ SemanticContext.prototype.evaluate = function(parser, outerContext) {
 // </ul>
 //
 SemanticContext.prototype.evalPrecedence = function(parser, outerContext) {
-	return this;
+  return this;
 };
 
 SemanticContext.andContext = function(a, b) {
-	if (a === null || a === SemanticContext.NONE) {
-		return b;
-	}
-	if (b === null || b === SemanticContext.NONE) {
-		return a;
-	}
-	var result = new AND(a, b);
-	if (result.opnds.length === 1) {
-		return result.opnds[0];
-	} else {
-		return result;
-	}
+  if (a === null || a === SemanticContext.NONE) {
+    return b;
+  }
+  if (b === null || b === SemanticContext.NONE) {
+    return a;
+  }
+  var result = new AND(a, b);
+  if (result.opnds.length === 1) {
+    return result.opnds[0];
+  } else {
+    return result;
+  }
 };
 
 SemanticContext.orContext = function(a, b) {
-	if (a === null) {
-		return b;
-	}
-	if (b === null) {
-		return a;
-	}
-	if (a === SemanticContext.NONE || b === SemanticContext.NONE) {
-		return SemanticContext.NONE;
-	}
-	var result = new OR(a, b);
-	if (result.opnds.length === 1) {
-		return result.opnds[0];
-	} else {
-		return result;
-	}
+  if (a === null) {
+    return b;
+  }
+  if (b === null) {
+    return a;
+  }
+  if (a === SemanticContext.NONE || b === SemanticContext.NONE) {
+    return SemanticContext.NONE;
+  }
+  var result = new OR(a, b);
+  if (result.opnds.length === 1) {
+    return result.opnds[0];
+  } else {
+    return result;
+  }
 };
 
 function Predicate(ruleIndex, predIndex, isCtxDependent) {
-	SemanticContext.call(this);
-	this.ruleIndex = ruleIndex === undefined ? -1 : ruleIndex;
-	this.predIndex = predIndex === undefined ? -1 : predIndex;
-	this.isCtxDependent = isCtxDependent === undefined ? false : isCtxDependent; // e.g., $i ref in pred
-	return this;
+  SemanticContext.call(this);
+  this.ruleIndex = ruleIndex === undefined ? -1 : ruleIndex;
+  this.predIndex = predIndex === undefined ? -1 : predIndex;
+  this.isCtxDependent = isCtxDependent === undefined ? false : isCtxDependent; // e.g., $i ref in pred
+  return this;
 }
 
 Predicate.prototype = Object.create(SemanticContext.prototype);
@@ -871,82 +872,82 @@ SemanticContext.NONE = new Predicate();
 
 
 Predicate.prototype.evaluate = function(parser, outerContext) {
-	var localctx = this.isCtxDependent ? outerContext : null;
-	return parser.sempred(localctx, this.ruleIndex, this.predIndex);
+  var localctx = this.isCtxDependent ? outerContext : null;
+  return parser.sempred(localctx, this.ruleIndex, this.predIndex);
 };
 
 Predicate.prototype.hashString = function() {
-	return "" + this.ruleIndex + "/" + this.predIndex + "/" + this.isCtxDependent;
+  return "" + this.ruleIndex + "/" + this.predIndex + "/" + this.isCtxDependent;
 };
 
 Predicate.prototype.equals = function(other) {
-	if (this === other) {
-		return true;
-	} else if (!(other instanceof Predicate)) {
-		return false;
-	} else {
-		return this.ruleIndex === other.ruleIndex &&
-				this.predIndex === other.predIndex &&
-				this.isCtxDependent === other.isCtxDependent;
-	}
+  if (this === other) {
+    return true;
+  } else if (!(other instanceof Predicate)) {
+    return false;
+  } else {
+    return this.ruleIndex === other.ruleIndex &&
+        this.predIndex === other.predIndex &&
+        this.isCtxDependent === other.isCtxDependent;
+  }
 };
 
 Predicate.prototype.toString = function() {
-	return "{" + this.ruleIndex + ":" + this.predIndex + "}?";
+  return "{" + this.ruleIndex + ":" + this.predIndex + "}?";
 };
 
 function PrecedencePredicate(precedence) {
-	SemanticContext.call(this);
-	this.precedence = precedence === undefined ? 0 : precedence;
+  SemanticContext.call(this);
+  this.precedence = precedence === undefined ? 0 : precedence;
 }
 
 PrecedencePredicate.prototype = Object.create(SemanticContext.prototype);
 PrecedencePredicate.prototype.constructor = PrecedencePredicate;
 
 PrecedencePredicate.prototype.evaluate = function(parser, outerContext) {
-	return parser.precpred(outerContext, this.precedence);
+  return parser.precpred(outerContext, this.precedence);
 };
 
 PrecedencePredicate.prototype.evalPrecedence = function(parser, outerContext) {
-	if (parser.precpred(outerContext, this.precedence)) {
-		return SemanticContext.NONE;
-	} else {
-		return null;
-	}
+  if (parser.precpred(outerContext, this.precedence)) {
+    return SemanticContext.NONE;
+  } else {
+    return null;
+  }
 };
 
 PrecedencePredicate.prototype.compareTo = function(other) {
-	return this.precedence - other.precedence;
+  return this.precedence - other.precedence;
 };
 
 PrecedencePredicate.prototype.hashString = function() {
-	return "31";
+  return "31";
 };
 
 PrecedencePredicate.prototype.equals = function(other) {
-	if (this === other) {
-		return true;
-	} else if (!(other instanceof PrecedencePredicate)) {
-		return false;
-	} else {
-		return this.precedence === other.precedence;
-	}
+  if (this === other) {
+    return true;
+  } else if (!(other instanceof PrecedencePredicate)) {
+    return false;
+  } else {
+    return this.precedence === other.precedence;
+  }
 };
 
 PrecedencePredicate.prototype.toString = function() {
-	return "{"+this.precedence+">=prec}?";
+  return "{"+this.precedence+">=prec}?";
 };
 
 
 
 PrecedencePredicate.filterPrecedencePredicates = function(set) {
-	var result = [];
-	set.values().map( function(context) {
-		if (context instanceof PrecedencePredicate) {
-			result.push(context);
-		}
-	});
-	return result;
+  var result = [];
+  set.values().map( function(context) {
+    if (context instanceof PrecedencePredicate) {
+      result.push(context);
+    }
+  });
+  return result;
 };
 
 
@@ -954,52 +955,52 @@ PrecedencePredicate.filterPrecedencePredicates = function(set) {
 // is false.
 //
 function AND(a, b) {
-	SemanticContext.call(this);
-	var operands = new Set();
-	if (a instanceof AND) {
-		a.opnds.map(function(o) {
-			operands.add(o);
-		});
-	} else {
-		operands.add(a);
-	}
-	if (b instanceof AND) {
-		b.opnds.map(function(o) {
-			operands.add(o);
-		});
-	} else {
-		operands.add(b);
-	}
-	var precedencePredicates = PrecedencePredicate.filterPrecedencePredicates(operands);
-	if (precedencePredicates.length > 0) {
-		// interested in the transition with the lowest precedence
-		var reduced = null;
-		precedencePredicates.map( function(p) {
-			if(reduced===null || p.precedence<reduced.precedence) {
-				reduced = p;
-			}
-		});
-		operands.add(reduced);
-	}
-	this.opnds = operands.values();
-	return this;
+  SemanticContext.call(this);
+  var operands = new Set();
+  if (a instanceof AND) {
+    a.opnds.map(function(o) {
+      operands.add(o);
+    });
+  } else {
+    operands.add(a);
+  }
+  if (b instanceof AND) {
+    b.opnds.map(function(o) {
+      operands.add(o);
+    });
+  } else {
+    operands.add(b);
+  }
+  var precedencePredicates = PrecedencePredicate.filterPrecedencePredicates(operands);
+  if (precedencePredicates.length > 0) {
+    // interested in the transition with the lowest precedence
+    var reduced = null;
+    precedencePredicates.map( function(p) {
+      if(reduced===null || p.precedence<reduced.precedence) {
+        reduced = p;
+      }
+    });
+    operands.add(reduced);
+  }
+  this.opnds = operands.values();
+  return this;
 }
 
 AND.prototype = Object.create(SemanticContext.prototype);
 AND.prototype.constructor = AND;
 
 AND.prototype.equals = function(other) {
-	if (this === other) {
-		return true;
-	} else if (!(other instanceof AND)) {
-		return false;
-	} else {
-		return this.opnds === other.opnds;
-	}
+  if (this === other) {
+    return true;
+  } else if (!(other instanceof AND)) {
+    return false;
+  } else {
+    return this.opnds === other.opnds;
+  }
 };
 
 AND.prototype.hashString = function() {
-	return "" + this.opnds + "/AND";
+  return "" + this.opnds + "/AND";
 };
 //
 // {@inheritDoc}
@@ -1009,49 +1010,49 @@ AND.prototype.hashString = function() {
 // unordered.</p>
 //
 AND.prototype.evaluate = function(parser, outerContext) {
-	for (var i = 0; i < this.opnds.length; i++) {
-		if (!this.opnds[i].evaluate(parser, outerContext)) {
-			return false;
-		}
-	}
-	return true;
+  for (var i = 0; i < this.opnds.length; i++) {
+    if (!this.opnds[i].evaluate(parser, outerContext)) {
+      return false;
+    }
+  }
+  return true;
 };
 
 AND.prototype.evalPrecedence = function(parser, outerContext) {
-	var differs = false;
-	var operands = [];
-	for (var i = 0; i < this.opnds.length; i++) {
-		var context = this.opnds[i];
-		var evaluated = context.evalPrecedence(parser, outerContext);
-		differs |= (evaluated !== context);
-		if (evaluated === null) {
-			// The AND context is false if any element is false
-			return null;
-		} else if (evaluated !== SemanticContext.NONE) {
-			// Reduce the result by skipping true elements
-			operands.push(evaluated);
-		}
-	}
-	if (!differs) {
-		return this;
-	}
-	if (operands.length === 0) {
-		// all elements were true, so the AND context is true
-		return SemanticContext.NONE;
-	}
-	var result = null;
-	operands.map(function(o) {
-		result = result === null ? o : SemanticPredicate.andContext(result, o);
-	});
-	return result;
+  var differs = false;
+  var operands = [];
+  for (var i = 0; i < this.opnds.length; i++) {
+    var context = this.opnds[i];
+    var evaluated = context.evalPrecedence(parser, outerContext);
+    differs |= (evaluated !== context);
+    if (evaluated === null) {
+      // The AND context is false if any element is false
+      return null;
+    } else if (evaluated !== SemanticContext.NONE) {
+      // Reduce the result by skipping true elements
+      operands.push(evaluated);
+    }
+  }
+  if (!differs) {
+    return this;
+  }
+  if (operands.length === 0) {
+    // all elements were true, so the AND context is true
+    return SemanticContext.NONE;
+  }
+  var result = null;
+  operands.map(function(o) {
+    result = result === null ? o : SemanticPredicate.andContext(result, o);
+  });
+  return result;
 };
 
 AND.prototype.toString = function() {
-	var s = "";
-	this.opnds.map(function(o) {
-		s += "&& " + o.toString();
-	});
-	return s.length > 3 ? s.slice(3) : s;
+  var s = "";
+  this.opnds.map(function(o) {
+    s += "&& " + o.toString();
+  });
+  return s.length > 3 ? s.slice(3) : s;
 };
 
 //
@@ -1059,51 +1060,51 @@ AND.prototype.toString = function() {
 // contexts is true.
 //
 function OR(a, b) {
-	SemanticContext.call(this);
-	var operands = new Set();
-	if (a instanceof OR) {
-		a.opnds.map(function(o) {
-			operands.add(o);
-		});
-	} else {
-		operands.add(a);
-	}
-	if (b instanceof OR) {
-		b.opnds.map(function(o) {
-			operands.add(o);
-		});
-	} else {
-		operands.add(b);
-	}
+  SemanticContext.call(this);
+  var operands = new Set();
+  if (a instanceof OR) {
+    a.opnds.map(function(o) {
+      operands.add(o);
+    });
+  } else {
+    operands.add(a);
+  }
+  if (b instanceof OR) {
+    b.opnds.map(function(o) {
+      operands.add(o);
+    });
+  } else {
+    operands.add(b);
+  }
 
-	var precedencePredicates = PrecedencePredicate.filterPrecedencePredicates(operands);
-	if (precedencePredicates.length > 0) {
-		// interested in the transition with the highest precedence
-		var s = precedencePredicates.sort(function(a, b) {
-			return a.compareTo(b);
-		});
-		var reduced = s[s.length-1];
-		operands.add(reduced);
-	}
-	this.opnds = operands.values();
-	return this;
+  var precedencePredicates = PrecedencePredicate.filterPrecedencePredicates(operands);
+  if (precedencePredicates.length > 0) {
+    // interested in the transition with the highest precedence
+    var s = precedencePredicates.sort(function(a, b) {
+      return a.compareTo(b);
+    });
+    var reduced = s[s.length-1];
+    operands.add(reduced);
+  }
+  this.opnds = operands.values();
+  return this;
 }
 
 OR.prototype = Object.create(SemanticContext.prototype);
 OR.prototype.constructor = OR;
 
 OR.prototype.constructor = function(other) {
-	if (this === other) {
-		return true;
-	} else if (!(other instanceof OR)) {
-		return false;
-	} else {
-		return this.opnds === other.opnds;
-	}
+  if (this === other) {
+    return true;
+  } else if (!(other instanceof OR)) {
+    return false;
+  } else {
+    return this.opnds === other.opnds;
+  }
 };
 
 OR.prototype.hashString = function() {
-	return "" + this.opnds + "/OR"; 
+  return "" + this.opnds + "/OR"; 
 };
 
 // <p>
@@ -1111,49 +1112,49 @@ OR.prototype.hashString = function() {
 // unordered.</p>
 //
 OR.prototype.evaluate = function(parser, outerContext) {
-	for (var i = 0; i < this.opnds.length; i++) {
-		if (this.opnds[i].evaluate(parser, outerContext)) {
-			return true;
-		}
-	}
-	return false;
+  for (var i = 0; i < this.opnds.length; i++) {
+    if (this.opnds[i].evaluate(parser, outerContext)) {
+      return true;
+    }
+  }
+  return false;
 };
 
 OR.prototype.evalPrecedence = function(parser, outerContext) {
-	var differs = false;
-	var operands = [];
-	for (var i = 0; i < this.opnds.length; i++) {
-		var context = this.opnds[i];
-		var evaluated = context.evalPrecedence(parser, outerContext);
-		differs |= (evaluated !== context);
-		if (evaluated === SemanticContext.NONE) {
-			// The OR context is true if any element is true
-			return SemanticContext.NONE;
-		} else if (evaluated !== null) {
-			// Reduce the result by skipping false elements
-			operands.push(evaluated);
-		}
-	}
-	if (!differs) {
-		return this;
-	}
-	if (operands.length === 0) {
-		// all elements were false, so the OR context is false
-		return null;
-	}
-	var result = null;
-	operands.map(function(o) {
-		return result === null ? o : SemanticContext.orContext(result, o);
-	});
-	return result;
+  var differs = false;
+  var operands = [];
+  for (var i = 0; i < this.opnds.length; i++) {
+    var context = this.opnds[i];
+    var evaluated = context.evalPrecedence(parser, outerContext);
+    differs |= (evaluated !== context);
+    if (evaluated === SemanticContext.NONE) {
+      // The OR context is true if any element is true
+      return SemanticContext.NONE;
+    } else if (evaluated !== null) {
+      // Reduce the result by skipping false elements
+      operands.push(evaluated);
+    }
+  }
+  if (!differs) {
+    return this;
+  }
+  if (operands.length === 0) {
+    // all elements were false, so the OR context is false
+    return null;
+  }
+  var result = null;
+  operands.map(function(o) {
+    return result === null ? o : SemanticContext.orContext(result, o);
+  });
+  return result;
 };
 
 AND.prototype.toString = function() {
-	var s = "";
-	this.opnds.map(function(o) {
-		s += "|| " + o.toString();
-	});
-	return s.length > 3 ? s.slice(3) : s;
+  var s = "";
+  this.opnds.map(function(o) {
+    s += "|| " + o.toString();
+  });
+  return s.length > 3 ? s.slice(3) : s;
 };
 
 exports.SemanticContext = SemanticContext;
@@ -1204,30 +1205,30 @@ var DecisionState = cachedModules[6504].exports.DecisionState;
 var SemanticContext = cachedModules[6211].exports.SemanticContext;
 
 function checkParams(params, isCfg) {
-	if(params===null) {
-		var result = { state:null, alt:null, context:null, semanticContext:null };
-		if(isCfg) {
-			result.reachesIntoOuterContext = 0;
-		}
-		return result;
-	} else {
-		var props = {};
-		props.state = params.state || null;
-		props.alt = params.alt || null;
-		props.context = params.context || null;
-		props.semanticContext = params.semanticContext || null;
-		if(isCfg) {
-			props.reachesIntoOuterContext = params.reachesIntoOuterContext || 0;
-			props.precedenceFilterSuppressed = params.precedenceFilterSuppressed || false;
-		}
-		return props;
-	}
+  if(params===null) {
+    var result = { state:null, alt:null, context:null, semanticContext:null };
+    if(isCfg) {
+      result.reachesIntoOuterContext = 0;
+    }
+    return result;
+  } else {
+    var props = {};
+    props.state = params.state || null;
+    props.alt = params.alt || null;
+    props.context = params.context || null;
+    props.semanticContext = params.semanticContext || null;
+    if(isCfg) {
+      props.reachesIntoOuterContext = params.reachesIntoOuterContext || 0;
+      props.precedenceFilterSuppressed = params.precedenceFilterSuppressed || false;
+    }
+    return props;
+  }
 }
 
 function ATNConfig(params, config) {
-	this.checkContext(params, config);
-	params = checkParams(params);
-	config = checkParams(config, true);
+  this.checkContext(params, config);
+  params = checkParams(params);
+  config = checkParams(config, true);
     // The ATN state associated with this configuration///
     this.state = params.state!==null ? params.state : config.state;
     // What alt (or lexer rule) is predicted by this configuration///
@@ -1253,10 +1254,10 @@ function ATNConfig(params, config) {
 }
 
 ATNConfig.prototype.checkContext = function(params, config) {
-	if((params.context===null || params.context===undefined) &&
-			(config===null || config.context===null || config.context===undefined)) {
-		this.context = null;
-	}
+  if((params.context===null || params.context===undefined) &&
+      (config===null || config.context===null || config.context===undefined)) {
+    this.context = null;
+  }
 };
 
 // An ATN configuration is equal to another if both have
@@ -1300,10 +1301,10 @@ ATNConfig.prototype.toString = function() {
 
 
 function LexerATNConfig(params, config) {
-	ATNConfig.call(this, params, config);
+  ATNConfig.call(this, params, config);
     
     // This is the backing field for {@link //getLexerActionExecutor}.
-	var lexerActionExecutor = params.lexerActionExecutor || null;
+  var lexerActionExecutor = params.lexerActionExecutor || null;
     this.lexerActionExecutor = lexerActionExecutor || (config!==null ? config.lexerActionExecutor : null);
     this.passedThroughNonGreedyDecision = config!==null ? this.checkNonGreedyDecision(config, this.state) : false;
     return this;
@@ -1348,105 +1349,105 @@ var Token = cachedModules[155].exports.Token;
 
 /* stop is not included! */
 function Interval(start, stop) {
-	this.start = start;
-	this.stop = stop;
-	return this;
+  this.start = start;
+  this.stop = stop;
+  return this;
 }
 
 Interval.prototype.contains = function(item) {
-	return item >= this.start && item < this.stop;
+  return item >= this.start && item < this.stop;
 };
 
 Interval.prototype.toString = function() {
-	if(this.start===this.stop-1) {
-		return this.start.toString();
-	} else {
-		return this.start.toString() + ".." + (this.stop-1).toString();
-	}
+  if(this.start===this.stop-1) {
+    return this.start.toString();
+  } else {
+    return this.start.toString() + ".." + (this.stop-1).toString();
+  }
 };
 
 
 Object.defineProperty(Interval.prototype, "length", {
-	get : function() {
-		return this.stop - this.start;
-	}
+  get : function() {
+    return this.stop - this.start;
+  }
 });
 
 function IntervalSet() {
-	this.intervals = null;
-	this.readOnly = false;
+  this.intervals = null;
+  this.readOnly = false;
 }
 
 IntervalSet.prototype.first = function(v) {
-	if (this.intervals === null || this.intervals.length===0) {
-		return Token.INVALID_TYPE;
-	} else {
-		return this.intervals[0].start;
-	}
+  if (this.intervals === null || this.intervals.length===0) {
+    return Token.INVALID_TYPE;
+  } else {
+    return this.intervals[0].start;
+  }
 };
 
 IntervalSet.prototype.addOne = function(v) {
-	this.addInterval(new Interval(v, v + 1));
+  this.addInterval(new Interval(v, v + 1));
 };
 
 IntervalSet.prototype.addRange = function(l, h) {
-	this.addInterval(new Interval(l, h + 1));
+  this.addInterval(new Interval(l, h + 1));
 };
 
 IntervalSet.prototype.addInterval = function(v) {
-	if (this.intervals === null) {
-		this.intervals = [];
-		this.intervals.push(v);
-	} else {
-		// find insert pos
-		for (var k = 0; k < this.intervals.length; k++) {
-			var i = this.intervals[k];
-			// distinct range -> insert
-			if (v.stop < i.start) {
-				this.intervals.splice(k, 0, v);
-				return;
-			}
-			// contiguous range -> adjust
-			else if (v.stop === i.start) {
-				this.intervals[k].start = v.start;
-				return;
-			}
-			// overlapping range -> adjust and reduce
-			else if (v.start <= i.stop) {
-				this.intervals[k] = new Interval(Math.min(i.start, v.start), Math.max(i.stop, v.stop));
-				this.reduce(k);
-				return;
-			}
-		}
-		// greater than any existing
-		this.intervals.push(v);
-	}
+  if (this.intervals === null) {
+    this.intervals = [];
+    this.intervals.push(v);
+  } else {
+    // find insert pos
+    for (var k = 0; k < this.intervals.length; k++) {
+      var i = this.intervals[k];
+      // distinct range -> insert
+      if (v.stop < i.start) {
+        this.intervals.splice(k, 0, v);
+        return;
+      }
+      // contiguous range -> adjust
+      else if (v.stop === i.start) {
+        this.intervals[k].start = v.start;
+        return;
+      }
+      // overlapping range -> adjust and reduce
+      else if (v.start <= i.stop) {
+        this.intervals[k] = new Interval(Math.min(i.start, v.start), Math.max(i.stop, v.stop));
+        this.reduce(k);
+        return;
+      }
+    }
+    // greater than any existing
+    this.intervals.push(v);
+  }
 };
 
 IntervalSet.prototype.addSet = function(other) {
-	if (other.intervals !== null) {
-		for (var k = 0; k < other.intervals.length; k++) {
-			var i = other.intervals[k];
-			this.addInterval(new Interval(i.start, i.stop));
-		}
-	}
-	return this;
+  if (other.intervals !== null) {
+    for (var k = 0; k < other.intervals.length; k++) {
+      var i = other.intervals[k];
+      this.addInterval(new Interval(i.start, i.stop));
+    }
+  }
+  return this;
 };
 
 IntervalSet.prototype.reduce = function(k) {
-	// only need to reduce if k is not the last
-	if (k < this.intervalslength - 1) {
-		var l = this.intervals[k];
-		var r = this.intervals[k + 1];
-		// if r contained in l
-		if (l.stop >= r.stop) {
-			this.intervals.pop(k + 1);
-			this.reduce(k);
-		} else if (l.stop >= r.start) {
-			this.intervals[k] = new Interval(l.start, r.stop);
-			this.intervals.pop(k + 1);
-		}
-	}
+  // only need to reduce if k is not the last
+  if (k < this.intervalslength - 1) {
+    var l = this.intervals[k];
+    var r = this.intervals[k + 1];
+    // if r contained in l
+    if (l.stop >= r.stop) {
+      this.intervals.pop(k + 1);
+      this.reduce(k);
+    } else if (l.stop >= r.start) {
+      this.intervals[k] = new Interval(l.start, r.stop);
+      this.intervals.pop(k + 1);
+    }
+  }
 };
 
 IntervalSet.prototype.complement = function(start, stop) {
@@ -1459,24 +1460,24 @@ IntervalSet.prototype.complement = function(start, stop) {
 };
 
 IntervalSet.prototype.contains = function(item) {
-	if (this.intervals === null) {
-		return false;
-	} else {
-		for (var k = 0; k < this.intervals.length; k++) {
-			if(this.intervals[k].contains(item)) {
-				return true;
-			}
-		}
-		return false;
-	}
+  if (this.intervals === null) {
+    return false;
+  } else {
+    for (var k = 0; k < this.intervals.length; k++) {
+      if(this.intervals[k].contains(item)) {
+        return true;
+      }
+    }
+    return false;
+  }
 };
 
 Object.defineProperty(IntervalSet.prototype, "length", {
-	get : function() {
-		var len = 0;
-		this.intervals.map(function(i) {len += i.length;});
-		return len;
-	}
+  get : function() {
+    var len = 0;
+    this.intervals.map(function(i) {len += i.length;});
+    return len;
+  }
 });
 
 IntervalSet.prototype.removeRange = function(v) {
@@ -1516,121 +1517,121 @@ IntervalSet.prototype.removeRange = function(v) {
 };
 
 IntervalSet.prototype.removeOne = function(v) {
-	if (this.intervals !== null) {
-		for (var k = 0; k < this.intervals.length; k++) {
-			var i = this.intervals[k];
-			// intervals is ordered
-			if (v < i.start) {
-				return;
-			}
-			// check for single value range
-			else if (v === i.start && v === i.stop - 1) {
-				this.intervals.splice(k, 1);
-				return;
-			}
-			// check for lower boundary
-			else if (v === i.start) {
-				this.intervals[k] = new Interval(i.start + 1, i.stop);
-				return;
-			}
-			// check for upper boundary
-			else if (v === i.stop - 1) {
-				this.intervals[k] = new Interval(i.start, i.stop - 1);
-				return;
-			}
-			// split existing range
-			else if (v < i.stop - 1) {
-				var x = new Interval(i.start, v);
-				i.start = v + 1;
-				this.intervals.splice(k, 0, x);
-				return;
-			}
-		}
-	}
+  if (this.intervals !== null) {
+    for (var k = 0; k < this.intervals.length; k++) {
+      var i = this.intervals[k];
+      // intervals is ordered
+      if (v < i.start) {
+        return;
+      }
+      // check for single value range
+      else if (v === i.start && v === i.stop - 1) {
+        this.intervals.splice(k, 1);
+        return;
+      }
+      // check for lower boundary
+      else if (v === i.start) {
+        this.intervals[k] = new Interval(i.start + 1, i.stop);
+        return;
+      }
+      // check for upper boundary
+      else if (v === i.stop - 1) {
+        this.intervals[k] = new Interval(i.start, i.stop - 1);
+        return;
+      }
+      // split existing range
+      else if (v < i.stop - 1) {
+        var x = new Interval(i.start, v);
+        i.start = v + 1;
+        this.intervals.splice(k, 0, x);
+        return;
+      }
+    }
+  }
 };
 
 IntervalSet.prototype.toString = function(literalNames, symbolicNames, elemsAreChar) {
-	literalNames = literalNames || null;
-	symbolicNames = symbolicNames || null;
-	elemsAreChar = elemsAreChar || false;
-	if (this.intervals === null) {
-		return "{}";
-	} else if(literalNames!==null || symbolicNames!==null) {
-		return this.toTokenString(literalNames, symbolicNames);
-	} else if(elemsAreChar) {
-		return this.toCharString();
-	} else {
-		return this.toIndexString();
-	}
+  literalNames = literalNames || null;
+  symbolicNames = symbolicNames || null;
+  elemsAreChar = elemsAreChar || false;
+  if (this.intervals === null) {
+    return "{}";
+  } else if(literalNames!==null || symbolicNames!==null) {
+    return this.toTokenString(literalNames, symbolicNames);
+  } else if(elemsAreChar) {
+    return this.toCharString();
+  } else {
+    return this.toIndexString();
+  }
 };
 
 IntervalSet.prototype.toCharString = function() {
-	var names = [];
-	for (var i = 0; i < this.intervals.length; i++) {
-		var v = this.intervals[i];
-		if(v.stop===v.start+1) {
-			if ( v.start===Token.EOF ) {
-				names.push("<EOF>");
-			} else {
-				names.push("'" + String.fromCharCode(v.start) + "'");
-			}
-		} else {
-			names.push("'" + String.fromCharCode(v.start) + "'..'" + String.fromCharCode(v.stop-1) + "'");
-		}
-	}
-	if (names.length > 1) {
-		return "{" + names.join(", ") + "}";
-	} else {
-		return names[0];
-	}
+  var names = [];
+  for (var i = 0; i < this.intervals.length; i++) {
+    var v = this.intervals[i];
+    if(v.stop===v.start+1) {
+      if ( v.start===Token.EOF ) {
+        names.push("<EOF>");
+      } else {
+        names.push("'" + String.fromCharCode(v.start) + "'");
+      }
+    } else {
+      names.push("'" + String.fromCharCode(v.start) + "'..'" + String.fromCharCode(v.stop-1) + "'");
+    }
+  }
+  if (names.length > 1) {
+    return "{" + names.join(", ") + "}";
+  } else {
+    return names[0];
+  }
 };
 
 
 IntervalSet.prototype.toIndexString = function() {
-	var names = [];
-	for (var i = 0; i < this.intervals.length; i++) {
-		var v = this.intervals[i];
-		if(v.stop===v.start+1) {
-			if ( v.start===Token.EOF ) {
-				names.push("<EOF>");
-			} else {
-				names.push(v.start.toString());
-			}
-		} else {
-			names.push(v.start.toString() + ".." + (v.stop-1).toString());
-		}
-	}
-	if (names.length > 1) {
-		return "{" + names.join(", ") + "}";
-	} else {
-		return names[0];
-	}
+  var names = [];
+  for (var i = 0; i < this.intervals.length; i++) {
+    var v = this.intervals[i];
+    if(v.stop===v.start+1) {
+      if ( v.start===Token.EOF ) {
+        names.push("<EOF>");
+      } else {
+        names.push(v.start.toString());
+      }
+    } else {
+      names.push(v.start.toString() + ".." + (v.stop-1).toString());
+    }
+  }
+  if (names.length > 1) {
+    return "{" + names.join(", ") + "}";
+  } else {
+    return names[0];
+  }
 };
 
 
 IntervalSet.prototype.toTokenString = function(literalNames, symbolicNames) {
-	var names = [];
-	for (var i = 0; i < this.intervals.length; i++) {
-		var v = this.intervals[i];
-		for (var j = v.start; j < v.stop; j++) {
-			names.push(this.elementName(literalNames, symbolicNames, j));
-		}
-	}
-	if (names.length > 1) {
-		return "{" + names.join(", ") + "}";
-	} else {
-		return names[0];
-	}
+  var names = [];
+  for (var i = 0; i < this.intervals.length; i++) {
+    var v = this.intervals[i];
+    for (var j = v.start; j < v.stop; j++) {
+      names.push(this.elementName(literalNames, symbolicNames, j));
+    }
+  }
+  if (names.length > 1) {
+    return "{" + names.join(", ") + "}";
+  } else {
+    return names[0];
+  }
 };
 
 IntervalSet.prototype.elementName = function(literalNames, symbolicNames, a) {
-	if (a === Token.EOF) {
-		return "<EOF>";
-	} else if (a === Token.EPSILON) {
-		return "<EPSILON>";
-	} else {
-		return literalNames[a] || symbolicNames[a];
-	}
+  if (a === Token.EOF) {
+    return "<EOF>";
+  } else if (a === Token.EPSILON) {
+    return "<EPSILON>";
+  } else {
+    return literalNames[a] || symbolicNames[a];
+  }
 };
 
 exports.Interval = Interval;
@@ -1738,8 +1739,8 @@ Transition.serializationTypes = {
 
 // TODO: make all transitions sets? no, should remove set edges
 function AtomTransition(target, label) {
-	Transition.call(this, target);
-	this.label_ = label; // The token type or character value; or, signifies special label.
+  Transition.call(this, target);
+  this.label_ = label; // The token type or character value; or, signifies special label.
     this.label = this.makeLabel();
     this.serializationType = Transition.ATOM;
     return this;
@@ -1749,7 +1750,7 @@ AtomTransition.prototype = Object.create(Transition.prototype);
 AtomTransition.prototype.constructor = AtomTransition;
 
 AtomTransition.prototype.makeLabel = function() {
-	var s = new IntervalSet();
+  var s = new IntervalSet();
     s.addOne(this.label_);
     return s;
 };
@@ -1759,11 +1760,11 @@ AtomTransition.prototype.matches = function( symbol, minVocabSymbol,  maxVocabSy
 };
 
 AtomTransition.prototype.toString = function() {
-	return this.label_;
+  return this.label_;
 };
 
 function RuleTransition(ruleStart, ruleIndex, precedence, followState) {
-	Transition.call(this, ruleStart);
+  Transition.call(this, ruleStart);
     this.ruleIndex = ruleIndex; // ptr to the rule definition object for this rule ref
     this.precedence = precedence;
     this.followState = followState; // what node to begin computations following ref to rule
@@ -1776,12 +1777,12 @@ RuleTransition.prototype = Object.create(Transition.prototype);
 RuleTransition.prototype.constructor = RuleTransition;
 
 RuleTransition.prototype.matches = function(symbol, minVocabSymbol,  maxVocabSymbol) {
-	return false;
+  return false;
 };
 
 
 function EpsilonTransition(target, outermostPrecedenceReturn) {
-	Transition.call(this, target);
+  Transition.call(this, target);
     this.serializationType = Transition.EPSILON;
     this.isEpsilon = true;
     this.outermostPrecedenceReturn = outermostPrecedenceReturn;
@@ -1792,16 +1793,16 @@ EpsilonTransition.prototype = Object.create(Transition.prototype);
 EpsilonTransition.prototype.constructor = EpsilonTransition;
 
 EpsilonTransition.prototype.matches = function( symbol, minVocabSymbol,  maxVocabSymbol) {
-	return false;
+  return false;
 };
 
 EpsilonTransition.prototype.toString = function() {
-	return "epsilon";
+  return "epsilon";
 };
 
 function RangeTransition(target, start, stop) {
-	Transition.call(this, target);
-	this.serializationType = Transition.RANGE;
+  Transition.call(this, target);
+  this.serializationType = Transition.RANGE;
     this.start = start;
     this.stop = stop;
     this.label = this.makeLabel();
@@ -1818,23 +1819,23 @@ RangeTransition.prototype.makeLabel = function() {
 };
 
 RangeTransition.prototype.matches = function(symbol, minVocabSymbol,  maxVocabSymbol) {
-	return symbol >= this.start && symbol <= this.stop;
+  return symbol >= this.start && symbol <= this.stop;
 };
 
 RangeTransition.prototype.toString = function() {
-	return "'" + String.fromCharCode(this.start) + "'..'" + String.fromCharCode(this.stop) + "'";
+  return "'" + String.fromCharCode(this.start) + "'..'" + String.fromCharCode(this.stop) + "'";
 };
 
 function AbstractPredicateTransition(target) {
-	Transition.call(this, target);
-	return this;
+  Transition.call(this, target);
+  return this;
 }
 
 AbstractPredicateTransition.prototype = Object.create(Transition.prototype);
 AbstractPredicateTransition.prototype.constructor = AbstractPredicateTransition;
 
 function PredicateTransition(target, ruleIndex, predIndex, isCtxDependent) {
-	AbstractPredicateTransition.call(this, target);
+  AbstractPredicateTransition.call(this, target);
     this.serializationType = Transition.PREDICATE;
     this.ruleIndex = ruleIndex;
     this.predIndex = predIndex;
@@ -1847,19 +1848,19 @@ PredicateTransition.prototype = Object.create(AbstractPredicateTransition.protot
 PredicateTransition.prototype.constructor = PredicateTransition;
 
 PredicateTransition.prototype.matches = function(symbol, minVocabSymbol,  maxVocabSymbol) {
-	return false;
+  return false;
 };
 
 PredicateTransition.prototype.getPredicate = function() {
-	return new Predicate(this.ruleIndex, this.predIndex, this.isCtxDependent);
+  return new Predicate(this.ruleIndex, this.predIndex, this.isCtxDependent);
 };
 
 PredicateTransition.prototype.toString = function() {
-	return "pred_" + this.ruleIndex + ":" + this.predIndex;
+  return "pred_" + this.ruleIndex + ":" + this.predIndex;
 };
 
 function ActionTransition(target, ruleIndex, actionIndex, isCtxDependent) {
-	Transition.call(this, target);
+  Transition.call(this, target);
     this.serializationType = Transition.ACTION;
     this.ruleIndex = ruleIndex;
     this.actionIndex = actionIndex===undefined ? -1 : actionIndex;
@@ -1873,18 +1874,18 @@ ActionTransition.prototype.constructor = ActionTransition;
 
 
 ActionTransition.prototype.matches = function(symbol, minVocabSymbol,  maxVocabSymbol) {
-	return false;
+  return false;
 };
 
 ActionTransition.prototype.toString = function() {
-	return "action_" + this.ruleIndex + ":" + this.actionIndex;
+  return "action_" + this.ruleIndex + ":" + this.actionIndex;
 };
         
 
 // A transition containing a set of values.
 function SetTransition(target, set) {
-	Transition.call(this, target);
-	this.serializationType = Transition.SET;
+  Transition.call(this, target);
+  this.serializationType = Transition.SET;
     if (set !==undefined && set !==null) {
         this.label = set;
     } else {
@@ -1898,36 +1899,36 @@ SetTransition.prototype = Object.create(Transition.prototype);
 SetTransition.prototype.constructor = SetTransition;
 
 SetTransition.prototype.matches = function(symbol, minVocabSymbol,  maxVocabSymbol) {
-	return this.label.contains(symbol);
+  return this.label.contains(symbol);
 };
         
 
 SetTransition.prototype.toString = function() {
-	return this.label.toString();
+  return this.label.toString();
 };
 
 function NotSetTransition(target, set) {
-	SetTransition.call(this, target, set);
-	this.serializationType = Transition.NOT_SET;
-	return this;
+  SetTransition.call(this, target, set);
+  this.serializationType = Transition.NOT_SET;
+  return this;
 }
 
 NotSetTransition.prototype = Object.create(SetTransition.prototype);
 NotSetTransition.prototype.constructor = NotSetTransition;
 
 NotSetTransition.prototype.matches = function(symbol, minVocabSymbol,  maxVocabSymbol) {
-	return symbol >= minVocabSymbol && symbol <= maxVocabSymbol &&
-			!SetTransition.prototype.matches.call(this, symbol, minVocabSymbol, maxVocabSymbol);
+  return symbol >= minVocabSymbol && symbol <= maxVocabSymbol &&
+      !SetTransition.prototype.matches.call(this, symbol, minVocabSymbol, maxVocabSymbol);
 };
 
 NotSetTransition.prototype.toString = function() {
-	return '~' + SetTransition.prototype.toString.call(this);
+  return '~' + SetTransition.prototype.toString.call(this);
 };
 
 function WildcardTransition(target) {
-	Transition.call(this, target);
-	this.serializationType = Transition.WILDCARD;
-	return this;
+  Transition.call(this, target);
+  this.serializationType = Transition.WILDCARD;
+  return this;
 }
 
 WildcardTransition.prototype = Object.create(Transition.prototype);
@@ -1935,15 +1936,15 @@ WildcardTransition.prototype.constructor = WildcardTransition;
 
 
 WildcardTransition.prototype.matches = function(symbol, minVocabSymbol,  maxVocabSymbol) {
-	return symbol >= minVocabSymbol && symbol <= maxVocabSymbol;
+  return symbol >= minVocabSymbol && symbol <= maxVocabSymbol;
 };
 
 WildcardTransition.prototype.toString = function() {
-	return ".";
+  return ".";
 };
 
 function PrecedencePredicateTransition(target, precedence) {
-	AbstractPredicateTransition.call(this, target);
+  AbstractPredicateTransition.call(this, target);
     this.serializationType = Transition.PRECEDENCE;
     this.precedence = precedence;
     this.isEpsilon = true;
@@ -1954,15 +1955,15 @@ PrecedencePredicateTransition.prototype = Object.create(AbstractPredicateTransit
 PrecedencePredicateTransition.prototype.constructor = PrecedencePredicateTransition;
 
 PrecedencePredicateTransition.prototype.matches = function(symbol, minVocabSymbol,  maxVocabSymbol) {
-	return false;
+  return false;
 };
 
 PrecedencePredicateTransition.prototype.getPredicate = function() {
-	return new PrecedencePredicate(this.precedence);
+  return new PrecedencePredicate(this.precedence);
 };
 
 PrecedencePredicateTransition.prototype.toString = function() {
-	return this.precedence + " >= _p";
+  return this.precedence + " >= _p";
 };
         
 exports.Transition = Transition;
@@ -2019,75 +2020,75 @@ var Utils = cachedModules[1849].exports;
 
 
 function Tree() {
-	return this;
+  return this;
 }
 
 function SyntaxTree() {
-	Tree.call(this);
-	return this;
+  Tree.call(this);
+  return this;
 }
 
 SyntaxTree.prototype = Object.create(Tree.prototype);
 SyntaxTree.prototype.constructor = SyntaxTree;
 
 function ParseTree() {
-	SyntaxTree.call(this);
-	return this;
+  SyntaxTree.call(this);
+  return this;
 }
 
 ParseTree.prototype = Object.create(SyntaxTree.prototype);
 ParseTree.prototype.constructor = ParseTree;
 
 function RuleNode() {
-	ParseTree.call(this);
-	return this;
+  ParseTree.call(this);
+  return this;
 }
 
 RuleNode.prototype = Object.create(ParseTree.prototype);
 RuleNode.prototype.constructor = RuleNode;
 
 function TerminalNode() {
-	ParseTree.call(this);
-	return this;
+  ParseTree.call(this);
+  return this;
 }
 
 TerminalNode.prototype = Object.create(ParseTree.prototype);
 TerminalNode.prototype.constructor = TerminalNode;
 
 function ErrorNode() {
-	TerminalNode.call(this);
-	return this;
+  TerminalNode.call(this);
+  return this;
 }
 
 ErrorNode.prototype = Object.create(TerminalNode.prototype);
 ErrorNode.prototype.constructor = ErrorNode;
 
 function ParseTreeVisitor() {
-	return this;
+  return this;
 }
 
 ParseTreeVisitor.prototype.visit = function(ctx) {
-	if (Utils.isArray(ctx)) {
-		var self = this;
-		return ctx.map(function(child) { return visitAtom(self, child)});
-	} else {
-		return visitAtom(this, ctx);
-	}
+  if (Utils.isArray(ctx)) {
+    var self = this;
+    return ctx.map(function(child) { return visitAtom(self, child)});
+  } else {
+    return visitAtom(this, ctx);
+  }
 };
 
 var visitAtom = function(visitor, ctx) {
-	if (ctx.parser === undefined) { //is terminal
-		return;
-	}
+  if (ctx.parser === undefined) { //is terminal
+    return;
+  }
 
-	var name = ctx.parser.ruleNames[ctx.ruleIndex];
-	var funcName = "visit" + Utils.titleCase(name);
+  var name = ctx.parser.ruleNames[ctx.ruleIndex];
+  var funcName = "visit" + Utils.titleCase(name);
 
-	return visitor[funcName](ctx);
+  return visitor[funcName](ctx);
 };
 
 function ParseTreeListener() {
-	return this;
+  return this;
 }
 
 ParseTreeListener.prototype.visitTerminal = function(node) {
@@ -2103,57 +2104,57 @@ ParseTreeListener.prototype.exitEveryRule = function(node) {
 };
 
 function TerminalNodeImpl(symbol) {
-	TerminalNode.call(this);
-	this.parentCtx = null;
-	this.symbol = symbol;
-	return this;
+  TerminalNode.call(this);
+  this.parentCtx = null;
+  this.symbol = symbol;
+  return this;
 }
 
 TerminalNodeImpl.prototype = Object.create(TerminalNode.prototype);
 TerminalNodeImpl.prototype.constructor = TerminalNodeImpl;
 
 TerminalNodeImpl.prototype.getChild = function(i) {
-	return null;
+  return null;
 };
 
 TerminalNodeImpl.prototype.getSymbol = function() {
-	return this.symbol;
+  return this.symbol;
 };
 
 TerminalNodeImpl.prototype.getParent = function() {
-	return this.parentCtx;
+  return this.parentCtx;
 };
 
 TerminalNodeImpl.prototype.getPayload = function() {
-	return this.symbol;
+  return this.symbol;
 };
 
 TerminalNodeImpl.prototype.getSourceInterval = function() {
-	if (this.symbol === null) {
-		return INVALID_INTERVAL;
-	}
-	var tokenIndex = this.symbol.tokenIndex;
-	return new Interval(tokenIndex, tokenIndex);
+  if (this.symbol === null) {
+    return INVALID_INTERVAL;
+  }
+  var tokenIndex = this.symbol.tokenIndex;
+  return new Interval(tokenIndex, tokenIndex);
 };
 
 TerminalNodeImpl.prototype.getChildCount = function() {
-	return 0;
+  return 0;
 };
 
 TerminalNodeImpl.prototype.accept = function(visitor) {
-	return visitor.visitTerminal(this);
+  return visitor.visitTerminal(this);
 };
 
 TerminalNodeImpl.prototype.getText = function() {
-	return this.symbol.text;
+  return this.symbol.text;
 };
 
 TerminalNodeImpl.prototype.toString = function() {
-	if (this.symbol.type === Token.EOF) {
-		return "<EOF>";
-	} else {
-		return this.symbol.text;
-	}
+  if (this.symbol.type === Token.EOF) {
+    return "<EOF>";
+  } else {
+    return this.symbol.text;
+  }
 };
 
 // Represents a token that was consumed during resynchronization
@@ -2163,40 +2164,40 @@ TerminalNodeImpl.prototype.toString = function() {
 // upon no viable alternative exceptions.
 
 function ErrorNodeImpl(token) {
-	TerminalNodeImpl.call(this, token);
-	return this;
+  TerminalNodeImpl.call(this, token);
+  return this;
 }
 
 ErrorNodeImpl.prototype = Object.create(TerminalNodeImpl.prototype);
 ErrorNodeImpl.prototype.constructor = ErrorNodeImpl;
 
 ErrorNodeImpl.prototype.isErrorNode = function() {
-	return true;
+  return true;
 };
 
 ErrorNodeImpl.prototype.accept = function(visitor) {
-	return visitor.visitErrorNode(this);
+  return visitor.visitErrorNode(this);
 };
 
 function ParseTreeWalker() {
-	return this;
+  return this;
 }
 
 ParseTreeWalker.prototype.walk = function(listener, t) {
-	var errorNode = t instanceof ErrorNode ||
-			(t.isErrorNode !== undefined && t.isErrorNode());
-	if (errorNode) {
-		listener.visitErrorNode(t);
-	} else if (t instanceof TerminalNode) {
-		listener.visitTerminal(t);
-	} else {
-		this.enterRule(listener, t);
-		for (var i = 0; i < t.getChildCount(); i++) {
-			var child = t.getChild(i);
-			this.walk(listener, child);
-		}
-		this.exitRule(listener, t);
-	}
+  var errorNode = t instanceof ErrorNode ||
+      (t.isErrorNode !== undefined && t.isErrorNode());
+  if (errorNode) {
+    listener.visitErrorNode(t);
+  } else if (t instanceof TerminalNode) {
+    listener.visitTerminal(t);
+  } else {
+    this.enterRule(listener, t);
+    for (var i = 0; i < t.getChildCount(); i++) {
+      var child = t.getChild(i);
+      this.walk(listener, child);
+    }
+    this.exitRule(listener, t);
+  }
 };
 //
 // The discovery of a rule node, involves sending two events: the generic
@@ -2205,15 +2206,15 @@ ParseTreeWalker.prototype.walk = function(listener, t) {
 // the rule specific. We to them in reverse order upon finishing the node.
 //
 ParseTreeWalker.prototype.enterRule = function(listener, r) {
-	var ctx = r.getRuleContext();
-	listener.enterEveryRule(ctx);
-	ctx.enterRule(listener);
+  var ctx = r.getRuleContext();
+  listener.enterEveryRule(ctx);
+  ctx.enterRule(listener);
 };
 
 ParseTreeWalker.prototype.exitRule = function(listener, r) {
-	var ctx = r.getRuleContext();
-	ctx.exitRule(listener);
-	listener.exitEveryRule(ctx);
+  var ctx = r.getRuleContext();
+  ctx.exitRule(listener);
+  listener.exitEveryRule(ctx);
 };
 
 ParseTreeWalker.DEFAULT = new ParseTreeWalker();
@@ -2274,8 +2275,8 @@ function Trees() {
 //  node payloads to get the text for the nodes.  Detect
 //  parse trees and extract data appropriately.
 Trees.toStringTree = function(tree, ruleNames, recog) {
-	ruleNames = ruleNames || null;
-	recog = recog || null;
+  ruleNames = ruleNames || null;
+  recog = recog || null;
     if(recog!==null) {
        ruleNames = recog.ruleNames;
     }
@@ -2299,8 +2300,8 @@ Trees.toStringTree = function(tree, ruleNames, recog) {
 };
 
 Trees.getNodeText = function(t, ruleNames, recog) {
-	ruleNames = ruleNames || null;
-	recog = recog || null;
+  ruleNames = ruleNames || null;
+  recog = recog || null;
     if(recog!==null) {
         ruleNames = recog.ruleNames;
     }
@@ -2326,11 +2327,11 @@ Trees.getNodeText = function(t, ruleNames, recog) {
 
 // Return ordered list of all children of this node
 Trees.getChildren = function(t) {
-	var list = [];
-	for(var i=0;i<t.getChildCount();i++) {
-		list.push(t.getChild(i));
-	}
-	return list;
+  var list = [];
+  for(var i=0;i<t.getChildCount();i++) {
+    list.push(t.getChild(i));
+  }
+  return list;
 };
 
 // Return a list of all ancestors of this node.  The first node of
@@ -2351,34 +2352,34 @@ Trees.findAllTokenNodes = function(t, ttype) {
 };
 
 Trees.findAllRuleNodes = function(t, ruleIndex) {
-	return Trees.findAllNodes(t, ruleIndex, false);
+  return Trees.findAllNodes(t, ruleIndex, false);
 };
 
 Trees.findAllNodes = function(t, index, findTokens) {
-	var nodes = [];
-	Trees._findAllNodes(t, index, findTokens, nodes);
-	return nodes;
+  var nodes = [];
+  Trees._findAllNodes(t, index, findTokens, nodes);
+  return nodes;
 };
 
 Trees._findAllNodes = function(t, index, findTokens, nodes) {
-	// check this node (the root) first
-	if(findTokens && (t instanceof TerminalNode)) {
-		if(t.symbol.type===index) {
-			nodes.push(t);
-		}
-	} else if(!findTokens && (t instanceof ParserRuleContext)) {
-		if(t.ruleIndex===index) {
-			nodes.push(t);
-		}
-	}
-	// check children
-	for(var i=0;i<t.getChildCount();i++) {
-		Trees._findAllNodes(t.getChild(i), index, findTokens, nodes);
-	}
+  // check this node (the root) first
+  if(findTokens && (t instanceof TerminalNode)) {
+    if(t.symbol.type===index) {
+      nodes.push(t);
+    }
+  } else if(!findTokens && (t instanceof ParserRuleContext)) {
+    if(t.ruleIndex===index) {
+      nodes.push(t);
+    }
+  }
+  // check children
+  for(var i=0;i<t.getChildCount();i++) {
+    Trees._findAllNodes(t.getChild(i), index, findTokens, nodes);
+  }
 };
 
 Trees.descendants = function(t) {
-	var nodes = [t];
+  var nodes = [t];
     for(var i=0;i<t.getChildCount();i++) {
         nodes = nodes.concat(Trees.descendants(t.getChild(i)));
     }
@@ -2444,47 +2445,47 @@ var RuleNode = cachedModules[5623].exports.RuleNode;
 var INVALID_INTERVAL = cachedModules[5623].exports.INVALID_INTERVAL;
 
 function RuleContext(parent, invokingState) {
-	RuleNode.call(this);
-	// What context invoked this rule?
-	this.parentCtx = parent || null;
-	// What state invoked the rule associated with this context?
-	// The "return address" is the followState of invokingState
-	// If parent is null, this should be -1.
-	this.invokingState = invokingState || -1;
-	return this;
+  RuleNode.call(this);
+  // What context invoked this rule?
+  this.parentCtx = parent || null;
+  // What state invoked the rule associated with this context?
+  // The "return address" is the followState of invokingState
+  // If parent is null, this should be -1.
+  this.invokingState = invokingState || -1;
+  return this;
 }
 
 RuleContext.prototype = Object.create(RuleNode.prototype);
 RuleContext.prototype.constructor = RuleContext;
 
 RuleContext.prototype.depth = function() {
-	var n = 0;
-	var p = this;
-	while (p !== null) {
-		p = p.parentCtx;
-		n += 1;
-	}
-	return n;
+  var n = 0;
+  var p = this;
+  while (p !== null) {
+    p = p.parentCtx;
+    n += 1;
+  }
+  return n;
 };
 
 // A context is empty if there is no invoking state; meaning nobody call
 // current context.
 RuleContext.prototype.isEmpty = function() {
-	return this.invokingState === -1;
+  return this.invokingState === -1;
 };
 
 // satisfy the ParseTree / SyntaxTree interface
 
 RuleContext.prototype.getSourceInterval = function() {
-	return INVALID_INTERVAL;
+  return INVALID_INTERVAL;
 };
 
 RuleContext.prototype.getRuleContext = function() {
-	return this;
+  return this;
 };
 
 RuleContext.prototype.getPayload = function() {
-	return this;
+  return this;
 };
 
 // Return the combined text of all child nodes. This method only considers
@@ -2495,25 +2496,25 @@ RuleContext.prototype.getPayload = function() {
 // method.
 // /
 RuleContext.prototype.getText = function() {
-	if (this.getChildCount() === 0) {
-		return "";
-	} else {
-		return this.children.map(function(child) {
-			return child.getText();
-		}).join("");
-	}
+  if (this.getChildCount() === 0) {
+    return "";
+  } else {
+    return this.children.map(function(child) {
+      return child.getText();
+    }).join("");
+  }
 };
 
 RuleContext.prototype.getChild = function(i) {
-	return null;
+  return null;
 };
 
 RuleContext.prototype.getChildCount = function() {
-	return 0;
+  return 0;
 };
 
 RuleContext.prototype.accept = function(visitor) {
-	return visitor.visitChildren(this);
+  return visitor.visitChildren(this);
 };
 
 //need to manage circular dependencies, so export now
@@ -2526,32 +2527,32 @@ var Trees = cachedModules[8258].exports.Trees;
 //
 
 RuleContext.prototype.toStringTree = function(ruleNames, recog) {
-	return Trees.toStringTree(this, ruleNames, recog);
+  return Trees.toStringTree(this, ruleNames, recog);
 };
 
 RuleContext.prototype.toString = function(ruleNames, stop) {
-	ruleNames = ruleNames || null;
-	stop = stop || null;
-	var p = this;
-	var s = "[";
-	while (p !== null && p !== stop) {
-		if (ruleNames === null) {
-			if (!p.isEmpty()) {
-				s += p.invokingState;
-			}
-		} else {
-			var ri = p.ruleIndex;
-			var ruleName = (ri >= 0 && ri < ruleNames.length) ? ruleNames[ri]
-					: "" + ri;
-			s += ruleName;
-		}
-		if (p.parentCtx !== null && (ruleNames !== null || !p.parentCtx.isEmpty())) {
-			s += " ";
-		}
-		p = p.parentCtx;
-	}
-	s += "]";
-	return s;
+  ruleNames = ruleNames || null;
+  stop = stop || null;
+  var p = this;
+  var s = "[";
+  while (p !== null && p !== stop) {
+    if (ruleNames === null) {
+      if (!p.isEmpty()) {
+        s += p.invokingState;
+      }
+    } else {
+      var ri = p.ruleIndex;
+      var ruleName = (ri >= 0 && ri < ruleNames.length) ? ruleNames[ri]
+          : "" + ri;
+      s += ruleName;
+    }
+    if (p.parentCtx !== null && (ruleNames !== null || !p.parentCtx.isEmpty())) {
+      s += " ";
+    }
+    p = p.parentCtx;
+  }
+  s += "]";
+  return s;
 };
 
 }).call(this,cachedModules[6881],cachedModules[6881].exports);
@@ -2590,7 +2591,7 @@ cachedModules[3533]={exports:{}};
 var RuleContext = cachedModules[6881].exports.RuleContext;
 
 function PredictionContext(cachedHashString) {
-	this.cachedHashString = cachedHashString;
+  this.cachedHashString = cachedHashString;
 }
 
 // Represents {@code $} in local context prediction, which means wildcard.
@@ -2634,23 +2635,23 @@ PredictionContext.id = PredictionContext.globalNodeCount;
 
 // This means only the {@link //EMPTY} context is in set.
 PredictionContext.prototype.isEmpty = function() {
-	return this === PredictionContext.EMPTY;
+  return this === PredictionContext.EMPTY;
 };
 
 PredictionContext.prototype.hasEmptyPath = function() {
-	return this.getReturnState(this.length - 1) === PredictionContext.EMPTY_RETURN_STATE;
+  return this.getReturnState(this.length - 1) === PredictionContext.EMPTY_RETURN_STATE;
 };
 
 PredictionContext.prototype.hashString = function() {
-	return this.cachedHashString;
+  return this.cachedHashString;
 };
 
 function calculateHashString(parent, returnState) {
-	return "" + parent + returnState;
+  return "" + parent + returnState;
 }
 
 function calculateEmptyHashString() {
-	return "";
+  return "";
 }
 
 // Used to cache {@link PredictionContext} objects. Its used for the shared
@@ -2658,8 +2659,8 @@ function calculateEmptyHashString() {
 // can be used for both lexers and parsers.
 
 function PredictionContextCache() {
-	this.cache = {};
-	return this;
+  this.cache = {};
+  return this;
 }
 
 // Add a context to the cache and return it. If the context already exists,
@@ -2667,253 +2668,253 @@ function PredictionContextCache() {
 // Protect shared cache from unsafe thread access.
 //
 PredictionContextCache.prototype.add = function(ctx) {
-	if (ctx === PredictionContext.EMPTY) {
-		return PredictionContext.EMPTY;
-	}
-	var existing = this.cache[ctx] || null;
-	if (existing !== null) {
-		return existing;
-	}
-	this.cache[ctx] = ctx;
-	return ctx;
+  if (ctx === PredictionContext.EMPTY) {
+    return PredictionContext.EMPTY;
+  }
+  var existing = this.cache[ctx] || null;
+  if (existing !== null) {
+    return existing;
+  }
+  this.cache[ctx] = ctx;
+  return ctx;
 };
 
 PredictionContextCache.prototype.get = function(ctx) {
-	return this.cache[ctx] || null;
+  return this.cache[ctx] || null;
 };
 
 Object.defineProperty(PredictionContextCache.prototype, "length", {
-	get : function() {
-		return this.cache.length;
-	}
+  get : function() {
+    return this.cache.length;
+  }
 });
 
 function SingletonPredictionContext(parent, returnState) {
-	var hashString = parent !== null ? calculateHashString(parent, returnState)
-			: calculateEmptyHashString();
-	PredictionContext.call(this, hashString);
-	this.parentCtx = parent;
-	this.returnState = returnState;
+  var hashString = parent !== null ? calculateHashString(parent, returnState)
+      : calculateEmptyHashString();
+  PredictionContext.call(this, hashString);
+  this.parentCtx = parent;
+  this.returnState = returnState;
 }
 
 SingletonPredictionContext.prototype = Object.create(PredictionContext.prototype);
 SingletonPredictionContext.prototype.contructor = SingletonPredictionContext;
 
 SingletonPredictionContext.create = function(parent, returnState) {
-	if (returnState === PredictionContext.EMPTY_RETURN_STATE && parent === null) {
-		// someone can pass in the bits of an array ctx that mean $
-		return PredictionContext.EMPTY;
-	} else {
-		return new SingletonPredictionContext(parent, returnState);
-	}
+  if (returnState === PredictionContext.EMPTY_RETURN_STATE && parent === null) {
+    // someone can pass in the bits of an array ctx that mean $
+    return PredictionContext.EMPTY;
+  } else {
+    return new SingletonPredictionContext(parent, returnState);
+  }
 };
 
 Object.defineProperty(SingletonPredictionContext.prototype, "length", {
-	get : function() {
-		return 1;
-	}
+  get : function() {
+    return 1;
+  }
 });
 
 SingletonPredictionContext.prototype.getParent = function(index) {
-	return this.parentCtx;
+  return this.parentCtx;
 };
 
 SingletonPredictionContext.prototype.getReturnState = function(index) {
-	return this.returnState;
+  return this.returnState;
 };
 
 SingletonPredictionContext.prototype.equals = function(other) {
-	if (this === other) {
-		return true;
-	} else if (!(other instanceof SingletonPredictionContext)) {
-		return false;
-	} else if (this.hashString() !== other.hashString()) {
-		return false; // can't be same if hash is different
-	} else {
-		if(this.returnState !== other.returnState)
+  if (this === other) {
+    return true;
+  } else if (!(other instanceof SingletonPredictionContext)) {
+    return false;
+  } else if (this.hashString() !== other.hashString()) {
+    return false; // can't be same if hash is different
+  } else {
+    if(this.returnState !== other.returnState)
             return false;
         else if(this.parentCtx==null)
             return other.parentCtx==null
-		else
+    else
             return this.parentCtx.equals(other.parentCtx);
-	}
+  }
 };
 
 SingletonPredictionContext.prototype.hashString = function() {
-	return this.cachedHashString;
+  return this.cachedHashString;
 };
 
 SingletonPredictionContext.prototype.toString = function() {
-	var up = this.parentCtx === null ? "" : this.parentCtx.toString();
-	if (up.length === 0) {
-		if (this.returnState === this.EMPTY_RETURN_STATE) {
-			return "$";
-		} else {
-			return "" + this.returnState;
-		}
-	} else {
-		return "" + this.returnState + " " + up;
-	}
+  var up = this.parentCtx === null ? "" : this.parentCtx.toString();
+  if (up.length === 0) {
+    if (this.returnState === this.EMPTY_RETURN_STATE) {
+      return "$";
+    } else {
+      return "" + this.returnState;
+    }
+  } else {
+    return "" + this.returnState + " " + up;
+  }
 };
 
 function EmptyPredictionContext() {
-	SingletonPredictionContext.call(this, null, PredictionContext.EMPTY_RETURN_STATE);
-	return this;
+  SingletonPredictionContext.call(this, null, PredictionContext.EMPTY_RETURN_STATE);
+  return this;
 }
 
 EmptyPredictionContext.prototype = Object.create(SingletonPredictionContext.prototype);
 EmptyPredictionContext.prototype.constructor = EmptyPredictionContext;
 
 EmptyPredictionContext.prototype.isEmpty = function() {
-	return true;
+  return true;
 };
 
 EmptyPredictionContext.prototype.getParent = function(index) {
-	return null;
+  return null;
 };
 
 EmptyPredictionContext.prototype.getReturnState = function(index) {
-	return this.returnState;
+  return this.returnState;
 };
 
 EmptyPredictionContext.prototype.equals = function(other) {
-	return this === other;
+  return this === other;
 };
 
 EmptyPredictionContext.prototype.toString = function() {
-	return "$";
+  return "$";
 };
 
 PredictionContext.EMPTY = new EmptyPredictionContext();
 
 function ArrayPredictionContext(parents, returnStates) {
-	// Parent can be null only if full ctx mode and we make an array
-	// from {@link //EMPTY} and non-empty. We merge {@link //EMPTY} by using
-	// null parent and
-	// returnState == {@link //EMPTY_RETURN_STATE}.
-	var hash = calculateHashString(parents, returnStates);
-	PredictionContext.call(this, hash);
-	this.parents = parents;
-	this.returnStates = returnStates;
-	return this;
+  // Parent can be null only if full ctx mode and we make an array
+  // from {@link //EMPTY} and non-empty. We merge {@link //EMPTY} by using
+  // null parent and
+  // returnState == {@link //EMPTY_RETURN_STATE}.
+  var hash = calculateHashString(parents, returnStates);
+  PredictionContext.call(this, hash);
+  this.parents = parents;
+  this.returnStates = returnStates;
+  return this;
 }
 
 ArrayPredictionContext.prototype = Object.create(PredictionContext.prototype);
 ArrayPredictionContext.prototype.constructor = ArrayPredictionContext;
 
 ArrayPredictionContext.prototype.isEmpty = function() {
-	// since EMPTY_RETURN_STATE can only appear in the last position, we
-	// don't need to verify that size==1
-	return this.returnStates[0] === PredictionContext.EMPTY_RETURN_STATE;
+  // since EMPTY_RETURN_STATE can only appear in the last position, we
+  // don't need to verify that size==1
+  return this.returnStates[0] === PredictionContext.EMPTY_RETURN_STATE;
 };
 
 Object.defineProperty(ArrayPredictionContext.prototype, "length", {
-	get : function() {
-		return this.returnStates.length;
-	}
+  get : function() {
+    return this.returnStates.length;
+  }
 });
 
 ArrayPredictionContext.prototype.getParent = function(index) {
-	return this.parents[index];
+  return this.parents[index];
 };
 
 ArrayPredictionContext.prototype.getReturnState = function(index) {
-	return this.returnStates[index];
+  return this.returnStates[index];
 };
 
 ArrayPredictionContext.prototype.equals = function(other) {
-	if (this === other) {
-		return true;
-	} else if (!(other instanceof ArrayPredictionContext)) {
-		return false;
-	} else if (this.hashString !== other.hashString()) {
-		return false; // can't be same if hash is different
-	} else {
-		return this.returnStates === other.returnStates &&
-				this.parents === other.parents;
-	}
+  if (this === other) {
+    return true;
+  } else if (!(other instanceof ArrayPredictionContext)) {
+    return false;
+  } else if (this.hashString !== other.hashString()) {
+    return false; // can't be same if hash is different
+  } else {
+    return this.returnStates === other.returnStates &&
+        this.parents === other.parents;
+  }
 };
 
 ArrayPredictionContext.prototype.toString = function() {
-	if (this.isEmpty()) {
-		return "[]";
-	} else {
-		var s = "[";
-		for (var i = 0; i < this.returnStates.length; i++) {
-			if (i > 0) {
-				s = s + ", ";
-			}
-			if (this.returnStates[i] === PredictionContext.EMPTY_RETURN_STATE) {
-				s = s + "$";
-				continue;
-			}
-			s = s + this.returnStates[i];
-			if (this.parents[i] !== null) {
-				s = s + " " + this.parents[i];
-			} else {
-				s = s + "null";
-			}
-		}
-		return s + "]";
-	}
+  if (this.isEmpty()) {
+    return "[]";
+  } else {
+    var s = "[";
+    for (var i = 0; i < this.returnStates.length; i++) {
+      if (i > 0) {
+        s = s + ", ";
+      }
+      if (this.returnStates[i] === PredictionContext.EMPTY_RETURN_STATE) {
+        s = s + "$";
+        continue;
+      }
+      s = s + this.returnStates[i];
+      if (this.parents[i] !== null) {
+        s = s + " " + this.parents[i];
+      } else {
+        s = s + "null";
+      }
+    }
+    return s + "]";
+  }
 };
 
 // Convert a {@link RuleContext} tree to a {@link PredictionContext} graph.
 // Return {@link //EMPTY} if {@code outerContext} is empty or null.
 // /
 function predictionContextFromRuleContext(atn, outerContext) {
-	if (outerContext === undefined || outerContext === null) {
-		outerContext = RuleContext.EMPTY;
-	}
-	// if we are in RuleContext of start rule, s, then PredictionContext
-	// is EMPTY. Nobody called us. (if we are empty, return empty)
-	if (outerContext.parentCtx === null || outerContext === RuleContext.EMPTY) {
-		return PredictionContext.EMPTY;
-	}
-	// If we have a parent, convert it to a PredictionContext graph
-	var parent = predictionContextFromRuleContext(atn, outerContext.parentCtx);
-	var state = atn.states[outerContext.invokingState];
-	var transition = state.transitions[0];
-	return SingletonPredictionContext.create(parent, transition.followState.stateNumber);
+  if (outerContext === undefined || outerContext === null) {
+    outerContext = RuleContext.EMPTY;
+  }
+  // if we are in RuleContext of start rule, s, then PredictionContext
+  // is EMPTY. Nobody called us. (if we are empty, return empty)
+  if (outerContext.parentCtx === null || outerContext === RuleContext.EMPTY) {
+    return PredictionContext.EMPTY;
+  }
+  // If we have a parent, convert it to a PredictionContext graph
+  var parent = predictionContextFromRuleContext(atn, outerContext.parentCtx);
+  var state = atn.states[outerContext.invokingState];
+  var transition = state.transitions[0];
+  return SingletonPredictionContext.create(parent, transition.followState.stateNumber);
 }
 
 function calculateListsHashString(parents, returnStates) {
-	var s = "";
-	parents.map(function(p) {
-		s = s + p;
-	});
-	returnStates.map(function(r) {
-		s = s + r;
-	});
-	return s;
+  var s = "";
+  parents.map(function(p) {
+    s = s + p;
+  });
+  returnStates.map(function(r) {
+    s = s + r;
+  });
+  return s;
 }
 
 function merge(a, b, rootIsWildcard, mergeCache) {
-	// share same graph if both same
-	if (a === b) {
-		return a;
-	}
-	if (a instanceof SingletonPredictionContext && b instanceof SingletonPredictionContext) {
-		return mergeSingletons(a, b, rootIsWildcard, mergeCache);
-	}
-	// At least one of a or b is array
-	// If one is $ and rootIsWildcard, return $ as// wildcard
-	if (rootIsWildcard) {
-		if (a instanceof EmptyPredictionContext) {
-			return a;
-		}
-		if (b instanceof EmptyPredictionContext) {
-			return b;
-		}
-	}
-	// convert singleton so both are arrays to normalize
-	if (a instanceof SingletonPredictionContext) {
-		a = new ArrayPredictionContext([a.getParent()], [a.returnState]);
-	}
-	if (b instanceof SingletonPredictionContext) {
-		b = new ArrayPredictionContext([b.getParent()], [b.returnState]);
-	}
-	return mergeArrays(a, b, rootIsWildcard, mergeCache);
+  // share same graph if both same
+  if (a === b) {
+    return a;
+  }
+  if (a instanceof SingletonPredictionContext && b instanceof SingletonPredictionContext) {
+    return mergeSingletons(a, b, rootIsWildcard, mergeCache);
+  }
+  // At least one of a or b is array
+  // If one is $ and rootIsWildcard, return $ as// wildcard
+  if (rootIsWildcard) {
+    if (a instanceof EmptyPredictionContext) {
+      return a;
+    }
+    if (b instanceof EmptyPredictionContext) {
+      return b;
+    }
+  }
+  // convert singleton so both are arrays to normalize
+  if (a instanceof SingletonPredictionContext) {
+    a = new ArrayPredictionContext([a.getParent()], [a.returnState]);
+  }
+  if (b instanceof SingletonPredictionContext) {
+    b = new ArrayPredictionContext([b.getParent()], [b.returnState]);
+  }
+  return mergeArrays(a, b, rootIsWildcard, mergeCache);
 }
 
 //
@@ -2948,81 +2949,81 @@ function merge(a, b, rootIsWildcard, mergeCache) {
 // @param mergeCache
 // /
 function mergeSingletons(a, b, rootIsWildcard, mergeCache) {
-	if (mergeCache !== null) {
-		var previous = mergeCache.get(a, b);
-		if (previous !== null) {
-			return previous;
-		}
-		previous = mergeCache.get(b, a);
-		if (previous !== null) {
-			return previous;
-		}
-	}
+  if (mergeCache !== null) {
+    var previous = mergeCache.get(a, b);
+    if (previous !== null) {
+      return previous;
+    }
+    previous = mergeCache.get(b, a);
+    if (previous !== null) {
+      return previous;
+    }
+  }
 
-	var rootMerge = mergeRoot(a, b, rootIsWildcard);
-	if (rootMerge !== null) {
-		if (mergeCache !== null) {
-			mergeCache.set(a, b, rootMerge);
-		}
-		return rootMerge;
-	}
-	if (a.returnState === b.returnState) {
-		var parent = merge(a.parentCtx, b.parentCtx, rootIsWildcard, mergeCache);
-		// if parent is same as existing a or b parent or reduced to a parent,
-		// return it
-		if (parent === a.parentCtx) {
-			return a; // ax + bx = ax, if a=b
-		}
-		if (parent === b.parentCtx) {
-			return b; // ax + bx = bx, if a=b
-		}
-		// else: ax + ay = a'[x,y]
-		// merge parents x and y, giving array node with x,y then remainders
-		// of those graphs. dup a, a' points at merged array
-		// new joined parent so create new singleton pointing to it, a'
-		var spc = SingletonPredictionContext.create(parent, a.returnState);
-		if (mergeCache !== null) {
-			mergeCache.set(a, b, spc);
-		}
-		return spc;
-	} else { // a != b payloads differ
-		// see if we can collapse parents due to $+x parents if local ctx
-		var singleParent = null;
-		if (a === b || (a.parentCtx !== null && a.parentCtx === b.parentCtx)) { // ax +
-																				// bx =
-																				// [a,b]x
-			singleParent = a.parentCtx;
-		}
-		if (singleParent !== null) { // parents are same
-			// sort payloads and use same parent
-			var payloads = [ a.returnState, b.returnState ];
-			if (a.returnState > b.returnState) {
-				payloads[0] = b.returnState;
-				payloads[1] = a.returnState;
-			}
-			var parents = [ singleParent, singleParent ];
-			var apc = new ArrayPredictionContext(parents, payloads);
-			if (mergeCache !== null) {
-				mergeCache.set(a, b, apc);
-			}
-			return apc;
-		}
-		// parents differ and can't merge them. Just pack together
-		// into array; can't merge.
-		// ax + by = [ax,by]
-		var payloads = [ a.returnState, b.returnState ];
-		var parents = [ a.parentCtx, b.parentCtx ];
-		if (a.returnState > b.returnState) { // sort by payload
-			payloads[0] = b.returnState;
-			payloads[1] = a.returnState;
-			parents = [ b.parentCtx, a.parentCtx ];
-		}
-		var a_ = new ArrayPredictionContext(parents, payloads);
-		if (mergeCache !== null) {
-			mergeCache.set(a, b, a_);
-		}
-		return a_;
-	}
+  var rootMerge = mergeRoot(a, b, rootIsWildcard);
+  if (rootMerge !== null) {
+    if (mergeCache !== null) {
+      mergeCache.set(a, b, rootMerge);
+    }
+    return rootMerge;
+  }
+  if (a.returnState === b.returnState) {
+    var parent = merge(a.parentCtx, b.parentCtx, rootIsWildcard, mergeCache);
+    // if parent is same as existing a or b parent or reduced to a parent,
+    // return it
+    if (parent === a.parentCtx) {
+      return a; // ax + bx = ax, if a=b
+    }
+    if (parent === b.parentCtx) {
+      return b; // ax + bx = bx, if a=b
+    }
+    // else: ax + ay = a'[x,y]
+    // merge parents x and y, giving array node with x,y then remainders
+    // of those graphs. dup a, a' points at merged array
+    // new joined parent so create new singleton pointing to it, a'
+    var spc = SingletonPredictionContext.create(parent, a.returnState);
+    if (mergeCache !== null) {
+      mergeCache.set(a, b, spc);
+    }
+    return spc;
+  } else { // a != b payloads differ
+    // see if we can collapse parents due to $+x parents if local ctx
+    var singleParent = null;
+    if (a === b || (a.parentCtx !== null && a.parentCtx === b.parentCtx)) { // ax +
+                                        // bx =
+                                        // [a,b]x
+      singleParent = a.parentCtx;
+    }
+    if (singleParent !== null) { // parents are same
+      // sort payloads and use same parent
+      var payloads = [ a.returnState, b.returnState ];
+      if (a.returnState > b.returnState) {
+        payloads[0] = b.returnState;
+        payloads[1] = a.returnState;
+      }
+      var parents = [ singleParent, singleParent ];
+      var apc = new ArrayPredictionContext(parents, payloads);
+      if (mergeCache !== null) {
+        mergeCache.set(a, b, apc);
+      }
+      return apc;
+    }
+    // parents differ and can't merge them. Just pack together
+    // into array; can't merge.
+    // ax + by = [ax,by]
+    var payloads = [ a.returnState, b.returnState ];
+    var parents = [ a.parentCtx, b.parentCtx ];
+    if (a.returnState > b.returnState) { // sort by payload
+      payloads[0] = b.returnState;
+      payloads[1] = a.returnState;
+      parents = [ b.parentCtx, a.parentCtx ];
+    }
+    var a_ = new ArrayPredictionContext(parents, payloads);
+    if (mergeCache !== null) {
+      mergeCache.set(a, b, a_);
+    }
+    return a_;
+  }
 }
 
 //
@@ -3064,28 +3065,28 @@ function mergeSingletons(a, b, rootIsWildcard, mergeCache) {
 // otherwise false to indicate a full-context merge
 // /
 function mergeRoot(a, b, rootIsWildcard) {
-	if (rootIsWildcard) {
-		if (a === PredictionContext.EMPTY) {
-			return PredictionContext.EMPTY; // // + b =//
-		}
-		if (b === PredictionContext.EMPTY) {
-			return PredictionContext.EMPTY; // a +// =//
-		}
-	} else {
-		if (a === PredictionContext.EMPTY && b === PredictionContext.EMPTY) {
-			return PredictionContext.EMPTY; // $ + $ = $
-		} else if (a === PredictionContext.EMPTY) { // $ + x = [$,x]
-			var payloads = [ b.returnState,
-					PredictionContext.EMPTY_RETURN_STATE ];
-			var parents = [ b.parentCtx, null ];
-			return new ArrayPredictionContext(parents, payloads);
-		} else if (b === PredictionContext.EMPTY) { // x + $ = [$,x] ($ is always first if present)
-			var payloads = [ a.returnState, PredictionContext.EMPTY_RETURN_STATE ];
-			var parents = [ a.parentCtx, null ];
-			return new ArrayPredictionContext(parents, payloads);
-		}
-	}
-	return null;
+  if (rootIsWildcard) {
+    if (a === PredictionContext.EMPTY) {
+      return PredictionContext.EMPTY; // // + b =//
+    }
+    if (b === PredictionContext.EMPTY) {
+      return PredictionContext.EMPTY; // a +// =//
+    }
+  } else {
+    if (a === PredictionContext.EMPTY && b === PredictionContext.EMPTY) {
+      return PredictionContext.EMPTY; // $ + $ = $
+    } else if (a === PredictionContext.EMPTY) { // $ + x = [$,x]
+      var payloads = [ b.returnState,
+          PredictionContext.EMPTY_RETURN_STATE ];
+      var parents = [ b.parentCtx, null ];
+      return new ArrayPredictionContext(parents, payloads);
+    } else if (b === PredictionContext.EMPTY) { // x + $ = [$,x] ($ is always first if present)
+      var payloads = [ a.returnState, PredictionContext.EMPTY_RETURN_STATE ];
+      var parents = [ a.parentCtx, null ];
+      return new ArrayPredictionContext(parents, payloads);
+    }
+  }
+  return null;
 }
 
 //
@@ -3109,107 +3110,107 @@ function mergeRoot(a, b, rootIsWildcard) {
 // <embed src="images/ArrayMerge_EqualTop.svg" type="image/svg+xml"/></p>
 // /
 function mergeArrays(a, b, rootIsWildcard, mergeCache) {
-	if (mergeCache !== null) {
-		var previous = mergeCache.get(a, b);
-		if (previous !== null) {
-			return previous;
-		}
-		previous = mergeCache.get(b, a);
-		if (previous !== null) {
-			return previous;
-		}
-	}
-	// merge sorted payloads a + b => M
-	var i = 0; // walks a
-	var j = 0; // walks b
-	var k = 0; // walks target M array
+  if (mergeCache !== null) {
+    var previous = mergeCache.get(a, b);
+    if (previous !== null) {
+      return previous;
+    }
+    previous = mergeCache.get(b, a);
+    if (previous !== null) {
+      return previous;
+    }
+  }
+  // merge sorted payloads a + b => M
+  var i = 0; // walks a
+  var j = 0; // walks b
+  var k = 0; // walks target M array
 
-	var mergedReturnStates = [];
-	var mergedParents = [];
-	// walk and merge to yield mergedParents, mergedReturnStates
-	while (i < a.returnStates.length && j < b.returnStates.length) {
-		var a_parent = a.parents[i];
-		var b_parent = b.parents[j];
-		if (a.returnStates[i] === b.returnStates[j]) {
-			// same payload (stack tops are equal), must yield merged singleton
-			var payload = a.returnStates[i];
-			// $+$ = $
-			var bothDollars = payload === PredictionContext.EMPTY_RETURN_STATE &&
-					a_parent === null && b_parent === null;
-			var ax_ax = (a_parent !== null && b_parent !== null && a_parent === b_parent); // ax+ax
-																							// ->
-																							// ax
-			if (bothDollars || ax_ax) {
-				mergedParents[k] = a_parent; // choose left
-				mergedReturnStates[k] = payload;
-			} else { // ax+ay -> a'[x,y]
-				var mergedParent = merge(a_parent, b_parent, rootIsWildcard, mergeCache);
-				mergedParents[k] = mergedParent;
-				mergedReturnStates[k] = payload;
-			}
-			i += 1; // hop over left one as usual
-			j += 1; // but also skip one in right side since we merge
-		} else if (a.returnStates[i] < b.returnStates[j]) { // copy a[i] to M
-			mergedParents[k] = a_parent;
-			mergedReturnStates[k] = a.returnStates[i];
-			i += 1;
-		} else { // b > a, copy b[j] to M
-			mergedParents[k] = b_parent;
-			mergedReturnStates[k] = b.returnStates[j];
-			j += 1;
-		}
-		k += 1;
-	}
-	// copy over any payloads remaining in either array
-	if (i < a.returnStates.length) {
-		for (var p = i; p < a.returnStates.length; p++) {
-			mergedParents[k] = a.parents[p];
-			mergedReturnStates[k] = a.returnStates[p];
-			k += 1;
-		}
-	} else {
-		for (var p = j; p < b.returnStates.length; p++) {
-			mergedParents[k] = b.parents[p];
-			mergedReturnStates[k] = b.returnStates[p];
-			k += 1;
-		}
-	}
-	// trim merged if we combined a few that had same stack tops
-	if (k < mergedParents.length) { // write index < last position; trim
-		if (k === 1) { // for just one merged element, return singleton top
-			var a_ = SingletonPredictionContext.create(mergedParents[0],
-					mergedReturnStates[0]);
-			if (mergeCache !== null) {
-				mergeCache.set(a, b, a_);
-			}
-			return a_;
-		}
-		mergedParents = mergedParents.slice(0, k);
-		mergedReturnStates = mergedReturnStates.slice(0, k);
-	}
+  var mergedReturnStates = [];
+  var mergedParents = [];
+  // walk and merge to yield mergedParents, mergedReturnStates
+  while (i < a.returnStates.length && j < b.returnStates.length) {
+    var a_parent = a.parents[i];
+    var b_parent = b.parents[j];
+    if (a.returnStates[i] === b.returnStates[j]) {
+      // same payload (stack tops are equal), must yield merged singleton
+      var payload = a.returnStates[i];
+      // $+$ = $
+      var bothDollars = payload === PredictionContext.EMPTY_RETURN_STATE &&
+          a_parent === null && b_parent === null;
+      var ax_ax = (a_parent !== null && b_parent !== null && a_parent === b_parent); // ax+ax
+                                              // ->
+                                              // ax
+      if (bothDollars || ax_ax) {
+        mergedParents[k] = a_parent; // choose left
+        mergedReturnStates[k] = payload;
+      } else { // ax+ay -> a'[x,y]
+        var mergedParent = merge(a_parent, b_parent, rootIsWildcard, mergeCache);
+        mergedParents[k] = mergedParent;
+        mergedReturnStates[k] = payload;
+      }
+      i += 1; // hop over left one as usual
+      j += 1; // but also skip one in right side since we merge
+    } else if (a.returnStates[i] < b.returnStates[j]) { // copy a[i] to M
+      mergedParents[k] = a_parent;
+      mergedReturnStates[k] = a.returnStates[i];
+      i += 1;
+    } else { // b > a, copy b[j] to M
+      mergedParents[k] = b_parent;
+      mergedReturnStates[k] = b.returnStates[j];
+      j += 1;
+    }
+    k += 1;
+  }
+  // copy over any payloads remaining in either array
+  if (i < a.returnStates.length) {
+    for (var p = i; p < a.returnStates.length; p++) {
+      mergedParents[k] = a.parents[p];
+      mergedReturnStates[k] = a.returnStates[p];
+      k += 1;
+    }
+  } else {
+    for (var p = j; p < b.returnStates.length; p++) {
+      mergedParents[k] = b.parents[p];
+      mergedReturnStates[k] = b.returnStates[p];
+      k += 1;
+    }
+  }
+  // trim merged if we combined a few that had same stack tops
+  if (k < mergedParents.length) { // write index < last position; trim
+    if (k === 1) { // for just one merged element, return singleton top
+      var a_ = SingletonPredictionContext.create(mergedParents[0],
+          mergedReturnStates[0]);
+      if (mergeCache !== null) {
+        mergeCache.set(a, b, a_);
+      }
+      return a_;
+    }
+    mergedParents = mergedParents.slice(0, k);
+    mergedReturnStates = mergedReturnStates.slice(0, k);
+  }
 
-	var M = new ArrayPredictionContext(mergedParents, mergedReturnStates);
+  var M = new ArrayPredictionContext(mergedParents, mergedReturnStates);
 
-	// if we created same array as a or b, return that instead
-	// TODO: track whether this is possible above during merge sort for speed
-	if (M === a) {
-		if (mergeCache !== null) {
-			mergeCache.set(a, b, a);
-		}
-		return a;
-	}
-	if (M === b) {
-		if (mergeCache !== null) {
-			mergeCache.set(a, b, b);
-		}
-		return b;
-	}
-	combineCommonParents(mergedParents);
+  // if we created same array as a or b, return that instead
+  // TODO: track whether this is possible above during merge sort for speed
+  if (M === a) {
+    if (mergeCache !== null) {
+      mergeCache.set(a, b, a);
+    }
+    return a;
+  }
+  if (M === b) {
+    if (mergeCache !== null) {
+      mergeCache.set(a, b, b);
+    }
+    return b;
+  }
+  combineCommonParents(mergedParents);
 
-	if (mergeCache !== null) {
-		mergeCache.set(a, b, M);
-	}
-	return M;
+  if (mergeCache !== null) {
+    mergeCache.set(a, b, M);
+  }
+  return M;
 }
 
 //
@@ -3217,87 +3218,87 @@ function mergeArrays(a, b, rootIsWildcard, mergeCache) {
 // ones.
 // /
 function combineCommonParents(parents) {
-	var uniqueParents = {};
+  var uniqueParents = {};
 
-	for (var p = 0; p < parents.length; p++) {
-		var parent = parents[p];
-		if (!(parent in uniqueParents)) {
-			uniqueParents[parent] = parent;
-		}
-	}
-	for (var q = 0; q < parents.length; q++) {
-		parents[q] = uniqueParents[parents[q]];
-	}
+  for (var p = 0; p < parents.length; p++) {
+    var parent = parents[p];
+    if (!(parent in uniqueParents)) {
+      uniqueParents[parent] = parent;
+    }
+  }
+  for (var q = 0; q < parents.length; q++) {
+    parents[q] = uniqueParents[parents[q]];
+  }
 }
 
 function getCachedPredictionContext(context, contextCache, visited) {
-	if (context.isEmpty()) {
-		return context;
-	}
-	var existing = visited[context] || null;
-	if (existing !== null) {
-		return existing;
-	}
-	existing = contextCache.get(context);
-	if (existing !== null) {
-		visited[context] = existing;
-		return existing;
-	}
-	var changed = false;
-	var parents = [];
-	for (var i = 0; i < parents.length; i++) {
-		var parent = getCachedPredictionContext(context.getParent(i), contextCache, visited);
-		if (changed || parent !== context.getParent(i)) {
-			if (!changed) {
-				parents = [];
-				for (var j = 0; j < context.length; j++) {
-					parents[j] = context.getParent(j);
-				}
-				changed = true;
-			}
-			parents[i] = parent;
-		}
-	}
-	if (!changed) {
-		contextCache.add(context);
-		visited[context] = context;
-		return context;
-	}
-	var updated = null;
-	if (parents.length === 0) {
-		updated = PredictionContext.EMPTY;
-	} else if (parents.length === 1) {
-		updated = SingletonPredictionContext.create(parents[0], context
-				.getReturnState(0));
-	} else {
-		updated = new ArrayPredictionContext(parents, context.returnStates);
-	}
-	contextCache.add(updated);
-	visited[updated] = updated;
-	visited[context] = updated;
+  if (context.isEmpty()) {
+    return context;
+  }
+  var existing = visited[context] || null;
+  if (existing !== null) {
+    return existing;
+  }
+  existing = contextCache.get(context);
+  if (existing !== null) {
+    visited[context] = existing;
+    return existing;
+  }
+  var changed = false;
+  var parents = [];
+  for (var i = 0; i < parents.length; i++) {
+    var parent = getCachedPredictionContext(context.getParent(i), contextCache, visited);
+    if (changed || parent !== context.getParent(i)) {
+      if (!changed) {
+        parents = [];
+        for (var j = 0; j < context.length; j++) {
+          parents[j] = context.getParent(j);
+        }
+        changed = true;
+      }
+      parents[i] = parent;
+    }
+  }
+  if (!changed) {
+    contextCache.add(context);
+    visited[context] = context;
+    return context;
+  }
+  var updated = null;
+  if (parents.length === 0) {
+    updated = PredictionContext.EMPTY;
+  } else if (parents.length === 1) {
+    updated = SingletonPredictionContext.create(parents[0], context
+        .getReturnState(0));
+  } else {
+    updated = new ArrayPredictionContext(parents, context.returnStates);
+  }
+  contextCache.add(updated);
+  visited[updated] = updated;
+  visited[context] = updated;
 
-	return updated;
+  return updated;
 }
 
 // ter's recursive version of Sam's getAllNodes()
 function getAllContextNodes(context, nodes, visited) {
-	if (nodes === null) {
-		nodes = [];
-		return getAllContextNodes(context, nodes, visited);
-	} else if (visited === null) {
-		visited = {};
-		return getAllContextNodes(context, nodes, visited);
-	} else {
-		if (context === null || visited[context] !== null) {
-			return nodes;
-		}
-		visited[context] = context;
-		nodes.push(context);
-		for (var i = 0; i < context.length; i++) {
-			getAllContextNodes(context.getParent(i), nodes, visited);
-		}
-		return nodes;
-	}
+  if (nodes === null) {
+    nodes = [];
+    return getAllContextNodes(context, nodes, visited);
+  } else if (visited === null) {
+    visited = {};
+    return getAllContextNodes(context, nodes, visited);
+  } else {
+    if (context === null || visited[context] !== null) {
+      return nodes;
+    }
+    visited[context] = context;
+    nodes.push(context);
+    for (var i = 0; i < context.length; i++) {
+      getAllContextNodes(context.getParent(i), nodes, visited);
+    }
+    return nodes;
+  }
 }
 
 exports.merge = merge;
@@ -3418,7 +3419,7 @@ LL1Analyzer.prototype.getDecisionLookahead = function(s) {
 LL1Analyzer.prototype.LOOK = function(s, stopState, ctx) {
     var r = new IntervalSet();
     var seeThruPreds = true; // ignore preds; get all lookahead
-	ctx = ctx || null;
+  ctx = ctx || null;
     var lookContext = ctx!==null ? predictionContextFromRuleContext(s.atn, ctx) : null;
     this._LOOK(s, stopState, lookContext, r, new Set(), new BitSet(), seeThruPreds, true);
     return r;
@@ -3595,7 +3596,7 @@ function ATN(grammarType , maxTokenType) {
 
     return this;
 }
-	
+  
 // Compute the set of valid tokens that can occur starting in state {@code s}.
 //  If {@code ctx} is null, the set of tokens will not include what can follow
 //  the rule surrounding {@code s}. In other words, the set will be
@@ -3733,7 +3734,7 @@ cachedModules[9681]={exports:{}};
 // Represents the type of recognizer an ATN applies to.
 
 function ATNType() {
-	
+  
 }
 
 ATNType.LEXER = 0;
@@ -3773,10 +3774,10 @@ cachedModules[5522]={exports:{}};
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 function ATNDeserializationOptions(copyFrom) {
-	if(copyFrom===undefined) {
-		copyFrom = null;
-	}
-	this.readOnly = false;
+  if(copyFrom===undefined) {
+    copyFrom = null;
+  }
+  this.readOnly = false;
     this.verifyATN = copyFrom===null ? true : copyFrom.verifyATN;
     this.generateRuleBypassTransitions = copyFrom===null ? false : copyFrom.generateRuleBypassTransitions;
 
@@ -3859,8 +3860,8 @@ LexerAction.prototype.equals = function(other) {
 // <p>The {@code skip} command does not have any parameters, so this action is
 // implemented as a singleton instance exposed by {@link //INSTANCE}.</p>
 function LexerSkipAction() {
-	LexerAction.call(this, LexerActionType.SKIP);
-	return this;
+  LexerAction.call(this, LexerActionType.SKIP);
+  return this;
 }
 
 LexerSkipAction.prototype = Object.create(LexerAction.prototype);
@@ -3874,15 +3875,15 @@ LexerSkipAction.prototype.execute = function(lexer) {
 };
 
 LexerSkipAction.prototype.toString = function() {
-	return "skip";
+  return "skip";
 };
 
 //  Implements the {@code type} lexer action by calling {@link Lexer//setType}
 // with the assigned type.
 function LexerTypeAction(type) {
-	LexerAction.call(this, LexerActionType.TYPE);
-	this.type = type;
-	return this;
+  LexerAction.call(this, LexerActionType.TYPE);
+  this.type = type;
+  return this;
 }
 
 LexerTypeAction.prototype = Object.create(LexerAction.prototype);
@@ -3893,7 +3894,7 @@ LexerTypeAction.prototype.execute = function(lexer) {
 };
 
 LexerTypeAction.prototype.hashString = function() {
-	return "" + this.actionType + this.type;
+  return "" + this.actionType + this.type;
 };
 
 
@@ -3914,7 +3915,7 @@ LexerTypeAction.prototype.toString = function() {
 // Implements the {@code pushMode} lexer action by calling
 // {@link Lexer//pushMode} with the assigned mode.
 function LexerPushModeAction(mode) {
-	LexerAction.call(this, LexerActionType.PUSH_MODE);
+  LexerAction.call(this, LexerActionType.PUSH_MODE);
     this.mode = mode;
     return this;
 }
@@ -3943,7 +3944,7 @@ LexerPushModeAction.prototype.equals = function(other) {
 };
 
 LexerPushModeAction.prototype.toString = function() {
-	return "pushMode(" + this.mode + ")";
+  return "pushMode(" + this.mode + ")";
 };
 
 
@@ -3952,8 +3953,8 @@ LexerPushModeAction.prototype.toString = function() {
 // <p>The {@code popMode} command does not have any parameters, so this action is
 // implemented as a singleton instance exposed by {@link //INSTANCE}.</p>
 function LexerPopModeAction() {
-	LexerAction.call(this,LexerActionType.POP_MODE);
-	return this;
+  LexerAction.call(this,LexerActionType.POP_MODE);
+  return this;
 }
 
 LexerPopModeAction.prototype = Object.create(LexerAction.prototype);
@@ -3967,7 +3968,7 @@ LexerPopModeAction.prototype.execute = function(lexer) {
 };
 
 LexerPopModeAction.prototype.toString = function() {
-	return "popMode";
+  return "popMode";
 };
 
 // Implements the {@code more} lexer action by calling {@link Lexer//more}.
@@ -3975,8 +3976,8 @@ LexerPopModeAction.prototype.toString = function() {
 // <p>The {@code more} command does not have any parameters, so this action is
 // implemented as a singleton instance exposed by {@link //INSTANCE}.</p>
 function LexerMoreAction() {
-	LexerAction.call(this, LexerActionType.MORE);
-	return this;
+  LexerAction.call(this, LexerActionType.MORE);
+  return this;
 }
 
 LexerMoreAction.prototype = Object.create(LexerAction.prototype);
@@ -3997,7 +3998,7 @@ LexerMoreAction.prototype.toString = function() {
 // Implements the {@code mode} lexer action by calling {@link Lexer//mode} with
 // the assigned mode.
 function LexerModeAction(mode) {
-	LexerAction.call(this, LexerActionType.MODE);
+  LexerAction.call(this, LexerActionType.MODE);
     this.mode = mode;
     return this;
 }
@@ -4012,7 +4013,7 @@ LexerModeAction.prototype.execute = function(lexer) {
 };
 
 LexerModeAction.prototype.hashString = function() {
-	return "" + this.actionType + this.mode;
+  return "" + this.actionType + this.mode;
 };
 
 LexerModeAction.prototype.equals = function(other) {
@@ -4048,7 +4049,7 @@ LexerModeAction.prototype.toString = function() {
     // {@link Recognizer//action}.
 
 function LexerCustomAction(ruleIndex, actionIndex) {
-	LexerAction.call(this, LexerActionType.CUSTOM);
+  LexerAction.call(this, LexerActionType.CUSTOM);
     this.ruleIndex = ruleIndex;
     this.actionIndex = actionIndex;
     this.isPositionDependent = true;
@@ -4083,7 +4084,7 @@ LexerCustomAction.prototype.equals = function(other) {
 // Constructs a new {@code channel} action with the specified channel value.
 // @param channel The channel value to pass to {@link Lexer//setChannel}.
 function LexerChannelAction(channel) {
-	LexerAction.call(this, LexerActionType.CHANNEL);
+  LexerAction.call(this, LexerActionType.CHANNEL);
     this.channel = channel;
     return this;
 }
@@ -4136,7 +4137,7 @@ LexerChannelAction.prototype.toString = function() {
 // @param action The lexer action to execute at a particular offset in the
 // input {@link CharStream}.
 function LexerIndexedCustomAction(offset, action) {
-	LexerAction.call(this, action.actionType);
+  LexerAction.call(this, action.actionType);
     this.offset = offset;
     this.action = action;
     this.isPositionDependent = true;
@@ -4266,13 +4267,13 @@ var SERIALIZED_VERSION = 3;
 var SERIALIZED_UUID = BASE_SERIALIZED_UUID;
 
 function initArray( length, value) {
-	var tmp = [];
-	tmp[length-1] = value;
-	return tmp.map(function(i) {return value;});
+  var tmp = [];
+  tmp[length-1] = value;
+  return tmp.map(function(i) {return value;});
 }
 
 function ATNDeserializer (options) {
-	
+  
     if ( options=== undefined || options === null ) {
         options = ATNDeserializationOptions.defaultOptions;
     }
@@ -4327,10 +4328,10 @@ ATNDeserializer.prototype.deserialize = function(data) {
 };
 
 ATNDeserializer.prototype.reset = function(data) {
-	var adjust = function(c) {
+  var adjust = function(c) {
         var v = c.charCodeAt(0);
         return v>1  ? v-2 : -1;
-	};
+  };
     var temp = data.split("").map(adjust);
     // don't adjust the first value since that's the version number
     temp[0] = data.charCodeAt(0);
@@ -4361,7 +4362,7 @@ ATNDeserializer.prototype.readATN = function() {
 };
 
 ATNDeserializer.prototype.readStates = function(atn) {
-	var j, pair, stateNumber;
+  var j, pair, stateNumber;
     var loopBackStateNumbers = [];
     var endStateNumbers = [];
     var nstates = this.readInt();
@@ -4387,7 +4388,7 @@ ATNDeserializer.prototype.readStates = function(atn) {
         atn.addState(s);
     }
     // delay the assignment of loop back and end states until we know all the
-	// state instances have been initialized
+  // state instances have been initialized
     for (j=0; j<loopBackStateNumbers.length; j++) {
         pair = loopBackStateNumbers[j];
         pair[0].loopBackState = atn.states[pair[1]];
@@ -4470,7 +4471,7 @@ ATNDeserializer.prototype.readSets = function(atn) {
 };
 
 ATNDeserializer.prototype.readEdges = function(atn, sets) {
-	var i, j, state, trans, target;
+  var i, j, state, trans, target;
     var nedges = this.readInt();
     for (i=0; i<nedges; i++) {
         var src = this.readInt();
@@ -4491,14 +4492,14 @@ ATNDeserializer.prototype.readEdges = function(atn, sets) {
             if (!(t instanceof RuleTransition)) {
                 continue;
             }
-			var outermostPrecedenceReturn = -1;
-			if (atn.ruleToStartState[t.target.ruleIndex].isPrecedenceRule) {
-				if (t.precedence === 0) {
-					outermostPrecedenceReturn = t.target.ruleIndex;
-				}
-			}
+      var outermostPrecedenceReturn = -1;
+      if (atn.ruleToStartState[t.target.ruleIndex].isPrecedenceRule) {
+        if (t.precedence === 0) {
+          outermostPrecedenceReturn = t.target.ruleIndex;
+        }
+      }
 
-			trans = new EpsilonTransition(t.followState, outermostPrecedenceReturn);
+      trans = new EpsilonTransition(t.followState, outermostPrecedenceReturn);
             atn.ruleToStopState[t.target.ruleIndex].addTransition(trans);
         }
     }
@@ -4511,7 +4512,7 @@ ATNDeserializer.prototype.readEdges = function(atn, sets) {
                 throw ("IllegalState");
             }
             // block end states can only be associated to a single block start
-			// state
+      // state
             if ( state.endState.startState !== null) {
                 throw ("IllegalState");
             }
@@ -4566,7 +4567,7 @@ ATNDeserializer.prototype.readLexerActions = function(atn) {
 };
 
 ATNDeserializer.prototype.generateRuleBypassTransitions = function(atn) {
-	var i;
+  var i;
     var count = atn.ruleToStartState.length;
     for(i=0; i<count; i++) {
         atn.ruleToTokenType[i] = atn.maxTokenType + i + 1;
@@ -4577,7 +4578,7 @@ ATNDeserializer.prototype.generateRuleBypassTransitions = function(atn) {
 };
 
 ATNDeserializer.prototype.generateRuleBypassTransition = function(atn, idx) {
-	var i, state;
+  var i, state;
     var bypassStart = new BasicBlockStartState();
     bypassStart.ruleIndex = idx;
     atn.addState(bypassStart);
@@ -4613,7 +4614,7 @@ ATNDeserializer.prototype.generateRuleBypassTransition = function(atn, idx) {
     }
     
     // all non-excluded transitions that currently target end state need to
-	// target blockEnd instead
+  // target blockEnd instead
     for(i=0; i<atn.states.length; i++) {
         state = atn.states[i];
         for(var j=0; j<state.transitions.length; j++) {
@@ -4628,7 +4629,7 @@ ATNDeserializer.prototype.generateRuleBypassTransition = function(atn, idx) {
     }
 
     // all transitions leaving the rule start state need to leave blockStart
-	// instead
+  // instead
     var ruleToStartState = atn.ruleToStartState[idx];
     var count = ruleToStartState.transitions.length;
     while ( count > 0) {
@@ -4672,9 +4673,9 @@ ATNDeserializer.prototype.stateIsEndStateFor = function(state, idx) {
 // @param atn The ATN.
 //
 ATNDeserializer.prototype.markPrecedenceDecisions = function(atn) {
-	for(var i=0; i<atn.states.length; i++) {
-		var state = atn.states[i];
-		if (!( state instanceof StarLoopEntryState)) {
+  for(var i=0; i<atn.states.length; i++) {
+    var state = atn.states[i];
+    if (!( state instanceof StarLoopEntryState)) {
             continue;
         }
         // We analyze the ATN to determine if this ATN decision state is the
@@ -4690,7 +4691,7 @@ ATNDeserializer.prototype.markPrecedenceDecisions = function(atn) {
                 }
             }
         }
-	}
+  }
 };
 
 ATNDeserializer.prototype.verifyATN = function(atn) {
@@ -4698,7 +4699,7 @@ ATNDeserializer.prototype.verifyATN = function(atn) {
         return;
     }
     // verify assumptions
-	for(var i=0; i<atn.states.length; i++) {
+  for(var i=0; i<atn.states.length; i++) {
         var state = atn.states[i];
         if (state === null) {
             continue;
@@ -4734,7 +4735,7 @@ ATNDeserializer.prototype.verifyATN = function(atn) {
         } else {
             this.checkCondition(state.transitions.length <= 1 || (state instanceof RuleStopState));
         }
-	}
+  }
 };
 
 ATNDeserializer.prototype.checkCondition = function(condition, message) {
@@ -4763,23 +4764,23 @@ ATNDeserializer.prototype.readLong = function() {
 };
 
 function createByteToHex() {
-	var bth = [];
-	for (var i = 0; i < 256; i++) {
-		bth[i] = (i + 0x100).toString(16).substr(1).toUpperCase();
-	}
-	return bth;
+  var bth = [];
+  for (var i = 0; i < 256; i++) {
+    bth[i] = (i + 0x100).toString(16).substr(1).toUpperCase();
+  }
+  return bth;
 }
 
 var byteToHex = createByteToHex();
-	
+  
 ATNDeserializer.prototype.readUUID = function() {
-	var bb = [];
-	for(var i=7;i>=0;i--) {
-		var int = this.readInt();
-		/* jshint bitwise: false */
-		bb[(2*i)+1] = int & 0xFF;
-		bb[2*i] = (int >> 8) & 0xFF;
-	}
+  var bb = [];
+  for(var i=7;i>=0;i--) {
+    var int = this.readInt();
+    /* jshint bitwise: false */
+    bb[(2*i)+1] = int & 0xFF;
+    bb[2*i] = (int >> 8) & 0xFF;
+  }
     return byteToHex[bb[0]] + byteToHex[bb[1]] +
     byteToHex[bb[2]] + byteToHex[bb[3]] + '-' +
     byteToHex[bb[4]] + byteToHex[bb[5]] + '-' +
@@ -4905,7 +4906,7 @@ cachedModules[4176]={exports:{}};
 // necessary.
 
 function ErrorListener() {
-	return this;
+  return this;
 }
 
 ErrorListener.prototype.syntaxError = function(recognizer, offendingSymbol, line, column, msg, e) {
@@ -4921,8 +4922,8 @@ ErrorListener.prototype.reportContextSensitivity = function(recognizer, dfa, sta
 };
 
 function ConsoleErrorListener() {
-	ErrorListener.call(this);
-	return this;
+  ErrorListener.call(this);
+  return this;
 }
 
 ConsoleErrorListener.prototype = Object.create(ErrorListener.prototype);
@@ -4950,12 +4951,12 @@ ConsoleErrorListener.prototype.syntaxError = function(recognizer, offendingSymbo
 };
 
 function ProxyErrorListener(delegates) {
-	ErrorListener.call(this);
+  ErrorListener.call(this);
     if (delegates===null) {
         throw "delegates";
     }
     this.delegates = delegates;
-	return this;
+  return this;
 }
 
 ProxyErrorListener.prototype = Object.create(ErrorListener.prototype);
@@ -4970,11 +4971,11 @@ ProxyErrorListener.prototype.reportAmbiguity = function(recognizer, dfa, startIn
 };
 
 ProxyErrorListener.prototype.reportAttemptingFullContext = function(recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs) {
-	this.delegates.map(function(d) { d.reportAttemptingFullContext(recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs); });
+  this.delegates.map(function(d) { d.reportAttemptingFullContext(recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs); });
 };
 
 ProxyErrorListener.prototype.reportContextSensitivity = function(recognizer, dfa, startIndex, stopIndex, prediction, configs) {
-	this.delegates.map(function(d) { d.reportContextSensitivity(recognizer, dfa, startIndex, stopIndex, prediction, configs); });
+  this.delegates.map(function(d) { d.reportContextSensitivity(recognizer, dfa, startIndex, stopIndex, prediction, configs); });
 };
 
 exports.ErrorListener = ErrorListener;
@@ -5144,12 +5145,12 @@ Recognizer.prototype.precpred = function(localctx , precedence) {
 //configuration information.
 
 Object.defineProperty(Recognizer.prototype, "state", {
-	get : function() {
-		return this._stateNumber;
-	},
-	set : function(state) {
-		this._stateNumber = state;
-	}
+  get : function() {
+    return this._stateNumber;
+  },
+  set : function(state) {
+    this._stateNumber = state;
+  }
 });
 
 
@@ -5195,11 +5196,11 @@ cachedModules[8943]={exports:{}};
 var CommonToken = cachedModules[155].exports.CommonToken;
 
 function TokenFactory() {
-	return this;
+  return this;
 }
 
 function CommonTokenFactory(copyText) {
-	TokenFactory.call(this);
+  TokenFactory.call(this);
     // Indicates whether {@link CommonToken//setText} should be called after
     // constructing tokens to explicitly set the text. This is useful for cases
     // where the input stream might not be able to provide arbitrary substrings
@@ -5215,7 +5216,7 @@ function CommonTokenFactory(copyText) {
     // overhead of copying text for every token unless explicitly requested.</p>
     //
     this.copyText = copyText===undefined ? false : copyText;
-	return this;
+  return this;
 }
 
 CommonTokenFactory.prototype = Object.create(TokenFactory.prototype);
@@ -5289,13 +5290,13 @@ cachedModules[613]={exports:{}};
 var PredicateTransition = cachedModules[8917].exports.PredicateTransition;
 
 function RecognitionException(params) {
-	Error.call(this);
-	if (!!Error.captureStackTrace) {
+  Error.call(this);
+  if (!!Error.captureStackTrace) {
         Error.captureStackTrace(this, RecognitionException);
-	} else {
-		var stack = new Error().stack;
-	}
-	this.message = params.message;
+  } else {
+    var stack = new Error().stack;
+  }
+  this.message = params.message;
     this.recognizer = params.recognizer;
     this.input = params.input;
     this.ctx = params.ctx;
@@ -5343,7 +5344,7 @@ RecognitionException.prototype.toString = function() {
 };
 
 function LexerNoViableAltException(lexer, input, startIndex, deadEndConfigs) {
-	RecognitionException.call(this, {message:"", recognizer:lexer, input:input, ctx:null});
+  RecognitionException.call(this, {message:"", recognizer:lexer, input:input, ctx:null});
     this.startIndex = startIndex;
     this.deadEndConfigs = deadEndConfigs;
     return this;
@@ -5366,13 +5367,13 @@ LexerNoViableAltException.prototype.toString = function() {
 // in the various paths when the error. Reported by reportNoViableAlternative()
 //
 function NoViableAltException(recognizer, input, startToken, offendingToken, deadEndConfigs, ctx) {
-	ctx = ctx || recognizer._ctx;
-	offendingToken = offendingToken || recognizer.getCurrentToken();
-	startToken = startToken || recognizer.getCurrentToken();
-	input = input || recognizer.getInputStream();
-	RecognitionException.call(this, {message:"", recognizer:recognizer, input:input, ctx:ctx});
+  ctx = ctx || recognizer._ctx;
+  offendingToken = offendingToken || recognizer.getCurrentToken();
+  startToken = startToken || recognizer.getCurrentToken();
+  input = input || recognizer.getInputStream();
+  RecognitionException.call(this, {message:"", recognizer:recognizer, input:input, ctx:ctx});
     // Which configurations did we try at input.index() that couldn't match
-	// input.LT(1)?//
+  // input.LT(1)?//
     this.deadEndConfigs = deadEndConfigs;
     // The token object at the start index; the input stream might
     // not be buffering tokens so get a reference to it. (At the
@@ -5389,7 +5390,7 @@ NoViableAltException.prototype.constructor = NoViableAltException;
 // when the current input does not match the expected token.
 //
 function InputMismatchException(recognizer) {
-	RecognitionException.call(this, {message:"", recognizer:recognizer, input:recognizer.getInputStream(), ctx:recognizer._ctx});
+  RecognitionException.call(this, {message:"", recognizer:recognizer, input:recognizer.getInputStream(), ctx:recognizer._ctx});
     this.offendingToken = recognizer.getCurrentToken();
 }
 
@@ -5402,7 +5403,7 @@ InputMismatchException.prototype.constructor = InputMismatchException;
 // prediction.
 
 function FailedPredicateException(recognizer, predicate, message) {
-	RecognitionException.call(this, {message:this.formatMessage(predicate,message || null), recognizer:recognizer,
+  RecognitionException.call(this, {message:this.formatMessage(predicate,message || null), recognizer:recognizer,
                          input:recognizer.getInputStream(), ctx:recognizer._ctx});
     var s = recognizer._interp.atn.states[recognizer.state];
     var trans = s.transitions[0];
@@ -5430,9 +5431,9 @@ FailedPredicateException.prototype.formatMessage = function(predicate, message) 
 };
 
 function ParseCancellationException() {
-	Error.call(this);
-	Error.captureStackTrace(this, ParseCancellationException);
-	return this;
+  Error.call(this);
+  Error.captureStackTrace(this, ParseCancellationException);
+  return this;
 }
 
 ParseCancellationException.prototype = Object.create(Error.prototype);
@@ -5487,56 +5488,56 @@ var CommonTokenFactory = cachedModules[8943].exports.CommonTokenFactory;
 var LexerNoViableAltException = cachedModules[613].exports.LexerNoViableAltException;
 
 function TokenSource() {
-	return this;
+  return this;
 }
 
 function Lexer(input) {
-	Recognizer.call(this);
-	this._input = input;
-	this._factory = CommonTokenFactory.DEFAULT;
-	this._tokenFactorySourcePair = [ this, input ];
+  Recognizer.call(this);
+  this._input = input;
+  this._factory = CommonTokenFactory.DEFAULT;
+  this._tokenFactorySourcePair = [ this, input ];
 
-	this._interp = null; // child classes must populate this
+  this._interp = null; // child classes must populate this
 
-	// The goal of all lexer rules/methods is to create a token object.
-	// this is an instance variable as multiple rules may collaborate to
-	// create a single token. nextToken will return this object after
-	// matching lexer rule(s). If you subclass to allow multiple token
-	// emissions, then set this to the last token to be matched or
-	// something nonnull so that the auto token emit mechanism will not
-	// emit another token.
-	this._token = null;
+  // The goal of all lexer rules/methods is to create a token object.
+  // this is an instance variable as multiple rules may collaborate to
+  // create a single token. nextToken will return this object after
+  // matching lexer rule(s). If you subclass to allow multiple token
+  // emissions, then set this to the last token to be matched or
+  // something nonnull so that the auto token emit mechanism will not
+  // emit another token.
+  this._token = null;
 
-	// What character index in the stream did the current token start at?
-	// Needed, for example, to get the text for current token. Set at
-	// the start of nextToken.
-	this._tokenStartCharIndex = -1;
+  // What character index in the stream did the current token start at?
+  // Needed, for example, to get the text for current token. Set at
+  // the start of nextToken.
+  this._tokenStartCharIndex = -1;
 
-	// The line on which the first character of the token resides///
-	this._tokenStartLine = -1;
+  // The line on which the first character of the token resides///
+  this._tokenStartLine = -1;
 
-	// The character position of first character within the line///
-	this._tokenStartColumn = -1;
+  // The character position of first character within the line///
+  this._tokenStartColumn = -1;
 
-	// Once we see EOF on char stream, next token will be EOF.
-	// If you have DONE : EOF ; then you see DONE EOF.
-	this._hitEOF = false;
+  // Once we see EOF on char stream, next token will be EOF.
+  // If you have DONE : EOF ; then you see DONE EOF.
+  this._hitEOF = false;
 
-	// The channel number for the current token///
-	this._channel = Token.DEFAULT_CHANNEL;
+  // The channel number for the current token///
+  this._channel = Token.DEFAULT_CHANNEL;
 
-	// The token type for the current token///
-	this._type = Token.INVALID_TYPE;
+  // The token type for the current token///
+  this._type = Token.INVALID_TYPE;
 
-	this._modeStack = [];
-	this._mode = Lexer.DEFAULT_MODE;
+  this._modeStack = [];
+  this._mode = Lexer.DEFAULT_MODE;
 
-	// You can set the text for the current token to override what is in
-	// the input char buffer. Use setText() or can set this instance var.
-	// /
-	this._text = null;
+  // You can set the text for the current token to override what is in
+  // the input char buffer. Use setText() or can set this instance var.
+  // /
+  this._text = null;
 
-	return this;
+  return this;
 }
 
 Lexer.prototype = Object.create(Recognizer.prototype);
@@ -5552,83 +5553,83 @@ Lexer.MIN_CHAR_VALUE = '\u0000';
 Lexer.MAX_CHAR_VALUE = '\uFFFE';
 
 Lexer.prototype.reset = function() {
-	// wack Lexer state variables
-	if (this._input !== null) {
-		this._input.seek(0); // rewind the input
-	}
-	this._token = null;
-	this._type = Token.INVALID_TYPE;
-	this._channel = Token.DEFAULT_CHANNEL;
-	this._tokenStartCharIndex = -1;
-	this._tokenStartColumn = -1;
-	this._tokenStartLine = -1;
-	this._text = null;
+  // wack Lexer state variables
+  if (this._input !== null) {
+    this._input.seek(0); // rewind the input
+  }
+  this._token = null;
+  this._type = Token.INVALID_TYPE;
+  this._channel = Token.DEFAULT_CHANNEL;
+  this._tokenStartCharIndex = -1;
+  this._tokenStartColumn = -1;
+  this._tokenStartLine = -1;
+  this._text = null;
 
-	this._hitEOF = false;
-	this._mode = Lexer.DEFAULT_MODE;
-	this._modeStack = [];
+  this._hitEOF = false;
+  this._mode = Lexer.DEFAULT_MODE;
+  this._modeStack = [];
 
-	this._interp.reset();
+  this._interp.reset();
 };
 
 // Return a token from this source; i.e., match a token on the char stream.
 Lexer.prototype.nextToken = function() {
-	if (this._input === null) {
-		throw "nextToken requires a non-null input stream.";
-	}
+  if (this._input === null) {
+    throw "nextToken requires a non-null input stream.";
+  }
 
-	// Mark start location in char stream so unbuffered streams are
-	// guaranteed at least have text of current token
-	var tokenStartMarker = this._input.mark();
-	try {
-		while (true) {
-			if (this._hitEOF) {
-				this.emitEOF();
-				return this._token;
-			}
-			this._token = null;
-			this._channel = Token.DEFAULT_CHANNEL;
-			this._tokenStartCharIndex = this._input.index;
-			this._tokenStartColumn = this._interp.column;
-			this._tokenStartLine = this._interp.line;
-			this._text = null;
-			var continueOuter = false;
-			while (true) {
-				this._type = Token.INVALID_TYPE;
-				var ttype = Lexer.SKIP;
-				try {
-					ttype = this._interp.match(this._input, this._mode);
-				} catch (e) {
-					this.notifyListeners(e); // report error
-					this.recover(e);
-				}
-				if (this._input.LA(1) === Token.EOF) {
-					this._hitEOF = true;
-				}
-				if (this._type === Token.INVALID_TYPE) {
-					this._type = ttype;
-				}
-				if (this._type === Lexer.SKIP) {
-					continueOuter = true;
-					break;
-				}
-				if (this._type !== Lexer.MORE) {
-					break;
-				}
-			}
-			if (continueOuter) {
-				continue;
-			}
-			if (this._token === null) {
-				this.emit();
-			}
-			return this._token;
-		}
-	} finally {
-		// make sure we release marker after match or
-		// unbuffered char stream will keep buffering
-		this._input.release(tokenStartMarker);
-	}
+  // Mark start location in char stream so unbuffered streams are
+  // guaranteed at least have text of current token
+  var tokenStartMarker = this._input.mark();
+  try {
+    while (true) {
+      if (this._hitEOF) {
+        this.emitEOF();
+        return this._token;
+      }
+      this._token = null;
+      this._channel = Token.DEFAULT_CHANNEL;
+      this._tokenStartCharIndex = this._input.index;
+      this._tokenStartColumn = this._interp.column;
+      this._tokenStartLine = this._interp.line;
+      this._text = null;
+      var continueOuter = false;
+      while (true) {
+        this._type = Token.INVALID_TYPE;
+        var ttype = Lexer.SKIP;
+        try {
+          ttype = this._interp.match(this._input, this._mode);
+        } catch (e) {
+          this.notifyListeners(e); // report error
+          this.recover(e);
+        }
+        if (this._input.LA(1) === Token.EOF) {
+          this._hitEOF = true;
+        }
+        if (this._type === Token.INVALID_TYPE) {
+          this._type = ttype;
+        }
+        if (this._type === Lexer.SKIP) {
+          continueOuter = true;
+          break;
+        }
+        if (this._type !== Lexer.MORE) {
+          break;
+        }
+      }
+      if (continueOuter) {
+        continue;
+      }
+      if (this._token === null) {
+        this.emit();
+      }
+      return this._token;
+    }
+  } finally {
+    // make sure we release marker after match or
+    // unbuffered char stream will keep buffering
+    this._input.release(tokenStartMarker);
+  }
 };
 
 // Instruct the lexer to skip creating a token for current lexer rule
@@ -5638,54 +5639,54 @@ Lexer.prototype.nextToken = function() {
 // and emits it.
 // /
 Lexer.prototype.skip = function() {
-	this._type = Lexer.SKIP;
+  this._type = Lexer.SKIP;
 };
 
 Lexer.prototype.more = function() {
-	this._type = Lexer.MORE;
+  this._type = Lexer.MORE;
 };
 
 Lexer.prototype.mode = function(m) {
-	this._mode = m;
+  this._mode = m;
 };
 
 Lexer.prototype.pushMode = function(m) {
-	if (this._interp.debug) {
-		console.log("pushMode " + m);
-	}
-	this._modeStack.push(this._mode);
-	this.mode(m);
+  if (this._interp.debug) {
+    console.log("pushMode " + m);
+  }
+  this._modeStack.push(this._mode);
+  this.mode(m);
 };
 
 Lexer.prototype.popMode = function() {
-	if (this._modeStack.length === 0) {
-		throw "Empty Stack";
-	}
-	if (this._interp.debug) {
-		console.log("popMode back to " + this._modeStack.slice(0, -1));
-	}
-	this.mode(this._modeStack.pop());
-	return this._mode;
+  if (this._modeStack.length === 0) {
+    throw "Empty Stack";
+  }
+  if (this._interp.debug) {
+    console.log("popMode back to " + this._modeStack.slice(0, -1));
+  }
+  this.mode(this._modeStack.pop());
+  return this._mode;
 };
 
 // Set the char stream and reset the lexer
 Object.defineProperty(Lexer.prototype, "inputStream", {
-	get : function() {
-		return this._input;
-	},
-	set : function(input) {
-		this._input = null;
-		this._tokenFactorySourcePair = [ this, this._input ];
-		this.reset();
-		this._input = input;
-		this._tokenFactorySourcePair = [ this, this._input ];
-	}
+  get : function() {
+    return this._input;
+  },
+  set : function(input) {
+    this._input = null;
+    this._tokenFactorySourcePair = [ this, this._input ];
+    this.reset();
+    this._input = input;
+    this._tokenFactorySourcePair = [ this, this._input ];
+  }
 });
 
 Object.defineProperty(Lexer.prototype, "sourceName", {
-	get : function sourceName() {
-		return this._input.sourceName;
-	}
+  get : function sourceName() {
+    return this._input.sourceName;
+  }
 });
 
 // By default does not support multiple emits per nextToken invocation
@@ -5694,7 +5695,7 @@ Object.defineProperty(Lexer.prototype, "sourceName", {
 // rather than a single variable as this implementation does).
 // /
 Lexer.prototype.emitToken = function(token) {
-	this._token = token;
+  this._token = token;
 };
 
 // The standard method called to automatically emit a token at the
@@ -5704,118 +5705,118 @@ Lexer.prototype.emitToken = function(token) {
 // custom Token objects or provide a new factory.
 // /
 Lexer.prototype.emit = function() {
-	var t = this._factory.create(this._tokenFactorySourcePair, this._type,
-			this._text, this._channel, this._tokenStartCharIndex, this
-					.getCharIndex() - 1, this._tokenStartLine,
-			this._tokenStartColumn);
-	this.emitToken(t);
-	return t;
+  var t = this._factory.create(this._tokenFactorySourcePair, this._type,
+      this._text, this._channel, this._tokenStartCharIndex, this
+          .getCharIndex() - 1, this._tokenStartLine,
+      this._tokenStartColumn);
+  this.emitToken(t);
+  return t;
 };
 
 Lexer.prototype.emitEOF = function() {
-	var cpos = this.column;
-	var lpos = this.line;
-	var eof = this._factory.create(this._tokenFactorySourcePair, Token.EOF,
-			null, Token.DEFAULT_CHANNEL, this._input.index,
-			this._input.index - 1, lpos, cpos);
-	this.emitToken(eof);
-	return eof;
+  var cpos = this.column;
+  var lpos = this.line;
+  var eof = this._factory.create(this._tokenFactorySourcePair, Token.EOF,
+      null, Token.DEFAULT_CHANNEL, this._input.index,
+      this._input.index - 1, lpos, cpos);
+  this.emitToken(eof);
+  return eof;
 };
 
 Object.defineProperty(Lexer.prototype, "type", {
-	get : function() {
-		return this.type;
-	},
-	set : function(type) {
-		this._type = type;
-	}
+  get : function() {
+    return this.type;
+  },
+  set : function(type) {
+    this._type = type;
+  }
 });
 
 Object.defineProperty(Lexer.prototype, "line", {
-	get : function() {
-		return this._interp.line;
-	},
-	set : function(line) {
-		this._interp.line = line;
-	}
+  get : function() {
+    return this._interp.line;
+  },
+  set : function(line) {
+    this._interp.line = line;
+  }
 });
 
 Object.defineProperty(Lexer.prototype, "column", {
-	get : function() {
-		return this._interp.column;
-	},
-	set : function(column) {
-		this._interp.column = column;
-	}
+  get : function() {
+    return this._interp.column;
+  },
+  set : function(column) {
+    this._interp.column = column;
+  }
 });
 
 
 // What is the index of the current character of lookahead?///
 Lexer.prototype.getCharIndex = function() {
-	return this._input.index;
+  return this._input.index;
 };
 
 // Return the text matched so far for the current token or any text override.
 //Set the complete text of this token; it wipes any previous changes to the text.
 Object.defineProperty(Lexer.prototype, "text", {
-	get : function() {
-		if (this._text !== null) {
-			return this._text;
-		} else {
-			return this._interp.getText(this._input);
-		}
-	},
-	set : function(text) {
-		this._text = text;
-	}
+  get : function() {
+    if (this._text !== null) {
+      return this._text;
+    } else {
+      return this._interp.getText(this._input);
+    }
+  },
+  set : function(text) {
+    this._text = text;
+  }
 });
 // Return a list of all Token objects in input char stream.
 // Forces load of all tokens. Does not include EOF token.
 // /
 Lexer.prototype.getAllTokens = function() {
-	var tokens = [];
-	var t = this.nextToken();
-	while (t.type !== Token.EOF) {
-		tokens.push(t);
-		t = this.nextToken();
-	}
-	return tokens;
+  var tokens = [];
+  var t = this.nextToken();
+  while (t.type !== Token.EOF) {
+    tokens.push(t);
+    t = this.nextToken();
+  }
+  return tokens;
 };
 
 Lexer.prototype.notifyListeners = function(e) {
-	var start = this._tokenStartCharIndex;
-	var stop = this._input.index;
-	var text = this._input.getText(start, stop);
-	var msg = "token recognition error at: '" + this.getErrorDisplay(text) + "'";
-	var listener = this.getErrorListenerDispatch();
-	listener.syntaxError(this, null, this._tokenStartLine,
-			this._tokenStartColumn, msg, e);
+  var start = this._tokenStartCharIndex;
+  var stop = this._input.index;
+  var text = this._input.getText(start, stop);
+  var msg = "token recognition error at: '" + this.getErrorDisplay(text) + "'";
+  var listener = this.getErrorListenerDispatch();
+  listener.syntaxError(this, null, this._tokenStartLine,
+      this._tokenStartColumn, msg, e);
 };
 
 Lexer.prototype.getErrorDisplay = function(s) {
-	var d = [];
-	for (var i = 0; i < s.length; i++) {
-		d.push(s[i]);
-	}
-	return d.join('');
+  var d = [];
+  for (var i = 0; i < s.length; i++) {
+    d.push(s[i]);
+  }
+  return d.join('');
 };
 
 Lexer.prototype.getErrorDisplayForChar = function(c) {
-	if (c.charCodeAt(0) === Token.EOF) {
-		return "<EOF>";
-	} else if (c === '\n') {
-		return "\\n";
-	} else if (c === '\t') {
-		return "\\t";
-	} else if (c === '\r') {
-		return "\\r";
-	} else {
-		return c;
-	}
+  if (c.charCodeAt(0) === Token.EOF) {
+    return "<EOF>";
+  } else if (c === '\n') {
+    return "\\n";
+  } else if (c === '\t') {
+    return "\\t";
+  } else if (c === '\r') {
+    return "\\r";
+  } else {
+    return c;
+  }
 };
 
 Lexer.prototype.getCharErrorDisplay = function(c) {
-	return "'" + this.getErrorDisplayForChar(c) + "'";
+  return "'" + this.getErrorDisplayForChar(c) + "'";
 };
 
 // Lexers can normally match any char in it's vocabulary after matching
@@ -5824,15 +5825,15 @@ Lexer.prototype.getCharErrorDisplay = function(c) {
 // to do sophisticated error recovery if you are in a fragment rule.
 // /
 Lexer.prototype.recover = function(re) {
-	if (this._input.LA(1) !== Token.EOF) {
-		if (re instanceof LexerNoViableAltException) {
-			// skip a char and try again
-			this._interp.consume(this._input);
-		} else {
-			// TODO: Do we lose character or line position information?
-			this._input.consume();
-		}
-	}
+  if (this._input.LA(1) !== Token.EOF) {
+    if (re instanceof LexerNoViableAltException) {
+      // skip a char and try again
+      this._interp.consume(this._input);
+    } else {
+      // TODO: Do we lose character or line position information?
+      this._input.consume();
+    }
+  }
 };
 
 exports.Lexer = Lexer;
@@ -5881,62 +5882,62 @@ var SemanticContext = cachedModules[6211].exports.SemanticContext;
 var merge = cachedModules[3533].exports.merge;
 
 function hashATNConfig(c) {
-	return c.shortHashString();
+  return c.shortHashString();
 }
 
 function equalATNConfigs(a, b) {
-	if ( a===b ) {
-		return true;
-	}
-	if ( a===null || b===null ) {
-		return false;
-	}
-	return a.state.stateNumber===b.state.stateNumber &&
-		a.alt===b.alt && a.semanticContext.equals(b.semanticContext);
+  if ( a===b ) {
+    return true;
+  }
+  if ( a===null || b===null ) {
+    return false;
+  }
+  return a.state.stateNumber===b.state.stateNumber &&
+    a.alt===b.alt && a.semanticContext.equals(b.semanticContext);
 }
 
 
 function ATNConfigSet(fullCtx) {
-	//
-	// The reason that we need this is because we don't want the hash map to use
-	// the standard hash code and equals. We need all configurations with the
-	// same
-	// {@code (s,i,_,semctx)} to be equal. Unfortunately, this key effectively
-	// doubles
-	// the number of objects associated with ATNConfigs. The other solution is
-	// to
-	// use a hash table that lets us specify the equals/hashcode operation.
-	// All configs but hashed by (s, i, _, pi) not including context. Wiped out
-	// when we go readonly as this set becomes a DFA state.
-	this.configLookup = new Set(hashATNConfig, equalATNConfigs);
-	// Indicates that this configuration set is part of a full context
-	// LL prediction. It will be used to determine how to merge $. With SLL
-	// it's a wildcard whereas it is not for LL context merge.
-	this.fullCtx = fullCtx === undefined ? true : fullCtx;
-	// Indicates that the set of configurations is read-only. Do not
-	// allow any code to manipulate the set; DFA states will point at
-	// the sets and they must not change. This does not protect the other
-	// fields; in particular, conflictingAlts is set after
-	// we've made this readonly.
-	this.readOnly = false;
-	// Track the elements as they are added to the set; supports get(i)///
-	this.configs = [];
+  //
+  // The reason that we need this is because we don't want the hash map to use
+  // the standard hash code and equals. We need all configurations with the
+  // same
+  // {@code (s,i,_,semctx)} to be equal. Unfortunately, this key effectively
+  // doubles
+  // the number of objects associated with ATNConfigs. The other solution is
+  // to
+  // use a hash table that lets us specify the equals/hashcode operation.
+  // All configs but hashed by (s, i, _, pi) not including context. Wiped out
+  // when we go readonly as this set becomes a DFA state.
+  this.configLookup = new Set(hashATNConfig, equalATNConfigs);
+  // Indicates that this configuration set is part of a full context
+  // LL prediction. It will be used to determine how to merge $. With SLL
+  // it's a wildcard whereas it is not for LL context merge.
+  this.fullCtx = fullCtx === undefined ? true : fullCtx;
+  // Indicates that the set of configurations is read-only. Do not
+  // allow any code to manipulate the set; DFA states will point at
+  // the sets and they must not change. This does not protect the other
+  // fields; in particular, conflictingAlts is set after
+  // we've made this readonly.
+  this.readOnly = false;
+  // Track the elements as they are added to the set; supports get(i)///
+  this.configs = [];
 
-	// TODO: these fields make me pretty uncomfortable but nice to pack up info
-	// together, saves recomputation
-	// TODO: can we track conflicts as they are added to save scanning configs
-	// later?
-	this.uniqueAlt = 0;
-	this.conflictingAlts = null;
+  // TODO: these fields make me pretty uncomfortable but nice to pack up info
+  // together, saves recomputation
+  // TODO: can we track conflicts as they are added to save scanning configs
+  // later?
+  this.uniqueAlt = 0;
+  this.conflictingAlts = null;
 
-	// Used in parser and lexer. In lexer, it indicates we hit a pred
-	// while computing a closure operation. Don't make a DFA state from this.
-	this.hasSemanticContext = false;
-	this.dipsIntoOuterContext = false;
+  // Used in parser and lexer. In lexer, it indicates we hit a pred
+  // while computing a closure operation. Don't make a DFA state from this.
+  this.hasSemanticContext = false;
+  this.dipsIntoOuterContext = false;
 
-	this.cachedHashString = "-1";
+  this.cachedHashString = "-1";
 
-	return this;
+  return this;
 }
 
 // Adding a new config means merging contexts with existing configs for
@@ -5949,169 +5950,169 @@ function ATNConfigSet(fullCtx) {
 // {@link //hasSemanticContext} when necessary.</p>
 // /
 ATNConfigSet.prototype.add = function(config, mergeCache) {
-	if (mergeCache === undefined) {
-		mergeCache = null;
-	}
-	if (this.readOnly) {
-		throw "This set is readonly";
-	}
-	if (config.semanticContext !== SemanticContext.NONE) {
-		this.hasSemanticContext = true;
-	}
-	if (config.reachesIntoOuterContext > 0) {
-		this.dipsIntoOuterContext = true;
-	}
-	var existing = this.configLookup.add(config);
-	if (existing === config) {
-		this.cachedHashString = "-1";
-		this.configs.push(config); // track order here
-		return true;
-	}
-	// a previous (s,i,pi,_), merge with it and save result
-	var rootIsWildcard = !this.fullCtx;
-	var merged = merge(existing.context, config.context, rootIsWildcard, mergeCache);
-	// no need to check for existing.context, config.context in cache
-	// since only way to create new graphs is "call rule" and here. We
-	// cache at both places.
-	existing.reachesIntoOuterContext = Math.max( existing.reachesIntoOuterContext, config.reachesIntoOuterContext);
-	// make sure to preserve the precedence filter suppression during the merge
-	if (config.precedenceFilterSuppressed) {
-		existing.precedenceFilterSuppressed = true;
-	}
-	existing.context = merged; // replace context; no need to alt mapping
-	return true;
+  if (mergeCache === undefined) {
+    mergeCache = null;
+  }
+  if (this.readOnly) {
+    throw "This set is readonly";
+  }
+  if (config.semanticContext !== SemanticContext.NONE) {
+    this.hasSemanticContext = true;
+  }
+  if (config.reachesIntoOuterContext > 0) {
+    this.dipsIntoOuterContext = true;
+  }
+  var existing = this.configLookup.add(config);
+  if (existing === config) {
+    this.cachedHashString = "-1";
+    this.configs.push(config); // track order here
+    return true;
+  }
+  // a previous (s,i,pi,_), merge with it and save result
+  var rootIsWildcard = !this.fullCtx;
+  var merged = merge(existing.context, config.context, rootIsWildcard, mergeCache);
+  // no need to check for existing.context, config.context in cache
+  // since only way to create new graphs is "call rule" and here. We
+  // cache at both places.
+  existing.reachesIntoOuterContext = Math.max( existing.reachesIntoOuterContext, config.reachesIntoOuterContext);
+  // make sure to preserve the precedence filter suppression during the merge
+  if (config.precedenceFilterSuppressed) {
+    existing.precedenceFilterSuppressed = true;
+  }
+  existing.context = merged; // replace context; no need to alt mapping
+  return true;
 };
 
 ATNConfigSet.prototype.getStates = function() {
-	var states = new Set();
-	for (var i = 0; i < this.configs.length; i++) {
-		states.add(this.configs[i].state);
-	}
-	return states;
+  var states = new Set();
+  for (var i = 0; i < this.configs.length; i++) {
+    states.add(this.configs[i].state);
+  }
+  return states;
 };
 
 ATNConfigSet.prototype.getPredicates = function() {
-	var preds = [];
-	for (var i = 0; i < this.configs.length; i++) {
-		var c = this.configs[i].semanticContext;
-		if (c !== SemanticContext.NONE) {
-			preds.push(c.semanticContext);
-		}
-	}
-	return preds;
+  var preds = [];
+  for (var i = 0; i < this.configs.length; i++) {
+    var c = this.configs[i].semanticContext;
+    if (c !== SemanticContext.NONE) {
+      preds.push(c.semanticContext);
+    }
+  }
+  return preds;
 };
 
 Object.defineProperty(ATNConfigSet.prototype, "items", {
-	get : function() {
-		return this.configs;
-	}
+  get : function() {
+    return this.configs;
+  }
 });
 
 ATNConfigSet.prototype.optimizeConfigs = function(interpreter) {
-	if (this.readOnly) {
-		throw "This set is readonly";
-	}
-	if (this.configLookup.length === 0) {
-		return;
-	}
-	for (var i = 0; i < this.configs.length; i++) {
-		var config = this.configs[i];
-		config.context = interpreter.getCachedContext(config.context);
-	}
+  if (this.readOnly) {
+    throw "This set is readonly";
+  }
+  if (this.configLookup.length === 0) {
+    return;
+  }
+  for (var i = 0; i < this.configs.length; i++) {
+    var config = this.configs[i];
+    config.context = interpreter.getCachedContext(config.context);
+  }
 };
 
 ATNConfigSet.prototype.addAll = function(coll) {
-	for (var i = 0; i < coll.length; i++) {
-		this.add(coll[i]);
-	}
-	return false;
+  for (var i = 0; i < coll.length; i++) {
+    this.add(coll[i]);
+  }
+  return false;
 };
 
 ATNConfigSet.prototype.equals = function(other) {
-	if (this === other) {
-		return true;
-	} else if (!(other instanceof ATNConfigSet)) {
-		return false;
-	}
-	return this.configs !== null && this.configs.equals(other.configs) &&
-			this.fullCtx === other.fullCtx &&
-			this.uniqueAlt === other.uniqueAlt &&
-			this.conflictingAlts === other.conflictingAlts &&
-			this.hasSemanticContext === other.hasSemanticContext &&
-			this.dipsIntoOuterContext === other.dipsIntoOuterContext;
+  if (this === other) {
+    return true;
+  } else if (!(other instanceof ATNConfigSet)) {
+    return false;
+  }
+  return this.configs !== null && this.configs.equals(other.configs) &&
+      this.fullCtx === other.fullCtx &&
+      this.uniqueAlt === other.uniqueAlt &&
+      this.conflictingAlts === other.conflictingAlts &&
+      this.hasSemanticContext === other.hasSemanticContext &&
+      this.dipsIntoOuterContext === other.dipsIntoOuterContext;
 };
 
 ATNConfigSet.prototype.hashString = function() {
-	if (this.readOnly) {
-		if (this.cachedHashString === "-1") {
-			this.cachedHashString = this.hashConfigs();
-		}
-		return this.cachedHashString;
-	} else {
-		return this.hashConfigs();
-	}
+  if (this.readOnly) {
+    if (this.cachedHashString === "-1") {
+      this.cachedHashString = this.hashConfigs();
+    }
+    return this.cachedHashString;
+  } else {
+    return this.hashConfigs();
+  }
 };
 
 ATNConfigSet.prototype.hashConfigs = function() {
-	var s = "";
-	this.configs.map(function(c) {
-		s += c.toString();
-	});
-	return s;
+  var s = "";
+  this.configs.map(function(c) {
+    s += c.toString();
+  });
+  return s;
 };
 
 Object.defineProperty(ATNConfigSet.prototype, "length", {
-	get : function() {
-		return this.configs.length;
-	}
+  get : function() {
+    return this.configs.length;
+  }
 });
 
 ATNConfigSet.prototype.isEmpty = function() {
-	return this.configs.length === 0;
+  return this.configs.length === 0;
 };
 
 ATNConfigSet.prototype.contains = function(item) {
-	if (this.configLookup === null) {
-		throw "This method is not implemented for readonly sets.";
-	}
-	return this.configLookup.contains(item);
+  if (this.configLookup === null) {
+    throw "This method is not implemented for readonly sets.";
+  }
+  return this.configLookup.contains(item);
 };
 
 ATNConfigSet.prototype.containsFast = function(item) {
-	if (this.configLookup === null) {
-		throw "This method is not implemented for readonly sets.";
-	}
-	return this.configLookup.containsFast(item);
+  if (this.configLookup === null) {
+    throw "This method is not implemented for readonly sets.";
+  }
+  return this.configLookup.containsFast(item);
 };
 
 ATNConfigSet.prototype.clear = function() {
-	if (this.readOnly) {
-		throw "This set is readonly";
-	}
-	this.configs = [];
-	this.cachedHashString = "-1";
-	this.configLookup = new Set();
+  if (this.readOnly) {
+    throw "This set is readonly";
+  }
+  this.configs = [];
+  this.cachedHashString = "-1";
+  this.configLookup = new Set();
 };
 
 ATNConfigSet.prototype.setReadonly = function(readOnly) {
-	this.readOnly = readOnly;
-	if (readOnly) {
-		this.configLookup = null; // can't mod, no need for lookup cache
-	}
+  this.readOnly = readOnly;
+  if (readOnly) {
+    this.configLookup = null; // can't mod, no need for lookup cache
+  }
 };
 
 ATNConfigSet.prototype.toString = function() {
-	return Utils.arrayToString(this.configs) +
-		(this.hasSemanticContext ? ",hasSemanticContext=" + this.hasSemanticContext : "") +
-		(this.uniqueAlt !== ATN.INVALID_ALT_NUMBER ? ",uniqueAlt=" + this.uniqueAlt : "") +
-		(this.conflictingAlts !== null ? ",conflictingAlts=" + this.conflictingAlts : "") +
-		(this.dipsIntoOuterContext ? ",dipsIntoOuterContext" : "");
+  return Utils.arrayToString(this.configs) +
+    (this.hasSemanticContext ? ",hasSemanticContext=" + this.hasSemanticContext : "") +
+    (this.uniqueAlt !== ATN.INVALID_ALT_NUMBER ? ",uniqueAlt=" + this.uniqueAlt : "") +
+    (this.conflictingAlts !== null ? ",conflictingAlts=" + this.conflictingAlts : "") +
+    (this.dipsIntoOuterContext ? ",dipsIntoOuterContext" : "");
 };
 
 function OrderedATNConfigSet() {
-	ATNConfigSet.call(this);
-	this.configLookup = new Set();
-	return this;
+  ATNConfigSet.call(this);
+  this.configLookup = new Set();
+  return this;
 }
 
 OrderedATNConfigSet.prototype = Object.create(ATNConfigSet.prototype);
@@ -6157,13 +6158,13 @@ var ATNConfigSet = cachedModules[5018].exports.ATNConfigSet;
 // Map a predicate to a predicted alternative.///
 
 function PredPrediction(pred, alt) {
-	this.alt = alt;
-	this.pred = pred;
-	return this;
+  this.alt = alt;
+  this.pred = pred;
+  return this;
 }
 
 PredPrediction.prototype.toString = function() {
-	return "(" + this.pred + ", " + this.alt + ")";
+  return "(" + this.pred + ", " + this.alt + ")";
 };
 
 // A DFA state represents a set of possible ATN configurations.
@@ -6192,62 +6193,62 @@ PredPrediction.prototype.toString = function() {
 // /
 
 function DFAState(stateNumber, configs) {
-	if (stateNumber === null) {
-		stateNumber = -1;
-	}
-	if (configs === null) {
-		configs = new ATNConfigSet();
-	}
-	this.stateNumber = stateNumber;
-	this.configs = configs;
-	// {@code edges[symbol]} points to target of symbol. Shift up by 1 so (-1)
-	// {@link Token//EOF} maps to {@code edges[0]}.
-	this.edges = null;
-	this.isAcceptState = false;
-	// if accept state, what ttype do we match or alt do we predict?
-	// This is set to {@link ATN//INVALID_ALT_NUMBER} when {@link
-	// //predicates}{@code !=null} or
-	// {@link //requiresFullContext}.
-	this.prediction = 0;
-	this.lexerActionExecutor = null;
-	// Indicates that this state was created during SLL prediction that
-	// discovered a conflict between the configurations in the state. Future
-	// {@link ParserATNSimulator//execATN} invocations immediately jumped doing
-	// full context prediction if this field is true.
-	this.requiresFullContext = false;
-	// During SLL parsing, this is a list of predicates associated with the
-	// ATN configurations of the DFA state. When we have predicates,
-	// {@link //requiresFullContext} is {@code false} since full context
-	// prediction evaluates predicates
-	// on-the-fly. If this is not null, then {@link //prediction} is
-	// {@link ATN//INVALID_ALT_NUMBER}.
-	//
-	// <p>We only use these for non-{@link //requiresFullContext} but
-	// conflicting states. That
-	// means we know from the context (it's $ or we don't dip into outer
-	// context) that it's an ambiguity not a conflict.</p>
-	//
-	// <p>This list is computed by {@link
-	// ParserATNSimulator//predicateDFAState}.</p>
-	this.predicates = null;
-	return this;
+  if (stateNumber === null) {
+    stateNumber = -1;
+  }
+  if (configs === null) {
+    configs = new ATNConfigSet();
+  }
+  this.stateNumber = stateNumber;
+  this.configs = configs;
+  // {@code edges[symbol]} points to target of symbol. Shift up by 1 so (-1)
+  // {@link Token//EOF} maps to {@code edges[0]}.
+  this.edges = null;
+  this.isAcceptState = false;
+  // if accept state, what ttype do we match or alt do we predict?
+  // This is set to {@link ATN//INVALID_ALT_NUMBER} when {@link
+  // //predicates}{@code !=null} or
+  // {@link //requiresFullContext}.
+  this.prediction = 0;
+  this.lexerActionExecutor = null;
+  // Indicates that this state was created during SLL prediction that
+  // discovered a conflict between the configurations in the state. Future
+  // {@link ParserATNSimulator//execATN} invocations immediately jumped doing
+  // full context prediction if this field is true.
+  this.requiresFullContext = false;
+  // During SLL parsing, this is a list of predicates associated with the
+  // ATN configurations of the DFA state. When we have predicates,
+  // {@link //requiresFullContext} is {@code false} since full context
+  // prediction evaluates predicates
+  // on-the-fly. If this is not null, then {@link //prediction} is
+  // {@link ATN//INVALID_ALT_NUMBER}.
+  //
+  // <p>We only use these for non-{@link //requiresFullContext} but
+  // conflicting states. That
+  // means we know from the context (it's $ or we don't dip into outer
+  // context) that it's an ambiguity not a conflict.</p>
+  //
+  // <p>This list is computed by {@link
+  // ParserATNSimulator//predicateDFAState}.</p>
+  this.predicates = null;
+  return this;
 }
 
 // Get the set of all alts mentioned by all ATN configurations in this
 // DFA state.
 DFAState.prototype.getAltSet = function() {
-	var alts = new Set();
-	if (this.configs !== null) {
-		for (var i = 0; i < this.configs.length; i++) {
-			var c = this.configs[i];
-			alts.add(c.alt);
-		}
-	}
-	if (alts.length === 0) {
-		return null;
-	} else {
-		return alts;
-	}
+  var alts = new Set();
+  if (this.configs !== null) {
+    for (var i = 0; i < this.configs.length; i++) {
+      var c = this.configs[i];
+      alts.add(c.alt);
+    }
+  }
+  if (alts.length === 0) {
+    return null;
+  } else {
+    return alts;
+  }
 };
 
 // Two {@link DFAState} instances are equal if their ATN configuration sets
@@ -6262,27 +6263,27 @@ DFAState.prototype.getAltSet = function() {
 // exists that has this exact set of ATN configurations. The
 // {@link //stateNumber} is irrelevant.</p>
 DFAState.prototype.equals = function(other) {
-	// compare set of ATN configurations in this set with other
-	if (this === other) {
-		return true;
-	} else if (!(other instanceof DFAState)) {
-		return false;
-	} else {
-		return this.configs.equals(other.configs);
-	}
+  // compare set of ATN configurations in this set with other
+  if (this === other) {
+    return true;
+  } else if (!(other instanceof DFAState)) {
+    return false;
+  } else {
+    return this.configs.equals(other.configs);
+  }
 };
 
 DFAState.prototype.toString = function() {
-	return "" + this.stateNumber + ":" + this.hashString();
+  return "" + this.stateNumber + ":" + this.hashString();
 };
 
 DFAState.prototype.hashString = function() {
-	return "" +  this.configs +
-			(this.isAcceptState ?
-					"=>" + (this.predicates !== null ?
-								this.predicates :
-								this.prediction) :
-					"");
+  return "" +  this.configs +
+      (this.isAcceptState ?
+          "=>" + (this.predicates !== null ?
+                this.predicates :
+                this.prediction) :
+          "");
 };
 
 exports.DFAState = DFAState;
@@ -6324,7 +6325,7 @@ var ATNConfigSet = cachedModules[5018].exports.ATNConfigSet;
 var getCachedPredictionContext = cachedModules[3533].exports.getCachedPredictionContext;
 
 function ATNSimulator(atn, sharedContextCache) {
-	
+  
     // The context cache maps all PredictionContext objects that are ==
     //  to a single cached copy. This cache is shared across all contexts
     //  in all ATNConfigs in all DFA states.  We rebuild each ATNConfigSet
@@ -6406,12 +6407,12 @@ cachedModules[371]={exports:{}};
 var LexerIndexedCustomAction = cachedModules[8705].exports.LexerIndexedCustomAction;
 
 function LexerActionExecutor(lexerActions) {
-	this.lexerActions = lexerActions === null ? [] : lexerActions;
-	// Caches the result of {@link //hashCode} since the hash code is an element
-	// of the performance-critical {@link LexerATNConfig//hashCode} operation.
-	this.hashString = lexerActions.toString(); // "".join([str(la) for la in
-	// lexerActions]))
-	return this;
+  this.lexerActions = lexerActions === null ? [] : lexerActions;
+  // Caches the result of {@link //hashCode} since the hash code is an element
+  // of the performance-critical {@link LexerATNConfig//hashCode} operation.
+  this.hashString = lexerActions.toString(); // "".join([str(la) for la in
+  // lexerActions]))
+  return this;
 }
 
 // Creates a {@link LexerActionExecutor} which executes the actions for
@@ -6428,11 +6429,11 @@ function LexerActionExecutor(lexerActions) {
 // @return A {@link LexerActionExecutor} for executing the combine actions
 // of {@code lexerActionExecutor} and {@code lexerAction}.
 LexerActionExecutor.append = function(lexerActionExecutor, lexerAction) {
-	if (lexerActionExecutor === null) {
-		return new LexerActionExecutor([ lexerAction ]);
-	}
-	var lexerActions = lexerActionExecutor.lexerActions.concat([ lexerAction ]);
-	return new LexerActionExecutor(lexerActions);
+  if (lexerActionExecutor === null) {
+    return new LexerActionExecutor([ lexerAction ]);
+  }
+  var lexerActions = lexerActionExecutor.lexerActions.concat([ lexerAction ]);
+  return new LexerActionExecutor(lexerActions);
 };
 
 // Creates a {@link LexerActionExecutor} which encodes the current offset
@@ -6464,22 +6465,22 @@ LexerActionExecutor.append = function(lexerActionExecutor, lexerAction) {
 // for all position-dependent lexer actions.
 // /
 LexerActionExecutor.prototype.fixOffsetBeforeMatch = function(offset) {
-	var updatedLexerActions = null;
-	for (var i = 0; i < this.lexerActions.length; i++) {
-		if (this.lexerActions[i].isPositionDependent &&
-				!(this.lexerActions[i] instanceof LexerIndexedCustomAction)) {
-			if (updatedLexerActions === null) {
-				updatedLexerActions = this.lexerActions.concat([]);
-			}
-			updatedLexerActions[i] = new LexerIndexedCustomAction(offset,
-					this.lexerActions[i]);
-		}
-	}
-	if (updatedLexerActions === null) {
-		return this;
-	} else {
-		return new LexerActionExecutor(updatedLexerActions);
-	}
+  var updatedLexerActions = null;
+  for (var i = 0; i < this.lexerActions.length; i++) {
+    if (this.lexerActions[i].isPositionDependent &&
+        !(this.lexerActions[i] instanceof LexerIndexedCustomAction)) {
+      if (updatedLexerActions === null) {
+        updatedLexerActions = this.lexerActions.concat([]);
+      }
+      updatedLexerActions[i] = new LexerIndexedCustomAction(offset,
+          this.lexerActions[i]);
+    }
+  }
+  if (updatedLexerActions === null) {
+    return this;
+  } else {
+    return new LexerActionExecutor(updatedLexerActions);
+  }
 };
 
 // Execute the actions encapsulated by this executor within the context of a
@@ -6501,42 +6502,42 @@ LexerActionExecutor.prototype.fixOffsetBeforeMatch = function(offset) {
 // of the token.
 // /
 LexerActionExecutor.prototype.execute = function(lexer, input, startIndex) {
-	var requiresSeek = false;
-	var stopIndex = input.index;
-	try {
-		for (var i = 0; i < this.lexerActions.length; i++) {
-			var lexerAction = this.lexerActions[i];
-			if (lexerAction instanceof LexerIndexedCustomAction) {
-				var offset = lexerAction.offset;
-				input.seek(startIndex + offset);
-				lexerAction = lexerAction.action;
-				requiresSeek = (startIndex + offset) !== stopIndex;
-			} else if (lexerAction.isPositionDependent) {
-				input.seek(stopIndex);
-				requiresSeek = false;
-			}
-			lexerAction.execute(lexer);
-		}
-	} finally {
-		if (requiresSeek) {
-			input.seek(stopIndex);
-		}
-	}
+  var requiresSeek = false;
+  var stopIndex = input.index;
+  try {
+    for (var i = 0; i < this.lexerActions.length; i++) {
+      var lexerAction = this.lexerActions[i];
+      if (lexerAction instanceof LexerIndexedCustomAction) {
+        var offset = lexerAction.offset;
+        input.seek(startIndex + offset);
+        lexerAction = lexerAction.action;
+        requiresSeek = (startIndex + offset) !== stopIndex;
+      } else if (lexerAction.isPositionDependent) {
+        input.seek(stopIndex);
+        requiresSeek = false;
+      }
+      lexerAction.execute(lexer);
+    }
+  } finally {
+    if (requiresSeek) {
+      input.seek(stopIndex);
+    }
+  }
 };
 
 LexerActionExecutor.prototype.hashString = function() {
-	return this.hashString;
+  return this.hashString;
 };
 
 LexerActionExecutor.prototype.equals = function(other) {
-	if (this === other) {
-		return true;
-	} else if (!(other instanceof LexerActionExecutor)) {
-		return false;
-	} else {
-		return this.hashString === other.hashString &&
-				this.lexerActions === other.lexerActions;
-	}
+  if (this === other) {
+    return true;
+  } else if (!(other instanceof LexerActionExecutor)) {
+    return false;
+  } else {
+    return this.hashString === other.hashString &&
+        this.lexerActions === other.lexerActions;
+  }
 };
 
 exports.LexerActionExecutor = LexerActionExecutor;
@@ -6605,41 +6606,41 @@ var LexerActionExecutor = cachedModules[371].exports.LexerActionExecutor;
 var LexerNoViableAltException = cachedModules[613].exports.LexerNoViableAltException;
 
 function resetSimState(sim) {
-	sim.index = -1;
-	sim.line = 0;
-	sim.column = -1;
-	sim.dfaState = null;
+  sim.index = -1;
+  sim.line = 0;
+  sim.column = -1;
+  sim.dfaState = null;
 }
 
 function SimState() {
-	resetSimState(this);
-	return this;
+  resetSimState(this);
+  return this;
 }
 
 SimState.prototype.reset = function() {
-	resetSimState(this);
+  resetSimState(this);
 };
 
 function LexerATNSimulator(recog, atn, decisionToDFA, sharedContextCache) {
-	ATNSimulator.call(this, atn, sharedContextCache);
-	this.decisionToDFA = decisionToDFA;
-	this.recog = recog;
-	// The current token's starting index into the character stream.
-	// Shared across DFA to ATN simulation in case the ATN fails and the
-	// DFA did not have a previous accept state. In this case, we use the
-	// ATN-generated exception object.
-	this.startIndex = -1;
-	// line number 1..n within the input///
-	this.line = 1;
-	// The index of the character relative to the beginning of the line
-	// 0..n-1///
-	this.column = 0;
-	this.mode = Lexer.DEFAULT_MODE;
-	// Used during DFA/ATN exec to record the most recent accept configuration
-	// info
-	this.prevAccept = new SimState();
-	// done
-	return this;
+  ATNSimulator.call(this, atn, sharedContextCache);
+  this.decisionToDFA = decisionToDFA;
+  this.recog = recog;
+  // The current token's starting index into the character stream.
+  // Shared across DFA to ATN simulation in case the ATN fails and the
+  // DFA did not have a previous accept state. In this case, we use the
+  // ATN-generated exception object.
+  this.startIndex = -1;
+  // line number 1..n within the input///
+  this.line = 1;
+  // The index of the character relative to the beginning of the line
+  // 0..n-1///
+  this.column = 0;
+  this.mode = Lexer.DEFAULT_MODE;
+  // Used during DFA/ATN exec to record the most recent accept configuration
+  // info
+  this.prevAccept = new SimState();
+  // done
+  return this;
 }
 
 LexerATNSimulator.prototype = Object.create(ATNSimulator.prototype);
@@ -6654,122 +6655,122 @@ LexerATNSimulator.MAX_DFA_EDGE = 127; // forces unicode to stay in ATN
 LexerATNSimulator.match_calls = 0;
 
 LexerATNSimulator.prototype.copyState = function(simulator) {
-	this.column = simulator.column;
-	this.line = simulator.line;
-	this.mode = simulator.mode;
-	this.startIndex = simulator.startIndex;
+  this.column = simulator.column;
+  this.line = simulator.line;
+  this.mode = simulator.mode;
+  this.startIndex = simulator.startIndex;
 };
 
 LexerATNSimulator.prototype.match = function(input, mode) {
-	this.match_calls += 1;
-	this.mode = mode;
-	var mark = input.mark();
-	try {
-		this.startIndex = input.index;
-		this.prevAccept.reset();
-		var dfa = this.decisionToDFA[mode];
-		if (dfa.s0 === null) {
-			return this.matchATN(input);
-		} else {
-			return this.execATN(input, dfa.s0);
-		}
-	} finally {
-		input.release(mark);
-	}
+  this.match_calls += 1;
+  this.mode = mode;
+  var mark = input.mark();
+  try {
+    this.startIndex = input.index;
+    this.prevAccept.reset();
+    var dfa = this.decisionToDFA[mode];
+    if (dfa.s0 === null) {
+      return this.matchATN(input);
+    } else {
+      return this.execATN(input, dfa.s0);
+    }
+  } finally {
+    input.release(mark);
+  }
 };
 
 LexerATNSimulator.prototype.reset = function() {
-	this.prevAccept.reset();
-	this.startIndex = -1;
-	this.line = 1;
-	this.column = 0;
-	this.mode = Lexer.DEFAULT_MODE;
+  this.prevAccept.reset();
+  this.startIndex = -1;
+  this.line = 1;
+  this.column = 0;
+  this.mode = Lexer.DEFAULT_MODE;
 };
 
 LexerATNSimulator.prototype.matchATN = function(input) {
-	var startState = this.atn.modeToStartState[this.mode];
+  var startState = this.atn.modeToStartState[this.mode];
 
-	if (this.debug) {
-		console.log("matchATN mode " + this.mode + " start: " + startState);
-	}
-	var old_mode = this.mode;
-	var s0_closure = this.computeStartState(input, startState);
-	var suppressEdge = s0_closure.hasSemanticContext;
-	s0_closure.hasSemanticContext = false;
+  if (this.debug) {
+    console.log("matchATN mode " + this.mode + " start: " + startState);
+  }
+  var old_mode = this.mode;
+  var s0_closure = this.computeStartState(input, startState);
+  var suppressEdge = s0_closure.hasSemanticContext;
+  s0_closure.hasSemanticContext = false;
 
-	var next = this.addDFAState(s0_closure);
-	if (!suppressEdge) {
-		this.decisionToDFA[this.mode].s0 = next;
-	}
+  var next = this.addDFAState(s0_closure);
+  if (!suppressEdge) {
+    this.decisionToDFA[this.mode].s0 = next;
+  }
 
-	var predict = this.execATN(input, next);
+  var predict = this.execATN(input, next);
 
-	if (this.debug) {
-		console.log("DFA after matchATN: " + this.decisionToDFA[old_mode].toLexerString());
-	}
-	return predict;
+  if (this.debug) {
+    console.log("DFA after matchATN: " + this.decisionToDFA[old_mode].toLexerString());
+  }
+  return predict;
 };
 
 LexerATNSimulator.prototype.execATN = function(input, ds0) {
-	if (this.debug) {
-		console.log("start state closure=" + ds0.configs);
-	}
-	if (ds0.isAcceptState) {
-		// allow zero-length tokens
-		this.captureSimState(this.prevAccept, input, ds0);
-	}
-	var t = input.LA(1);
-	var s = ds0; // s is current/from DFA state
+  if (this.debug) {
+    console.log("start state closure=" + ds0.configs);
+  }
+  if (ds0.isAcceptState) {
+    // allow zero-length tokens
+    this.captureSimState(this.prevAccept, input, ds0);
+  }
+  var t = input.LA(1);
+  var s = ds0; // s is current/from DFA state
 
-	while (true) { // while more work
-		if (this.debug) {
-			console.log("execATN loop starting closure: " + s.configs);
-		}
+  while (true) { // while more work
+    if (this.debug) {
+      console.log("execATN loop starting closure: " + s.configs);
+    }
 
-		// As we move src->trg, src->trg, we keep track of the previous trg to
-		// avoid looking up the DFA state again, which is expensive.
-		// If the previous target was already part of the DFA, we might
-		// be able to avoid doing a reach operation upon t. If s!=null,
-		// it means that semantic predicates didn't prevent us from
-		// creating a DFA state. Once we know s!=null, we check to see if
-		// the DFA state has an edge already for t. If so, we can just reuse
-		// it's configuration set; there's no point in re-computing it.
-		// This is kind of like doing DFA simulation within the ATN
-		// simulation because DFA simulation is really just a way to avoid
-		// computing reach/closure sets. Technically, once we know that
-		// we have a previously added DFA state, we could jump over to
-		// the DFA simulator. But, that would mean popping back and forth
-		// a lot and making things more complicated algorithmically.
-		// This optimization makes a lot of sense for loops within DFA.
-		// A character will take us back to an existing DFA state
-		// that already has lots of edges out of it. e.g., .* in comments.
-		// print("Target for:" + str(s) + " and:" + str(t))
-		var target = this.getExistingTargetState(s, t);
-		// print("Existing:" + str(target))
-		if (target === null) {
-			target = this.computeTargetState(input, s, t);
-			// print("Computed:" + str(target))
-		}
-		if (target === ATNSimulator.ERROR) {
-			break;
-		}
-		// If this is a consumable input element, make sure to consume before
-		// capturing the accept state so the input index, line, and char
-		// position accurately reflect the state of the interpreter at the
-		// end of the token.
-		if (t !== Token.EOF) {
-			this.consume(input);
-		}
-		if (target.isAcceptState) {
-			this.captureSimState(this.prevAccept, input, target);
-			if (t === Token.EOF) {
-				break;
-			}
-		}
-		t = input.LA(1);
-		s = target; // flip; current DFA target becomes new src/from state
-	}
-	return this.failOrAccept(this.prevAccept, input, s.configs, t);
+    // As we move src->trg, src->trg, we keep track of the previous trg to
+    // avoid looking up the DFA state again, which is expensive.
+    // If the previous target was already part of the DFA, we might
+    // be able to avoid doing a reach operation upon t. If s!=null,
+    // it means that semantic predicates didn't prevent us from
+    // creating a DFA state. Once we know s!=null, we check to see if
+    // the DFA state has an edge already for t. If so, we can just reuse
+    // it's configuration set; there's no point in re-computing it.
+    // This is kind of like doing DFA simulation within the ATN
+    // simulation because DFA simulation is really just a way to avoid
+    // computing reach/closure sets. Technically, once we know that
+    // we have a previously added DFA state, we could jump over to
+    // the DFA simulator. But, that would mean popping back and forth
+    // a lot and making things more complicated algorithmically.
+    // This optimization makes a lot of sense for loops within DFA.
+    // A character will take us back to an existing DFA state
+    // that already has lots of edges out of it. e.g., .* in comments.
+    // print("Target for:" + str(s) + " and:" + str(t))
+    var target = this.getExistingTargetState(s, t);
+    // print("Existing:" + str(target))
+    if (target === null) {
+      target = this.computeTargetState(input, s, t);
+      // print("Computed:" + str(target))
+    }
+    if (target === ATNSimulator.ERROR) {
+      break;
+    }
+    // If this is a consumable input element, make sure to consume before
+    // capturing the accept state so the input index, line, and char
+    // position accurately reflect the state of the interpreter at the
+    // end of the token.
+    if (t !== Token.EOF) {
+      this.consume(input);
+    }
+    if (target.isAcceptState) {
+      this.captureSimState(this.prevAccept, input, target);
+      if (t === Token.EOF) {
+        break;
+      }
+    }
+    t = input.LA(1);
+    s = target; // flip; current DFA target becomes new src/from state
+  }
+  return this.failOrAccept(this.prevAccept, input, s.configs, t);
 };
 
 // Get an existing target state for an edge in the DFA. If the target state
@@ -6782,18 +6783,18 @@ LexerATNSimulator.prototype.execATN = function(input, ds0) {
 // {@code t}, or {@code null} if the target state for this edge is not
 // already cached
 LexerATNSimulator.prototype.getExistingTargetState = function(s, t) {
-	if (s.edges === null || t < LexerATNSimulator.MIN_DFA_EDGE || t > LexerATNSimulator.MAX_DFA_EDGE) {
-		return null;
-	}
+  if (s.edges === null || t < LexerATNSimulator.MIN_DFA_EDGE || t > LexerATNSimulator.MAX_DFA_EDGE) {
+    return null;
+  }
 
-	var target = s.edges[t - LexerATNSimulator.MIN_DFA_EDGE];
-	if(target===undefined) {
-		target = null;
-	}
-	if (this.debug && target !== null) {
-		console.log("reuse state " + s.stateNumber + " edge to " + target.stateNumber);
-	}
-	return target;
+  var target = s.edges[t - LexerATNSimulator.MIN_DFA_EDGE];
+  if(target===undefined) {
+    target = null;
+  }
+  if (this.debug && target !== null) {
+    console.log("reuse state " + s.stateNumber + " edge to " + target.stateNumber);
+  }
+  return target;
 };
 
 // Compute a target state for an edge in the DFA, and attempt to add the
@@ -6807,109 +6808,109 @@ LexerATNSimulator.prototype.getExistingTargetState = function(s, t) {
 // {@code t}. If {@code t} does not lead to a valid DFA state, this method
 // returns {@link //ERROR}.
 LexerATNSimulator.prototype.computeTargetState = function(input, s, t) {
-	var reach = new OrderedATNConfigSet();
-	// if we don't find an existing DFA state
-	// Fill reach starting from closure, following t transitions
-	this.getReachableConfigSet(input, s.configs, reach, t);
+  var reach = new OrderedATNConfigSet();
+  // if we don't find an existing DFA state
+  // Fill reach starting from closure, following t transitions
+  this.getReachableConfigSet(input, s.configs, reach, t);
 
-	if (reach.items.length === 0) { // we got nowhere on t from s
-		if (!reach.hasSemanticContext) {
-			// we got nowhere on t, don't throw out this knowledge; it'd
-			// cause a failover from DFA later.
-			this.addDFAEdge(s, t, ATNSimulator.ERROR);
-		}
-		// stop when we can't match any more char
-		return ATNSimulator.ERROR;
-	}
-	// Add an edge from s to target DFA found/created for reach
-	return this.addDFAEdge(s, t, null, reach);
+  if (reach.items.length === 0) { // we got nowhere on t from s
+    if (!reach.hasSemanticContext) {
+      // we got nowhere on t, don't throw out this knowledge; it'd
+      // cause a failover from DFA later.
+      this.addDFAEdge(s, t, ATNSimulator.ERROR);
+    }
+    // stop when we can't match any more char
+    return ATNSimulator.ERROR;
+  }
+  // Add an edge from s to target DFA found/created for reach
+  return this.addDFAEdge(s, t, null, reach);
 };
 
 LexerATNSimulator.prototype.failOrAccept = function(prevAccept, input, reach, t) {
-	if (this.prevAccept.dfaState !== null) {
-		var lexerActionExecutor = prevAccept.dfaState.lexerActionExecutor;
-		this.accept(input, lexerActionExecutor, this.startIndex,
-				prevAccept.index, prevAccept.line, prevAccept.column);
-		return prevAccept.dfaState.prediction;
-	} else {
-		// if no accept and EOF is first char, return EOF
-		if (t === Token.EOF && input.index === this.startIndex) {
-			return Token.EOF;
-		}
-		throw new LexerNoViableAltException(this.recog, input, this.startIndex, reach);
-	}
+  if (this.prevAccept.dfaState !== null) {
+    var lexerActionExecutor = prevAccept.dfaState.lexerActionExecutor;
+    this.accept(input, lexerActionExecutor, this.startIndex,
+        prevAccept.index, prevAccept.line, prevAccept.column);
+    return prevAccept.dfaState.prediction;
+  } else {
+    // if no accept and EOF is first char, return EOF
+    if (t === Token.EOF && input.index === this.startIndex) {
+      return Token.EOF;
+    }
+    throw new LexerNoViableAltException(this.recog, input, this.startIndex, reach);
+  }
 };
 
 // Given a starting configuration set, figure out all ATN configurations
 // we can reach upon input {@code t}. Parameter {@code reach} is a return
 // parameter.
 LexerATNSimulator.prototype.getReachableConfigSet = function(input, closure,
-		reach, t) {
-	// this is used to skip processing for configs which have a lower priority
-	// than a config that already reached an accept state for the same rule
-	var skipAlt = ATN.INVALID_ALT_NUMBER;
-	for (var i = 0; i < closure.items.length; i++) {
-		var cfg = closure.items[i];
-		var currentAltReachedAcceptState = (cfg.alt === skipAlt);
-		if (currentAltReachedAcceptState && cfg.passedThroughNonGreedyDecision) {
-			continue;
-		}
-		if (this.debug) {
-			console.log("testing %s at %s\n", this.getTokenName(t), cfg
-					.toString(this.recog, true));
-		}
-		for (var j = 0; j < cfg.state.transitions.length; j++) {
-			var trans = cfg.state.transitions[j]; // for each transition
-			var target = this.getReachableTarget(trans, t);
-			if (target !== null) {
-				var lexerActionExecutor = cfg.lexerActionExecutor;
-				if (lexerActionExecutor !== null) {
-					lexerActionExecutor = lexerActionExecutor.fixOffsetBeforeMatch(input.index - this.startIndex);
-				}
-				var treatEofAsEpsilon = (t === Token.EOF);
-				var config = new LexerATNConfig({state:target, lexerActionExecutor:lexerActionExecutor}, cfg);
-				if (this.closure(input, config, reach,
-						currentAltReachedAcceptState, true, treatEofAsEpsilon)) {
-					// any remaining configs for this alt have a lower priority
-					// than the one that just reached an accept state.
-					skipAlt = cfg.alt;
-				}
-			}
-		}
-	}
+    reach, t) {
+  // this is used to skip processing for configs which have a lower priority
+  // than a config that already reached an accept state for the same rule
+  var skipAlt = ATN.INVALID_ALT_NUMBER;
+  for (var i = 0; i < closure.items.length; i++) {
+    var cfg = closure.items[i];
+    var currentAltReachedAcceptState = (cfg.alt === skipAlt);
+    if (currentAltReachedAcceptState && cfg.passedThroughNonGreedyDecision) {
+      continue;
+    }
+    if (this.debug) {
+      console.log("testing %s at %s\n", this.getTokenName(t), cfg
+          .toString(this.recog, true));
+    }
+    for (var j = 0; j < cfg.state.transitions.length; j++) {
+      var trans = cfg.state.transitions[j]; // for each transition
+      var target = this.getReachableTarget(trans, t);
+      if (target !== null) {
+        var lexerActionExecutor = cfg.lexerActionExecutor;
+        if (lexerActionExecutor !== null) {
+          lexerActionExecutor = lexerActionExecutor.fixOffsetBeforeMatch(input.index - this.startIndex);
+        }
+        var treatEofAsEpsilon = (t === Token.EOF);
+        var config = new LexerATNConfig({state:target, lexerActionExecutor:lexerActionExecutor}, cfg);
+        if (this.closure(input, config, reach,
+            currentAltReachedAcceptState, true, treatEofAsEpsilon)) {
+          // any remaining configs for this alt have a lower priority
+          // than the one that just reached an accept state.
+          skipAlt = cfg.alt;
+        }
+      }
+    }
+  }
 };
 
 LexerATNSimulator.prototype.accept = function(input, lexerActionExecutor,
-		startIndex, index, line, charPos) {
-	if (this.debug) {
-		console.log("ACTION %s\n", lexerActionExecutor);
-	}
-	// seek to after last char in token
-	input.seek(index);
-	this.line = line;
-	this.column = charPos;
-	if (lexerActionExecutor !== null && this.recog !== null) {
-		lexerActionExecutor.execute(this.recog, input, startIndex);
-	}
+    startIndex, index, line, charPos) {
+  if (this.debug) {
+    console.log("ACTION %s\n", lexerActionExecutor);
+  }
+  // seek to after last char in token
+  input.seek(index);
+  this.line = line;
+  this.column = charPos;
+  if (lexerActionExecutor !== null && this.recog !== null) {
+    lexerActionExecutor.execute(this.recog, input, startIndex);
+  }
 };
 
 LexerATNSimulator.prototype.getReachableTarget = function(trans, t) {
-	if (trans.matches(t, 0, 0xFFFE)) {
-		return trans.target;
-	} else {
-		return null;
-	}
+  if (trans.matches(t, 0, 0xFFFE)) {
+    return trans.target;
+  } else {
+    return null;
+  }
 };
 
 LexerATNSimulator.prototype.computeStartState = function(input, p) {
-	var initialContext = PredictionContext.EMPTY;
-	var configs = new OrderedATNConfigSet();
-	for (var i = 0; i < p.transitions.length; i++) {
-		var target = p.transitions[i].target;
+  var initialContext = PredictionContext.EMPTY;
+  var configs = new OrderedATNConfigSet();
+  for (var i = 0; i < p.transitions.length; i++) {
+    var target = p.transitions[i].target;
         var cfg = new LexerATNConfig({state:target, alt:i+1, context:initialContext}, null);
-		this.closure(input, cfg, configs, false, false, false);
-	}
-	return configs;
+    this.closure(input, cfg, configs, false, false, false);
+  }
+  return configs;
 };
 
 // Since the alternatives within any lexer decision are ordered by
@@ -6921,127 +6922,127 @@ LexerATNSimulator.prototype.computeStartState = function(input, p) {
 // @return {@code true} if an accept state is reached, otherwise
 // {@code false}.
 LexerATNSimulator.prototype.closure = function(input, config, configs,
-		currentAltReachedAcceptState, speculative, treatEofAsEpsilon) {
-	var cfg = null;
-	if (this.debug) {
-		console.log("closure(" + config.toString(this.recog, true) + ")");
-	}
-	if (config.state instanceof RuleStopState) {
-		if (this.debug) {
-			if (this.recog !== null) {
-				console.log("closure at %s rule stop %s\n", this.recog.getRuleNames()[config.state.ruleIndex], config);
-			} else {
-				console.log("closure at rule stop %s\n", config);
-			}
-		}
-		if (config.context === null || config.context.hasEmptyPath()) {
-			if (config.context === null || config.context.isEmpty()) {
-				configs.add(config);
-				return true;
-			} else {
-				configs.add(new LexerATNConfig({ state:config.state, context:PredictionContext.EMPTY}, config));
-				currentAltReachedAcceptState = true;
-			}
-		}
-		if (config.context !== null && !config.context.isEmpty()) {
-			for (var i = 0; i < config.context.length; i++) {
-				if (config.context.getReturnState(i) !== PredictionContext.EMPTY_RETURN_STATE) {
-					var newContext = config.context.getParent(i); // "pop" return state
-					var returnState = this.atn.states[config.context.getReturnState(i)];
-					cfg = new LexerATNConfig({ state:returnState, context:newContext }, config);
-					currentAltReachedAcceptState = this.closure(input, cfg,
-							configs, currentAltReachedAcceptState, speculative,
-							treatEofAsEpsilon);
-				}
-			}
-		}
-		return currentAltReachedAcceptState;
-	}
-	// optimization
-	if (!config.state.epsilonOnlyTransitions) {
-		if (!currentAltReachedAcceptState || !config.passedThroughNonGreedyDecision) {
-			configs.add(config);
-		}
-	}
-	for (var j = 0; j < config.state.transitions.length; j++) {
-		var trans = config.state.transitions[j];
-		cfg = this.getEpsilonTarget(input, config, trans, configs, speculative, treatEofAsEpsilon);
-		if (cfg !== null) {
-			currentAltReachedAcceptState = this.closure(input, cfg, configs,
-					currentAltReachedAcceptState, speculative, treatEofAsEpsilon);
-		}
-	}
-	return currentAltReachedAcceptState;
+    currentAltReachedAcceptState, speculative, treatEofAsEpsilon) {
+  var cfg = null;
+  if (this.debug) {
+    console.log("closure(" + config.toString(this.recog, true) + ")");
+  }
+  if (config.state instanceof RuleStopState) {
+    if (this.debug) {
+      if (this.recog !== null) {
+        console.log("closure at %s rule stop %s\n", this.recog.getRuleNames()[config.state.ruleIndex], config);
+      } else {
+        console.log("closure at rule stop %s\n", config);
+      }
+    }
+    if (config.context === null || config.context.hasEmptyPath()) {
+      if (config.context === null || config.context.isEmpty()) {
+        configs.add(config);
+        return true;
+      } else {
+        configs.add(new LexerATNConfig({ state:config.state, context:PredictionContext.EMPTY}, config));
+        currentAltReachedAcceptState = true;
+      }
+    }
+    if (config.context !== null && !config.context.isEmpty()) {
+      for (var i = 0; i < config.context.length; i++) {
+        if (config.context.getReturnState(i) !== PredictionContext.EMPTY_RETURN_STATE) {
+          var newContext = config.context.getParent(i); // "pop" return state
+          var returnState = this.atn.states[config.context.getReturnState(i)];
+          cfg = new LexerATNConfig({ state:returnState, context:newContext }, config);
+          currentAltReachedAcceptState = this.closure(input, cfg,
+              configs, currentAltReachedAcceptState, speculative,
+              treatEofAsEpsilon);
+        }
+      }
+    }
+    return currentAltReachedAcceptState;
+  }
+  // optimization
+  if (!config.state.epsilonOnlyTransitions) {
+    if (!currentAltReachedAcceptState || !config.passedThroughNonGreedyDecision) {
+      configs.add(config);
+    }
+  }
+  for (var j = 0; j < config.state.transitions.length; j++) {
+    var trans = config.state.transitions[j];
+    cfg = this.getEpsilonTarget(input, config, trans, configs, speculative, treatEofAsEpsilon);
+    if (cfg !== null) {
+      currentAltReachedAcceptState = this.closure(input, cfg, configs,
+          currentAltReachedAcceptState, speculative, treatEofAsEpsilon);
+    }
+  }
+  return currentAltReachedAcceptState;
 };
 
 // side-effect: can alter configs.hasSemanticContext
 LexerATNSimulator.prototype.getEpsilonTarget = function(input, config, trans,
-		configs, speculative, treatEofAsEpsilon) {
-	var cfg = null;
-	if (trans.serializationType === Transition.RULE) {
-		var newContext = SingletonPredictionContext.create(config.context, trans.followState.stateNumber);
-		cfg = new LexerATNConfig( { state:trans.target, context:newContext}, config);
-	} else if (trans.serializationType === Transition.PRECEDENCE) {
-		throw "Precedence predicates are not supported in lexers.";
-	} else if (trans.serializationType === Transition.PREDICATE) {
-		// Track traversing semantic predicates. If we traverse,
-		// we cannot add a DFA state for this "reach" computation
-		// because the DFA would not test the predicate again in the
-		// future. Rather than creating collections of semantic predicates
-		// like v3 and testing them on prediction, v4 will test them on the
-		// fly all the time using the ATN not the DFA. This is slower but
-		// semantically it's not used that often. One of the key elements to
-		// this predicate mechanism is not adding DFA states that see
-		// predicates immediately afterwards in the ATN. For example,
+    configs, speculative, treatEofAsEpsilon) {
+  var cfg = null;
+  if (trans.serializationType === Transition.RULE) {
+    var newContext = SingletonPredictionContext.create(config.context, trans.followState.stateNumber);
+    cfg = new LexerATNConfig( { state:trans.target, context:newContext}, config);
+  } else if (trans.serializationType === Transition.PRECEDENCE) {
+    throw "Precedence predicates are not supported in lexers.";
+  } else if (trans.serializationType === Transition.PREDICATE) {
+    // Track traversing semantic predicates. If we traverse,
+    // we cannot add a DFA state for this "reach" computation
+    // because the DFA would not test the predicate again in the
+    // future. Rather than creating collections of semantic predicates
+    // like v3 and testing them on prediction, v4 will test them on the
+    // fly all the time using the ATN not the DFA. This is slower but
+    // semantically it's not used that often. One of the key elements to
+    // this predicate mechanism is not adding DFA states that see
+    // predicates immediately afterwards in the ATN. For example,
 
-		// a : ID {p1}? | ID {p2}? ;
+    // a : ID {p1}? | ID {p2}? ;
 
-		// should create the start state for rule 'a' (to save start state
-		// competition), but should not create target of ID state. The
-		// collection of ATN states the following ID references includes
-		// states reached by traversing predicates. Since this is when we
-		// test them, we cannot cash the DFA state target of ID.
+    // should create the start state for rule 'a' (to save start state
+    // competition), but should not create target of ID state. The
+    // collection of ATN states the following ID references includes
+    // states reached by traversing predicates. Since this is when we
+    // test them, we cannot cash the DFA state target of ID.
 
-		if (this.debug) {
-			console.log("EVAL rule " + trans.ruleIndex + ":" + trans.predIndex);
-		}
-		configs.hasSemanticContext = true;
-		if (this.evaluatePredicate(input, trans.ruleIndex, trans.predIndex, speculative)) {
-			cfg = new LexerATNConfig({ state:trans.target}, config);
-		}
-	} else if (trans.serializationType === Transition.ACTION) {
-		if (config.context === null || config.context.hasEmptyPath()) {
-			// execute actions anywhere in the start rule for a token.
-			//
-			// TODO: if the entry rule is invoked recursively, some
-			// actions may be executed during the recursive call. The
-			// problem can appear when hasEmptyPath() is true but
-			// isEmpty() is false. In this case, the config needs to be
-			// split into two contexts - one with just the empty path
-			// and another with everything but the empty path.
-			// Unfortunately, the current algorithm does not allow
-			// getEpsilonTarget to return two configurations, so
-			// additional modifications are needed before we can support
-			// the split operation.
-			var lexerActionExecutor = LexerActionExecutor.append(config.lexerActionExecutor,
-					this.atn.lexerActions[trans.actionIndex]);
-			cfg = new LexerATNConfig({ state:trans.target, lexerActionExecutor:lexerActionExecutor }, config);
-		} else {
-			// ignore actions in referenced rules
-			cfg = new LexerATNConfig( { state:trans.target}, config);
-		}
-	} else if (trans.serializationType === Transition.EPSILON) {
-		cfg = new LexerATNConfig({ state:trans.target}, config);
-	} else if (trans.serializationType === Transition.ATOM ||
-				trans.serializationType === Transition.RANGE ||
-				trans.serializationType === Transition.SET) {
-		if (treatEofAsEpsilon) {
-			if (trans.matches(Token.EOF, 0, 0xFFFF)) {
-				cfg = new LexerATNConfig( { state:trans.target }, config);
-			}
-		}
-	}
-	return cfg;
+    if (this.debug) {
+      console.log("EVAL rule " + trans.ruleIndex + ":" + trans.predIndex);
+    }
+    configs.hasSemanticContext = true;
+    if (this.evaluatePredicate(input, trans.ruleIndex, trans.predIndex, speculative)) {
+      cfg = new LexerATNConfig({ state:trans.target}, config);
+    }
+  } else if (trans.serializationType === Transition.ACTION) {
+    if (config.context === null || config.context.hasEmptyPath()) {
+      // execute actions anywhere in the start rule for a token.
+      //
+      // TODO: if the entry rule is invoked recursively, some
+      // actions may be executed during the recursive call. The
+      // problem can appear when hasEmptyPath() is true but
+      // isEmpty() is false. In this case, the config needs to be
+      // split into two contexts - one with just the empty path
+      // and another with everything but the empty path.
+      // Unfortunately, the current algorithm does not allow
+      // getEpsilonTarget to return two configurations, so
+      // additional modifications are needed before we can support
+      // the split operation.
+      var lexerActionExecutor = LexerActionExecutor.append(config.lexerActionExecutor,
+          this.atn.lexerActions[trans.actionIndex]);
+      cfg = new LexerATNConfig({ state:trans.target, lexerActionExecutor:lexerActionExecutor }, config);
+    } else {
+      // ignore actions in referenced rules
+      cfg = new LexerATNConfig( { state:trans.target}, config);
+    }
+  } else if (trans.serializationType === Transition.EPSILON) {
+    cfg = new LexerATNConfig({ state:trans.target}, config);
+  } else if (trans.serializationType === Transition.ATOM ||
+        trans.serializationType === Transition.RANGE ||
+        trans.serializationType === Transition.SET) {
+    if (treatEofAsEpsilon) {
+      if (trans.matches(Token.EOF, 0, 0xFFFF)) {
+        cfg = new LexerATNConfig( { state:trans.target }, config);
+      }
+    }
+  }
+  return cfg;
 };
 
 // Evaluate a predicate specified in the lexer.
@@ -7065,79 +7066,79 @@ LexerATNSimulator.prototype.getEpsilonTarget = function(input, config, trans,
 // {@code true}.
 // /
 LexerATNSimulator.prototype.evaluatePredicate = function(input, ruleIndex,
-		predIndex, speculative) {
-	// assume true if no recognizer was provided
-	if (this.recog === null) {
-		return true;
-	}
-	if (!speculative) {
-		return this.recog.sempred(null, ruleIndex, predIndex);
-	}
-	var savedcolumn = this.column;
-	var savedLine = this.line;
-	var index = input.index;
-	var marker = input.mark();
-	try {
-		this.consume(input);
-		return this.recog.sempred(null, ruleIndex, predIndex);
-	} finally {
-		this.column = savedcolumn;
-		this.line = savedLine;
-		input.seek(index);
-		input.release(marker);
-	}
+    predIndex, speculative) {
+  // assume true if no recognizer was provided
+  if (this.recog === null) {
+    return true;
+  }
+  if (!speculative) {
+    return this.recog.sempred(null, ruleIndex, predIndex);
+  }
+  var savedcolumn = this.column;
+  var savedLine = this.line;
+  var index = input.index;
+  var marker = input.mark();
+  try {
+    this.consume(input);
+    return this.recog.sempred(null, ruleIndex, predIndex);
+  } finally {
+    this.column = savedcolumn;
+    this.line = savedLine;
+    input.seek(index);
+    input.release(marker);
+  }
 };
 
 LexerATNSimulator.prototype.captureSimState = function(settings, input, dfaState) {
-	settings.index = input.index;
-	settings.line = this.line;
-	settings.column = this.column;
-	settings.dfaState = dfaState;
+  settings.index = input.index;
+  settings.line = this.line;
+  settings.column = this.column;
+  settings.dfaState = dfaState;
 };
 
 LexerATNSimulator.prototype.addDFAEdge = function(from_, tk, to, cfgs) {
-	if (to === undefined) {
-		to = null;
-	}
-	if (cfgs === undefined) {
-		cfgs = null;
-	}
-	if (to === null && cfgs !== null) {
-		// leading to this call, ATNConfigSet.hasSemanticContext is used as a
-		// marker indicating dynamic predicate evaluation makes this edge
-		// dependent on the specific input sequence, so the static edge in the
-		// DFA should be omitted. The target DFAState is still created since
-		// execATN has the ability to resynchronize with the DFA state cache
-		// following the predicate evaluation step.
-		//
-		// TJP notes: next time through the DFA, we see a pred again and eval.
-		// If that gets us to a previously created (but dangling) DFA
-		// state, we can continue in pure DFA mode from there.
-		// /
-		var suppressEdge = cfgs.hasSemanticContext;
-		cfgs.hasSemanticContext = false;
+  if (to === undefined) {
+    to = null;
+  }
+  if (cfgs === undefined) {
+    cfgs = null;
+  }
+  if (to === null && cfgs !== null) {
+    // leading to this call, ATNConfigSet.hasSemanticContext is used as a
+    // marker indicating dynamic predicate evaluation makes this edge
+    // dependent on the specific input sequence, so the static edge in the
+    // DFA should be omitted. The target DFAState is still created since
+    // execATN has the ability to resynchronize with the DFA state cache
+    // following the predicate evaluation step.
+    //
+    // TJP notes: next time through the DFA, we see a pred again and eval.
+    // If that gets us to a previously created (but dangling) DFA
+    // state, we can continue in pure DFA mode from there.
+    // /
+    var suppressEdge = cfgs.hasSemanticContext;
+    cfgs.hasSemanticContext = false;
 
-		to = this.addDFAState(cfgs);
+    to = this.addDFAState(cfgs);
 
-		if (suppressEdge) {
-			return to;
-		}
-	}
-	// add the edge
-	if (tk < LexerATNSimulator.MIN_DFA_EDGE || tk > LexerATNSimulator.MAX_DFA_EDGE) {
-		// Only track edges within the DFA bounds
-		return to;
-	}
-	if (this.debug) {
-		console.log("EDGE " + from_ + " -> " + to + " upon " + tk);
-	}
-	if (from_.edges === null) {
-		// make room for tokens 1..n and -1 masquerading as index 0
-		from_.edges = [];
-	}
-	from_.edges[tk - LexerATNSimulator.MIN_DFA_EDGE] = to; // connect
+    if (suppressEdge) {
+      return to;
+    }
+  }
+  // add the edge
+  if (tk < LexerATNSimulator.MIN_DFA_EDGE || tk > LexerATNSimulator.MAX_DFA_EDGE) {
+    // Only track edges within the DFA bounds
+    return to;
+  }
+  if (this.debug) {
+    console.log("EDGE " + from_ + " -> " + to + " upon " + tk);
+  }
+  if (from_.edges === null) {
+    // make room for tokens 1..n and -1 masquerading as index 0
+    from_.edges = [];
+  }
+  from_.edges[tk - LexerATNSimulator.MIN_DFA_EDGE] = to; // connect
 
-	return to;
+  return to;
 };
 
 // Add a new DFA state if there isn't one with this set of
@@ -7145,61 +7146,61 @@ LexerATNSimulator.prototype.addDFAEdge = function(from_, tk, to, cfgs) {
 // configuration containing an ATN rule stop state. Later, when
 // traversing the DFA, we will know which rule to accept.
 LexerATNSimulator.prototype.addDFAState = function(configs) {
-	var proposed = new DFAState(null, configs);
-	var firstConfigWithRuleStopState = null;
-	for (var i = 0; i < configs.items.length; i++) {
-		var cfg = configs.items[i];
-		if (cfg.state instanceof RuleStopState) {
-			firstConfigWithRuleStopState = cfg;
-			break;
-		}
-	}
-	if (firstConfigWithRuleStopState !== null) {
-		proposed.isAcceptState = true;
-		proposed.lexerActionExecutor = firstConfigWithRuleStopState.lexerActionExecutor;
-		proposed.prediction = this.atn.ruleToTokenType[firstConfigWithRuleStopState.state.ruleIndex];
-	}
-	var hash = proposed.hashString();
-	var dfa = this.decisionToDFA[this.mode];
-	var existing = dfa.states[hash] || null;
-	if (existing!==null) {
-		return existing;
-	}
-	var newState = proposed;
-	newState.stateNumber = dfa.states.length;
-	configs.setReadonly(true);
-	newState.configs = configs;
-	dfa.states[hash] = newState;
-	return newState;
+  var proposed = new DFAState(null, configs);
+  var firstConfigWithRuleStopState = null;
+  for (var i = 0; i < configs.items.length; i++) {
+    var cfg = configs.items[i];
+    if (cfg.state instanceof RuleStopState) {
+      firstConfigWithRuleStopState = cfg;
+      break;
+    }
+  }
+  if (firstConfigWithRuleStopState !== null) {
+    proposed.isAcceptState = true;
+    proposed.lexerActionExecutor = firstConfigWithRuleStopState.lexerActionExecutor;
+    proposed.prediction = this.atn.ruleToTokenType[firstConfigWithRuleStopState.state.ruleIndex];
+  }
+  var hash = proposed.hashString();
+  var dfa = this.decisionToDFA[this.mode];
+  var existing = dfa.states[hash] || null;
+  if (existing!==null) {
+    return existing;
+  }
+  var newState = proposed;
+  newState.stateNumber = dfa.states.length;
+  configs.setReadonly(true);
+  newState.configs = configs;
+  dfa.states[hash] = newState;
+  return newState;
 };
 
 LexerATNSimulator.prototype.getDFA = function(mode) {
-	return this.decisionToDFA[mode];
+  return this.decisionToDFA[mode];
 };
 
 // Get the text matched so far for the current token.
 LexerATNSimulator.prototype.getText = function(input) {
-	// index is first lookahead char, don't include.
-	return input.getText(this.startIndex, input.index - 1);
+  // index is first lookahead char, don't include.
+  return input.getText(this.startIndex, input.index - 1);
 };
 
 LexerATNSimulator.prototype.consume = function(input) {
-	var curChar = input.LA(1);
-	if (curChar === "\n".charCodeAt(0)) {
-		this.line += 1;
-		this.column = 0;
-	} else {
-		this.column += 1;
-	}
-	input.consume();
+  var curChar = input.LA(1);
+  if (curChar === "\n".charCodeAt(0)) {
+    this.line += 1;
+    this.column = 0;
+  } else {
+    this.column += 1;
+  }
+  input.consume();
 };
 
 LexerATNSimulator.prototype.getTokenName = function(tt) {
-	if (tt === -1) {
-		return "EOF";
-	} else {
-		return "'" + String.fromCharCode(tt) + "'";
-	}
+  if (tt === -1) {
+    return "EOF";
+  } else {
+    return "'" + String.fromCharCode(tt) + "'";
+  }
 };
 
 exports.LexerATNSimulator = LexerATNSimulator;
@@ -7247,7 +7248,7 @@ var ATN = cachedModules[1782].exports.ATN;
 var RuleStopState = cachedModules[6504].exports.RuleStopState;
 
 function PredictionMode() {
-	return this;
+  return this;
 }
 
 //
@@ -7421,7 +7422,7 @@ PredictionMode.hasSLLConflictTerminatingPrediction = function( mode, configs) {
             // dup configs, tossing out semantic predicates
             var dup = new ATNConfigSet();
             for(var i=0;i<configs.items.length;i++) {
-            	var c = configs.items[i];
+              var c = configs.items[i];
                 c = new ATNConfig({semanticContext:SemanticContext.NONE}, c);
                 dup.add(c);
             }
@@ -7443,12 +7444,12 @@ PredictionMode.hasSLLConflictTerminatingPrediction = function( mode, configs) {
 // @return {@code true} if any configuration in {@code configs} is in a
 // {@link RuleStopState}, otherwise {@code false}
 PredictionMode.hasConfigInRuleStopState = function(configs) {
-	for(var i=0;i<configs.items.length;i++) {
-		var c = configs.items[i];
+  for(var i=0;i<configs.items.length;i++) {
+    var c = configs.items[i];
         if (c.state instanceof RuleStopState) {
             return true;
         }
-	}
+  }
     return false;
 };
 
@@ -7461,12 +7462,12 @@ PredictionMode.hasConfigInRuleStopState = function(configs) {
 // @return {@code true} if all configurations in {@code configs} are in a
 // {@link RuleStopState}, otherwise {@code false}
 PredictionMode.allConfigsInRuleStopStates = function(configs) {
-	for(var i=0;i<configs.items.length;i++) {
-		var c = configs.items[i];
+  for(var i=0;i<configs.items.length;i++) {
+    var c = configs.items[i];
         if (!(c.state instanceof RuleStopState)) {
             return false;
         }
-	}
+  }
     return true;
 };
 
@@ -7635,12 +7636,12 @@ PredictionMode.allSubsetsConflict = function(altsets) {
 // {@link BitSet//cardinality cardinality} 1, otherwise {@code false}
 //
 PredictionMode.hasNonConflictingAltSet = function(altsets) {
-	for(var i=0;i<altsets.length;i++) {
-		var alts = altsets[i];
+  for(var i=0;i<altsets.length;i++) {
+    var alts = altsets[i];
         if (alts.length===1) {
             return true;
         }
-	}
+  }
     return false;
 };
 
@@ -7653,12 +7654,12 @@ PredictionMode.hasNonConflictingAltSet = function(altsets) {
 // {@link BitSet//cardinality cardinality} &gt; 1, otherwise {@code false}
 //
 PredictionMode.hasConflictingAltSet = function(altsets) {
-	for(var i=0;i<altsets.length;i++) {
-		var alts = altsets[i];
+  for(var i=0;i<altsets.length;i++) {
+    var alts = altsets[i];
         if (alts.length>1) {
             return true;
         }
-	}
+  }
     return false;
 };
 
@@ -7671,14 +7672,14 @@ PredictionMode.hasConflictingAltSet = function(altsets) {
 //
 PredictionMode.allSubsetsEqual = function(altsets) {
     var first = null;
-	for(var i=0;i<altsets.length;i++) {
-		var alts = altsets[i];
+  for(var i=0;i<altsets.length;i++) {
+    var alts = altsets[i];
         if (first === null) {
             first = alts;
         } else if (alts!==first) {
             return false;
         }
-	}
+  }
     return true;
 };
 
@@ -7722,8 +7723,8 @@ PredictionMode.getAlts = function(altsets) {
 //
 PredictionMode.getConflictingAltSubsets = function(configs) {
     var configToAlts = {};
-	for(var i=0;i<configs.items.length;i++) {
-		var c = configs.items[i];
+  for(var i=0;i<configs.items.length;i++) {
+    var c = configs.items[i];
         var key = "key_" + c.state.stateNumber + "/" + c.context;
         var alts = configToAlts[key] || null;
         if (alts === null) {
@@ -7731,14 +7732,14 @@ PredictionMode.getConflictingAltSubsets = function(configs) {
             configToAlts[key] = alts;
         }
         alts.add(c.alt);
-	}
-	var values = [];
-	for(var k in configToAlts) {
-		if(k.indexOf("key_")!==0) {
-			continue;
-		}
-		values.push(configToAlts[k]);
-	}
+  }
+  var values = [];
+  for(var k in configToAlts) {
+    if(k.indexOf("key_")!==0) {
+      continue;
+    }
+    values.push(configToAlts[k]);
+  }
     return values;
 };
 
@@ -7775,15 +7776,15 @@ PredictionMode.hasStateAssociatedWithOneAlt = function(configs) {
 
 PredictionMode.getSingleViableAlt = function(altsets) {
     var result = null;
-	for(var i=0;i<altsets.length;i++) {
-		var alts = altsets[i];
+  for(var i=0;i<altsets.length;i++) {
+    var alts = altsets[i];
         var minAlt = alts.minValue();
         if(result===null) {
             result = minAlt;
         } else if(result!==minAlt) { // more than 1 viable alt
             return ATN.INVALID_ALT_NUMBER;
         }
-	}
+  }
     return result;
 };
 
@@ -7850,10 +7851,10 @@ var ErrorNodeImpl = Tree.ErrorNodeImpl;
 var Interval = cachedModules[30].exports.Interval;
 
 function ParserRuleContext(parent, invokingStateNumber) {
-	parent = parent || null;
-	invokingStateNumber = invokingStateNumber || null;
-	RuleContext.call(this, parent, invokingStateNumber);
-	this.ruleIndex = -1;
+  parent = parent || null;
+  invokingStateNumber = invokingStateNumber || null;
+  RuleContext.call(this, parent, invokingStateNumber);
+  this.ruleIndex = -1;
     // * If we are debugging or building a parse tree for a visitor,
     // we need to track all of the tokens and rule invocations associated
     // with this rule's context. This is empty for parsing w/o tree constr.
@@ -7922,38 +7923,38 @@ ParserRuleContext.prototype.addErrorNode = function(badToken) {
 };
 
 ParserRuleContext.prototype.getChild = function(i, type) {
-	type = type || null;
-	if (type === null) {
-		return this.children.length>=i ? this.children[i] : null;
-	} else {
-		for(var j=0; j<this.children.length; j++) {
-			var child = this.children[j];
-			if(child instanceof type) {
-				if(i===0) {
-					return child;
-				} else {
-					i -= 1;
-				}
-			}
-		}
-		return null;
+  type = type || null;
+  if (type === null) {
+    return this.children.length>=i ? this.children[i] : null;
+  } else {
+    for(var j=0; j<this.children.length; j++) {
+      var child = this.children[j];
+      if(child instanceof type) {
+        if(i===0) {
+          return child;
+        } else {
+          i -= 1;
+        }
+      }
+    }
+    return null;
     }
 };
 
 
 ParserRuleContext.prototype.getToken = function(ttype, i) {
-	for(var j=0; j<this.children.length; j++) {
-		var child = this.children[j];
-		if (child instanceof TerminalNode) {
-			if (child.symbol.type === ttype) {
-				if(i===0) {
-					return child;
-				} else {
-					i -= 1;
-				}
-			}
+  for(var j=0; j<this.children.length; j++) {
+    var child = this.children[j];
+    if (child instanceof TerminalNode) {
+      if (child.symbol.type === ttype) {
+        if(i===0) {
+          return child;
+        } else {
+          i -= 1;
         }
-	}
+      }
+        }
+  }
     return null;
 };
 
@@ -7961,16 +7962,16 @@ ParserRuleContext.prototype.getTokens = function(ttype ) {
     if (this.children=== null) {
         return [];
     } else {
-		var tokens = [];
-		for(var j=0; j<this.children.length; j++) {
-			var child = this.children[j];
-			if (child instanceof TerminalNode) {
-				if (child.symbol.type === ttype) {
-					tokens.push(child);
-				}
-			}
-		}
-		return tokens;
+    var tokens = [];
+    for(var j=0; j<this.children.length; j++) {
+      var child = this.children[j];
+      if (child instanceof TerminalNode) {
+        if (child.symbol.type === ttype) {
+          tokens.push(child);
+        }
+      }
+    }
+    return tokens;
     }
 };
 
@@ -7982,23 +7983,23 @@ ParserRuleContext.prototype.getTypedRuleContexts = function(ctxType) {
     if (this.children=== null) {
         return [];
     } else {
-		var contexts = [];
-		for(var j=0; j<this.children.length; j++) {
-			var child = this.children[j];
-			if (child instanceof ctxType) {
-				contexts.push(child);
-			}
-		}
-		return contexts;
-	}
+    var contexts = [];
+    for(var j=0; j<this.children.length; j++) {
+      var child = this.children[j];
+      if (child instanceof ctxType) {
+        contexts.push(child);
+      }
+    }
+    return contexts;
+  }
 };
 
 ParserRuleContext.prototype.getChildCount = function() {
-	if (this.children=== null) {
-		return 0;
-	} else {
-		return this.children.length;
-	}
+  if (this.children=== null) {
+    return 0;
+  } else {
+    return this.children.length;
+  }
 };
 
 ParserRuleContext.prototype.getSourceInterval = function() {
@@ -8012,7 +8013,7 @@ ParserRuleContext.prototype.getSourceInterval = function() {
 RuleContext.EMPTY = new ParserRuleContext();
 
 function InterpreterRuleContext(parent, invokingStateNumber, ruleIndex) {
-	ParserRuleContext.call(parent, invokingStateNumber);
+  ParserRuleContext.call(parent, invokingStateNumber);
     this.ruleIndex = ruleIndex;
     return this;
 }
@@ -8115,8 +8116,8 @@ cachedModules[4038]={exports:{}};
 // in the input and A B C E could predict alternative 2 in another position in
 // input. The conflicting SLL configurations could still be non-unique in the
 // full context prediction, which would lead us to requiring more input than the
-// original A B C.	To make a	prediction cache work, we have to track	the exact
-// input	used during the previous prediction. That amounts to a cache that maps
+// original A B C.  To make a prediction cache work, we have to track the exact
+// input  used during the previous prediction. That amounts to a cache that maps
 // X to a specific DFA for that context.</p>
 //
 // <p>
@@ -8312,7 +8313,7 @@ var SingletonPredictionContext = cachedModules[3533].exports.SingletonPrediction
 var predictionContextFromRuleContext = cachedModules[3533].exports.predictionContextFromRuleContext;
 
 function ParserATNSimulator(parser, atn, decisionToDFA, sharedContextCache) {
-	ATNSimulator.call(this, atn, sharedContextCache);
+  ATNSimulator.call(this, atn, sharedContextCache);
     this.parser = parser;
     this.decisionToDFA = decisionToDFA;
     // SLL, LL, or LL + exact ambig detection?//
@@ -8725,7 +8726,7 @@ ParserATNSimulator.prototype.execATNWithFullContext = function(dfa, D, // how fa
     // on-the-fly when doing full context prediction.
 
     //
-    // In non-exact ambiguity detection mode, we might	actually be able to
+    // In non-exact ambiguity detection mode, we might  actually be able to
     // detect an exact ambiguity, but I'm not going to spend the cycles
     // needed to check. We only emit ambiguity warnings in exact ambiguity
     // mode.
@@ -8991,8 +8992,8 @@ ParserATNSimulator.prototype.computeStartState = function(p, ctx, fullCtx) {
 // calling {@link Parser//getPrecedence}).
 //
 ParserATNSimulator.prototype.applyPrecedenceFilter = function(configs) {
-	var config;
-	var statesFromAlt1 = [];
+  var config;
+  var statesFromAlt1 = [];
     var configSet = new ATNConfigSet(configs.fullCtx);
     for(var i=0; i<configs.items.length; i++) {
         config = configs.items[i];
@@ -9021,13 +9022,13 @@ ParserATNSimulator.prototype.applyPrecedenceFilter = function(configs) {
         // In the future, this elimination step could be updated to also
         // filter the prediction context for alternatives predicting alt>1
         // (basically a graph subtraction algorithm).
-		if (!config.precedenceFilterSuppressed) {
+    if (!config.precedenceFilterSuppressed) {
             var context = statesFromAlt1[config.state.stateNumber] || null;
             if (context!==null && context.equals(config.context)) {
                 // eliminated
                 continue;
             }
-		}
+    }
         configSet.add(config, this.mergeCache);
     }
     return configSet;
@@ -9216,7 +9217,7 @@ ParserATNSimulator.prototype.splitAccordingToSemanticValidity = function( config
 ParserATNSimulator.prototype.evalSemanticContext = function(predPredictions, outerContext, complete) {
     var predictions = new BitSet();
     for(var i=0;i<predPredictions.length;i++) {
-    	var pair = predPredictions[i];
+      var pair = predPredictions[i];
         if (pair.pred === SemanticContext.NONE) {
             predictions.add(pair.alt);
             if (! complete) {
@@ -9321,10 +9322,10 @@ ParserATNSimulator.prototype.closure_ = function(config, configs, closureBusy, c
         var continueCollecting = collectPredicates && !(t instanceof ActionTransition);
         var c = this.getEpsilonTarget(config, t, continueCollecting, depth === 0, fullCtx, treatEofAsEpsilon);
         if (c!==null) {
-			if (!t.isEpsilon && closureBusy.add(c)!==c){
-				// avoid infinite recursion for EOF* and EOF+
-				continue;
-			}
+      if (!t.isEpsilon && closureBusy.add(c)!==c){
+        // avoid infinite recursion for EOF* and EOF+
+        continue;
+      }
             var newDepth = depth;
             if ( config.state instanceof RuleStopState) {
                 // target fell off end of rule; mark resulting c as having dipped into outer context
@@ -9338,11 +9339,11 @@ ParserATNSimulator.prototype.closure_ = function(config, configs, closureBusy, c
                     continue;
                 }
 
-				if (this._dfa !== null && this._dfa.precedenceDfa) {
-					if (t.outermostPrecedenceReturn === this._dfa.atnStartState.ruleIndex) {
-						c.precedenceFilterSuppressed = true;
-					}
-				}
+        if (this._dfa !== null && this._dfa.precedenceDfa) {
+          if (t.outermostPrecedenceReturn === this._dfa.atnStartState.ruleIndex) {
+            c.precedenceFilterSuppressed = true;
+          }
+        }
 
                 c.reachesIntoOuterContext += 1;
                 configs.dipsIntoOuterContext = true; // TODO: can remove? only care when we add to set per middle of this method
@@ -9393,7 +9394,7 @@ ParserATNSimulator.prototype.getEpsilonTarget = function(config, t, collectPredi
         }
         return null;
     default:
-    	return null;
+      return null;
     }
 };
 
@@ -9409,7 +9410,7 @@ ParserATNSimulator.prototype.precedenceTransition = function(config, pt,  collec
         console.log("PRED (collectPredicates=" + collectPredicates + ") " +
                 pt.precedence + ">=_p, ctx dependent=true");
         if (this.parser!==null) {
-        	console.log("context surrounding pred is " + Utils.arrayToString(this.parser.getRuleInvocationStack()));
+          console.log("context surrounding pred is " + Utils.arrayToString(this.parser.getRuleInvocationStack()));
         }
     }
     var c = null;
@@ -9562,7 +9563,7 @@ ParserATNSimulator.prototype.dumpDeadEndConfigs = function(nvae) {
     console.log("dead end configs: ");
     var decs = nvae.getDeadEndConfigs();
     for(var i=0; i<decs.length; i++) {
-    	var c = decs[i];
+      var c = decs[i];
         var trans = "no edges";
         if (c.state.transitions.length>0) {
             var t = c.state.transitions[0];
@@ -9584,7 +9585,7 @@ ParserATNSimulator.prototype.noViableAlt = function(input, outerContext, configs
 ParserATNSimulator.prototype.getUniqueAlt = function(configs) {
     var alt = ATN.INVALID_ALT_NUMBER;
     for(var i=0;i<configs.items.length;i++) {
-    	var c = configs.items[i];
+      var c = configs.items[i];
         if (alt === ATN.INVALID_ALT_NUMBER) {
             alt = c.alt // found first alt
         } else if( c.alt!==alt) {
@@ -9748,10 +9749,10 @@ cachedModules[8914]={exports:{}};
 
 
 function DFASerializer(dfa, literalNames, symbolicNames) {
-	this.dfa = dfa;
-	this.literalNames = literalNames || [];
-	this.symbolicNames = symbolicNames || [];
-	return this;
+  this.dfa = dfa;
+  this.literalNames = literalNames || [];
+  this.symbolicNames = symbolicNames || [];
+  return this;
 }
 
 DFASerializer.prototype.toString = function() {
@@ -9804,15 +9805,15 @@ DFASerializer.prototype.getStateString = function(s) {
 };
 
 function LexerDFASerializer(dfa) {
-	DFASerializer.call(this, dfa, null);
-	return this;
+  DFASerializer.call(this, dfa, null);
+  return this;
 }
 
 LexerDFASerializer.prototype = Object.create(DFASerializer.prototype);
 LexerDFASerializer.prototype.constructor = LexerDFASerializer;
 
 LexerDFASerializer.prototype.getEdgeLabel = function(i) {
-	return "'" + String.fromCharCode(i) + "'";
+  return "'" + String.fromCharCode(i) + "'";
 };
 
 exports.DFASerializer = DFASerializer;
@@ -9856,31 +9857,31 @@ var DFASerializer = cachedModules[8914].exports.DFASerializer;
 var LexerDFASerializer = cachedModules[8914].exports.LexerDFASerializer;
 
 function DFAStatesSet() {
-	return this;
+  return this;
 }
 
 Object.defineProperty(DFAStatesSet.prototype, "length", {
-	get : function() {
-		return Object.keys(this).length;
-	}
+  get : function() {
+    return Object.keys(this).length;
+  }
 });
 
 function DFA(atnStartState, decision) {
-	if (decision === undefined) {
-		decision = 0;
-	}
-	// From which ATN state did we create this DFA?
-	this.atnStartState = atnStartState;
-	this.decision = decision;
-	// A set of all DFA states. Use {@link Map} so we can get old state back
-	// ({@link Set} only allows you to see if it's there).
-	this._states = new DFAStatesSet();
-	this.s0 = null;
-	// {@code true} if this DFA is for a precedence decision; otherwise,
-	// {@code false}. This is the backing field for {@link //isPrecedenceDfa},
-	// {@link //setPrecedenceDfa}.
-	this.precedenceDfa = false;
-	return this;
+  if (decision === undefined) {
+    decision = 0;
+  }
+  // From which ATN state did we create this DFA?
+  this.atnStartState = atnStartState;
+  this.decision = decision;
+  // A set of all DFA states. Use {@link Map} so we can get old state back
+  // ({@link Set} only allows you to see if it's there).
+  this._states = new DFAStatesSet();
+  this.s0 = null;
+  // {@code true} if this DFA is for a precedence decision; otherwise,
+  // {@code false}. This is the backing field for {@link //isPrecedenceDfa},
+  // {@link //setPrecedenceDfa}.
+  this.precedenceDfa = false;
+  return this;
 }
 
 // Get the start state for a specific precedence value.
@@ -9893,14 +9894,14 @@ function DFA(atnStartState, decision) {
 // @see //isPrecedenceDfa()
 
 DFA.prototype.getPrecedenceStartState = function(precedence) {
-	if (!(this.precedenceDfa)) {
-		throw ("Only precedence DFAs may contain a precedence start state.");
-	}
-	// s0.edges is never null for a precedence DFA
-	if (precedence < 0 || precedence >= this.s0.edges.length) {
-		return null;
-	}
-	return this.s0.edges[precedence] || null;
+  if (!(this.precedenceDfa)) {
+    throw ("Only precedence DFAs may contain a precedence start state.");
+  }
+  // s0.edges is never null for a precedence DFA
+  if (precedence < 0 || precedence >= this.s0.edges.length) {
+    return null;
+  }
+  return this.s0.edges[precedence] || null;
 };
 
 // Set the start state for a specific precedence value.
@@ -9913,17 +9914,17 @@ DFA.prototype.getPrecedenceStartState = function(precedence) {
 // @see //isPrecedenceDfa()
 //
 DFA.prototype.setPrecedenceStartState = function(precedence, startState) {
-	if (!(this.precedenceDfa)) {
-		throw ("Only precedence DFAs may contain a precedence start state.");
-	}
-	if (precedence < 0) {
-		return;
-	}
+  if (!(this.precedenceDfa)) {
+    throw ("Only precedence DFAs may contain a precedence start state.");
+  }
+  if (precedence < 0) {
+    return;
+  }
 
-	// synchronization on s0 here is ok. when the DFA is turned into a
-	// precedence DFA, s0 will be initialized once and not updated again
-	// s0.edges is never null for a precedence DFA
-	this.s0.edges[precedence] = startState;
+  // synchronization on s0 here is ok. when the DFA is turned into a
+  // precedence DFA, s0 will be initialized once and not updated again
+  // s0.edges is never null for a precedence DFA
+  this.s0.edges[precedence] = startState;
 };
 
 //
@@ -9944,56 +9945,56 @@ DFA.prototype.setPrecedenceStartState = function(precedence, startState) {
 // {@code false}
 
 DFA.prototype.setPrecedenceDfa = function(precedenceDfa) {
-	if (this.precedenceDfa!==precedenceDfa) {
-		this._states = new DFAStatesSet();
-		if (precedenceDfa) {
-			var precedenceState = new DFAState(new ATNConfigSet());
-			precedenceState.edges = [];
-			precedenceState.isAcceptState = false;
-			precedenceState.requiresFullContext = false;
-			this.s0 = precedenceState;
-		} else {
-			this.s0 = null;
-		}
-		this.precedenceDfa = precedenceDfa;
-	}
+  if (this.precedenceDfa!==precedenceDfa) {
+    this._states = new DFAStatesSet();
+    if (precedenceDfa) {
+      var precedenceState = new DFAState(new ATNConfigSet());
+      precedenceState.edges = [];
+      precedenceState.isAcceptState = false;
+      precedenceState.requiresFullContext = false;
+      this.s0 = precedenceState;
+    } else {
+      this.s0 = null;
+    }
+    this.precedenceDfa = precedenceDfa;
+  }
 };
 
 Object.defineProperty(DFA.prototype, "states", {
-	get : function() {
-		return this._states;
-	}
+  get : function() {
+    return this._states;
+  }
 });
 
 // Return a list of all states in this DFA, ordered by state number.
 DFA.prototype.sortedStates = function() {
-	// states_ is a map of state/state, where key=value
-	var keys = Object.keys(this._states);
-	var list = [];
-	for(var i=0;i<keys.length;i++) {
-		list.push(this._states[keys[i]]);
-	}
-	return list.sort(function(a, b) {
-		return a.stateNumber - b.stateNumber;
-	});
+  // states_ is a map of state/state, where key=value
+  var keys = Object.keys(this._states);
+  var list = [];
+  for(var i=0;i<keys.length;i++) {
+    list.push(this._states[keys[i]]);
+  }
+  return list.sort(function(a, b) {
+    return a.stateNumber - b.stateNumber;
+  });
 };
 
 DFA.prototype.toString = function(literalNames, symbolicNames) {
-	literalNames = literalNames || null;
-	symbolicNames = symbolicNames || null;
-	if (this.s0 === null) {
-		return "";
-	}
-	var serializer = new DFASerializer(this, literalNames, symbolicNames);
-	return serializer.toString();
+  literalNames = literalNames || null;
+  symbolicNames = symbolicNames || null;
+  if (this.s0 === null) {
+    return "";
+  }
+  var serializer = new DFASerializer(this, literalNames, symbolicNames);
+  return serializer.toString();
 };
 
 DFA.prototype.toLexerString = function() {
-	if (this.s0 === null) {
-		return "";
-	}
-	var serializer = new LexerDFASerializer(this);
-	return serializer.toString();
+  if (this.s0 === null) {
+    return "";
+  }
+  var serializer = new LexerDFASerializer(this);
+  return serializer.toString();
 };
 
 exports.DFA = DFA;
@@ -10067,61 +10068,61 @@ var ErrorListener = cachedModules[4176].exports.ErrorListener;
 var Interval = cachedModules[30].exports.Interval;
 
 function DiagnosticErrorListener(exactOnly) {
-	ErrorListener.call(this);
-	exactOnly = exactOnly || true;
-	// whether all ambiguities or only exact ambiguities are reported.
-	this.exactOnly = exactOnly;
-	return this;
+  ErrorListener.call(this);
+  exactOnly = exactOnly || true;
+  // whether all ambiguities or only exact ambiguities are reported.
+  this.exactOnly = exactOnly;
+  return this;
 }
 
 DiagnosticErrorListener.prototype = Object.create(ErrorListener.prototype);
 DiagnosticErrorListener.prototype.constructor = DiagnosticErrorListener;
 
 DiagnosticErrorListener.prototype.reportAmbiguity = function(recognizer, dfa,
-		startIndex, stopIndex, exact, ambigAlts, configs) {
-	if (this.exactOnly && !exact) {
-		return;
-	}
-	var msg = "reportAmbiguity d=" +
-			this.getDecisionDescription(recognizer, dfa) +
-			": ambigAlts=" +
-			this.getConflictingAlts(ambigAlts, configs) +
-			", input='" +
-			recognizer.getTokenStream().getText(new Interval(startIndex, stopIndex)) + "'";
-	recognizer.notifyErrorListeners(msg);
+    startIndex, stopIndex, exact, ambigAlts, configs) {
+  if (this.exactOnly && !exact) {
+    return;
+  }
+  var msg = "reportAmbiguity d=" +
+      this.getDecisionDescription(recognizer, dfa) +
+      ": ambigAlts=" +
+      this.getConflictingAlts(ambigAlts, configs) +
+      ", input='" +
+      recognizer.getTokenStream().getText(new Interval(startIndex, stopIndex)) + "'";
+  recognizer.notifyErrorListeners(msg);
 };
 
 DiagnosticErrorListener.prototype.reportAttemptingFullContext = function(
-		recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs) {
-	var msg = "reportAttemptingFullContext d=" +
-			this.getDecisionDescription(recognizer, dfa) +
-			", input='" +
-			recognizer.getTokenStream().getText(new Interval(startIndex, stopIndex)) + "'";
-	recognizer.notifyErrorListeners(msg);
+    recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs) {
+  var msg = "reportAttemptingFullContext d=" +
+      this.getDecisionDescription(recognizer, dfa) +
+      ", input='" +
+      recognizer.getTokenStream().getText(new Interval(startIndex, stopIndex)) + "'";
+  recognizer.notifyErrorListeners(msg);
 };
 
 DiagnosticErrorListener.prototype.reportContextSensitivity = function(
-		recognizer, dfa, startIndex, stopIndex, prediction, configs) {
-	var msg = "reportContextSensitivity d=" +
-			this.getDecisionDescription(recognizer, dfa) +
-			", input='" +
-			recognizer.getTokenStream().getText(new Interval(startIndex, stopIndex)) + "'";
-	recognizer.notifyErrorListeners(msg);
+    recognizer, dfa, startIndex, stopIndex, prediction, configs) {
+  var msg = "reportContextSensitivity d=" +
+      this.getDecisionDescription(recognizer, dfa) +
+      ", input='" +
+      recognizer.getTokenStream().getText(new Interval(startIndex, stopIndex)) + "'";
+  recognizer.notifyErrorListeners(msg);
 };
 
 DiagnosticErrorListener.prototype.getDecisionDescription = function(recognizer, dfa) {
-	var decision = dfa.decision;
-	var ruleIndex = dfa.atnStartState.ruleIndex;
+  var decision = dfa.decision;
+  var ruleIndex = dfa.atnStartState.ruleIndex;
 
-	var ruleNames = recognizer.ruleNames;
-	if (ruleIndex < 0 || ruleIndex >= ruleNames.length) {
-		return "" + decision;
-	}
-	var ruleName = ruleNames[ruleIndex] || null;
-	if (ruleName === null || ruleName.length === 0) {
-		return "" + decision;
-	}
-	return "" + decision + " (" + ruleName + ")";
+  var ruleNames = recognizer.ruleNames;
+  if (ruleIndex < 0 || ruleIndex >= ruleNames.length) {
+    return "" + decision;
+  }
+  var ruleName = ruleNames[ruleIndex] || null;
+  if (ruleName === null || ruleName.length === 0) {
+    return "" + decision;
+  }
+  return "" + decision + " (" + ruleName + ")";
 };
 
 //
@@ -10136,14 +10137,14 @@ DiagnosticErrorListener.prototype.getDecisionDescription = function(recognizer, 
 // returns the set of alternatives represented in {@code configs}.
 //
 DiagnosticErrorListener.prototype.getConflictingAlts = function(reportedAlts, configs) {
-	if (reportedAlts !== null) {
-		return reportedAlts;
-	}
-	var result = new BitSet();
-	for (var i = 0; i < configs.items.length; i++) {
-		result.add(configs.items[i].alt);
-	}
-	return "{" + result.values().join(", ") + "}";
+  if (reportedAlts !== null) {
+    return reportedAlts;
+  }
+  var result = new BitSet();
+  for (var i = 0; i < configs.items.length; i++) {
+    result.add(configs.items[i].alt);
+  }
+  return "{" + result.values().join(", ") + "}";
 };
 
 exports.DiagnosticErrorListener = DiagnosticErrorListener;}).call(this,cachedModules[7794],cachedModules[7794].exports);
@@ -10190,7 +10191,7 @@ var Interval = cachedModules[30].exports.Interval;
 var IntervalSet = cachedModules[30].exports.IntervalSet;
 
 function ErrorStrategy() {
-	
+  
 }
 
 ErrorStrategy.prototype.reset = function(recognizer){
@@ -10217,7 +10218,7 @@ ErrorStrategy.prototype.reportError = function(recognizer){
 // error reporting and recovery in ANTLR parsers.
 //
 function DefaultErrorStrategy() {
-	ErrorStrategy.call(this);
+  ErrorStrategy.call(this);
     // Indicates whether the error strategy is currently "recovering from an
     // error". This is used to suppress reporting multiple error messages while
     // attempting to recover from a detected syntax error.
@@ -10329,11 +10330,11 @@ DefaultErrorStrategy.prototype.reportError = function(recognizer, e) {
 DefaultErrorStrategy.prototype.recover = function(recognizer, e) {
     if (this.lastErrorIndex===recognizer.getInputStream().index &&
         this.lastErrorStates !== null && this.lastErrorStates.indexOf(recognizer.state)>=0) {
-		// uh oh, another error at same token index and previously-visited
-		// state in ATN; must be a case where LT(1) is in the recovery
-		// token set so nothing got consumed. Consume a single token
-		// at least to prevent an infinite loop; this is a failsafe.
-		recognizer.consume();
+    // uh oh, another error at same token index and previously-visited
+    // state in ATN; must be a case where LT(1) is in the recovery
+    // token set so nothing got consumed. Consume a single token
+    // at least to prevent an infinite loop; this is a failsafe.
+    recognizer.consume();
     }
     this.lastErrorIndex = recognizer._input.index;
     if (this.lastErrorStates === null) {
@@ -10896,8 +10897,8 @@ DefaultErrorStrategy.prototype.consumeUntil = function(recognizer, set) {
 // @see Parser//setErrorHandler(ANTLRErrorStrategy)
 //
 function BailErrorStrategy() {
-	DefaultErrorStrategy.call(this);
-	return this;
+  DefaultErrorStrategy.call(this);
+  return this;
 }
 
 BailErrorStrategy.prototype = Object.create(DefaultErrorStrategy.prototype);
@@ -10977,31 +10978,31 @@ var Token = cachedModules[155].exports.Token;
 // Vacuum all input from a string and then treat it like a buffer.
 
 function _loadString(stream) {
-	stream._index = 0;
-	stream.data = [];
-	for (var i = 0; i < stream.strdata.length; i++) {
-		stream.data.push(stream.strdata.charCodeAt(i));
-	}
-	stream._size = stream.data.length;
+  stream._index = 0;
+  stream.data = [];
+  for (var i = 0; i < stream.strdata.length; i++) {
+    stream.data.push(stream.strdata.charCodeAt(i));
+  }
+  stream._size = stream.data.length;
 }
 
 function InputStream(data) {
-	this.name = "<empty>";
-	this.strdata = data;
-	_loadString(this);
-	return this;
+  this.name = "<empty>";
+  this.strdata = data;
+  _loadString(this);
+  return this;
 }
 
 Object.defineProperty(InputStream.prototype, "index", {
-	get : function() {
-		return this._index;
-	}
+  get : function() {
+    return this._index;
+  }
 });
 
 Object.defineProperty(InputStream.prototype, "size", {
-	get : function() {
-		return this._size;
-	}
+  get : function() {
+    return this._size;
+  }
 });
 
 // Reset the stream so that it's in the same state it was
@@ -11009,38 +11010,38 @@ Object.defineProperty(InputStream.prototype, "size", {
 // touched.
 //
 InputStream.prototype.reset = function() {
-	this._index = 0;
+  this._index = 0;
 };
 
 InputStream.prototype.consume = function() {
-	if (this._index >= this._size) {
-		// assert this.LA(1) == Token.EOF
-		throw ("cannot consume EOF");
-	}
-	this._index += 1;
+  if (this._index >= this._size) {
+    // assert this.LA(1) == Token.EOF
+    throw ("cannot consume EOF");
+  }
+  this._index += 1;
 };
 
 InputStream.prototype.LA = function(offset) {
-	if (offset === 0) {
-		return 0; // undefined
-	}
-	if (offset < 0) {
-		offset += 1; // e.g., translate LA(-1) to use offset=0
-	}
-	var pos = this._index + offset - 1;
-	if (pos < 0 || pos >= this._size) { // invalid
-		return Token.EOF;
-	}
-	return this.data[pos];
+  if (offset === 0) {
+    return 0; // undefined
+  }
+  if (offset < 0) {
+    offset += 1; // e.g., translate LA(-1) to use offset=0
+  }
+  var pos = this._index + offset - 1;
+  if (pos < 0 || pos >= this._size) { // invalid
+    return Token.EOF;
+  }
+  return this.data[pos];
 };
 
 InputStream.prototype.LT = function(offset) {
-	return this.LA(offset);
+  return this.LA(offset);
 };
 
 // mark/release do nothing; we have entire buffer
 InputStream.prototype.mark = function() {
-	return -1;
+  return -1;
 };
 
 InputStream.prototype.release = function(marker) {
@@ -11050,28 +11051,28 @@ InputStream.prototype.release = function(marker) {
 // update line and column. If we seek backwards, just set p
 //
 InputStream.prototype.seek = function(_index) {
-	if (_index <= this._index) {
-		this._index = _index; // just jump; don't update stream state (line,
-								// ...)
-		return;
-	}
-	// seek forward
-	this._index = Math.min(_index, this._size);
+  if (_index <= this._index) {
+    this._index = _index; // just jump; don't update stream state (line,
+                // ...)
+    return;
+  }
+  // seek forward
+  this._index = Math.min(_index, this._size);
 };
 
 InputStream.prototype.getText = function(start, stop) {
-	if (stop >= this._size) {
-		stop = this._size - 1;
-	}
-	if (start >= this._size) {
-		return "";
-	} else {
-		return this.strdata.slice(start, stop + 1);
-	}
+  if (stop >= this._size) {
+    stop = this._size - 1;
+  }
+  if (start >= this._size) {
+    return "";
+  } else {
+    return this.strdata.slice(start, stop + 1);
+  }
 };
 
 InputStream.prototype.toString = function() {
-	return this.strdata;
+  return this.strdata;
 };
 
 exports.InputStream = InputStream;
@@ -11117,10 +11118,10 @@ var isNodeJs = typeof window === 'undefined' && typeof importScripts === 'undefi
 var fs = isNodeJs ? require("fs") : null;
 
 function FileStream(fileName) {
-	var data = fs.readFileSync(fileName, "utf8");
-	InputStream.call(this, data);
-	this.fileName = fileName;
-	return this;
+  var data = fs.readFileSync(fileName, "utf8");
+  InputStream.call(this, data);
+  this.fileName = fileName;
+  return this;
 }
 
 FileStream.prototype = Object.create(InputStream.prototype);
@@ -11176,96 +11177,96 @@ var Interval = cachedModules[30].exports.Interval;
 
 // this is just to keep meaningful parameter types to Parser
 function TokenStream() {
-	return this;
+  return this;
 }
 
 function BufferedTokenStream(tokenSource) {
 
-	TokenStream.call(this);
-	// The {@link TokenSource} from which tokens for this stream are fetched.
-	this.tokenSource = tokenSource;
+  TokenStream.call(this);
+  // The {@link TokenSource} from which tokens for this stream are fetched.
+  this.tokenSource = tokenSource;
 
-	// A collection of all tokens fetched from the token source. The list is
-	// considered a complete view of the input once {@link //fetchedEOF} is set
-	// to {@code true}.
-	this.tokens = [];
+  // A collection of all tokens fetched from the token source. The list is
+  // considered a complete view of the input once {@link //fetchedEOF} is set
+  // to {@code true}.
+  this.tokens = [];
 
-	// The index into {@link //tokens} of the current token (next token to
-	// {@link //consume}). {@link //tokens}{@code [}{@link //p}{@code ]} should
-	// be
-	// {@link //LT LT(1)}.
-	//
-	// <p>This field is set to -1 when the stream is first constructed or when
-	// {@link //setTokenSource} is called, indicating that the first token has
-	// not yet been fetched from the token source. For additional information,
-	// see the documentation of {@link IntStream} for a description of
-	// Initializing Methods.</p>
-	this.index = -1;
+  // The index into {@link //tokens} of the current token (next token to
+  // {@link //consume}). {@link //tokens}{@code [}{@link //p}{@code ]} should
+  // be
+  // {@link //LT LT(1)}.
+  //
+  // <p>This field is set to -1 when the stream is first constructed or when
+  // {@link //setTokenSource} is called, indicating that the first token has
+  // not yet been fetched from the token source. For additional information,
+  // see the documentation of {@link IntStream} for a description of
+  // Initializing Methods.</p>
+  this.index = -1;
 
-	// Indicates whether the {@link Token//EOF} token has been fetched from
-	// {@link //tokenSource} and added to {@link //tokens}. This field improves
-	// performance for the following cases:
-	//
-	// <ul>
-	// <li>{@link //consume}: The lookahead check in {@link //consume} to
-	// prevent
-	// consuming the EOF symbol is optimized by checking the values of
-	// {@link //fetchedEOF} and {@link //p} instead of calling {@link
-	// //LA}.</li>
-	// <li>{@link //fetch}: The check to prevent adding multiple EOF symbols
-	// into
-	// {@link //tokens} is trivial with this field.</li>
-	// <ul>
-	this.fetchedEOF = false;
-	return this;
+  // Indicates whether the {@link Token//EOF} token has been fetched from
+  // {@link //tokenSource} and added to {@link //tokens}. This field improves
+  // performance for the following cases:
+  //
+  // <ul>
+  // <li>{@link //consume}: The lookahead check in {@link //consume} to
+  // prevent
+  // consuming the EOF symbol is optimized by checking the values of
+  // {@link //fetchedEOF} and {@link //p} instead of calling {@link
+  // //LA}.</li>
+  // <li>{@link //fetch}: The check to prevent adding multiple EOF symbols
+  // into
+  // {@link //tokens} is trivial with this field.</li>
+  // <ul>
+  this.fetchedEOF = false;
+  return this;
 }
 
 BufferedTokenStream.prototype = Object.create(TokenStream.prototype);
 BufferedTokenStream.prototype.constructor = BufferedTokenStream;
 
 BufferedTokenStream.prototype.mark = function() {
-	return 0;
+  return 0;
 };
 
 BufferedTokenStream.prototype.release = function(marker) {
-	// no resources to release
+  // no resources to release
 };
 
 BufferedTokenStream.prototype.reset = function() {
-	this.seek(0);
+  this.seek(0);
 };
 
 BufferedTokenStream.prototype.seek = function(index) {
-	this.lazyInit();
-	this.index = this.adjustSeekIndex(index);
+  this.lazyInit();
+  this.index = this.adjustSeekIndex(index);
 };
 
 BufferedTokenStream.prototype.get = function(index) {
-	this.lazyInit();
-	return this.tokens[index];
+  this.lazyInit();
+  return this.tokens[index];
 };
 
 BufferedTokenStream.prototype.consume = function() {
-	var skipEofCheck = false;
-	if (this.index >= 0) {
-		if (this.fetchedEOF) {
-			// the last token in tokens is EOF. skip check if p indexes any
-			// fetched token except the last.
-			skipEofCheck = this.index < this.tokens.length - 1;
-		} else {
-			// no EOF token in tokens. skip check if p indexes a fetched token.
-			skipEofCheck = this.index < this.tokens.length;
-		}
-	} else {
-		// not yet initialized
-		skipEofCheck = false;
-	}
-	if (!skipEofCheck && this.LA(1) === Token.EOF) {
-		throw "cannot consume EOF";
-	}
-	if (this.sync(this.index + 1)) {
-		this.index = this.adjustSeekIndex(this.index + 1);
-	}
+  var skipEofCheck = false;
+  if (this.index >= 0) {
+    if (this.fetchedEOF) {
+      // the last token in tokens is EOF. skip check if p indexes any
+      // fetched token except the last.
+      skipEofCheck = this.index < this.tokens.length - 1;
+    } else {
+      // no EOF token in tokens. skip check if p indexes a fetched token.
+      skipEofCheck = this.index < this.tokens.length;
+    }
+  } else {
+    // not yet initialized
+    skipEofCheck = false;
+  }
+  if (!skipEofCheck && this.LA(1) === Token.EOF) {
+    throw "cannot consume EOF";
+  }
+  if (this.sync(this.index + 1)) {
+    this.index = this.adjustSeekIndex(this.index + 1);
+  }
 };
 
 // Make sure index {@code i} in tokens has a token.
@@ -11275,12 +11276,12 @@ BufferedTokenStream.prototype.consume = function() {
 // @see //get(int i)
 // /
 BufferedTokenStream.prototype.sync = function(i) {
-	var n = i - this.tokens.length + 1; // how many more elements we need?
-	if (n > 0) {
-		var fetched = this.fetch(n);
-		return fetched >= n;
-	}
-	return true;
+  var n = i - this.tokens.length + 1; // how many more elements we need?
+  if (n > 0) {
+    var fetched = this.fetch(n);
+    return fetched >= n;
+  }
+  return true;
 };
 
 // Add {@code n} elements to buffer.
@@ -11288,72 +11289,72 @@ BufferedTokenStream.prototype.sync = function(i) {
 // @return The actual number of elements added to the buffer.
 // /
 BufferedTokenStream.prototype.fetch = function(n) {
-	if (this.fetchedEOF) {
-		return 0;
-	}
-	for (var i = 0; i < n; i++) {
-		var t = this.tokenSource.nextToken();
-		t.tokenIndex = this.tokens.length;
-		this.tokens.push(t);
-		if (t.type === Token.EOF) {
-			this.fetchedEOF = true;
-			return i + 1;
-		}
-	}
-	return n;
+  if (this.fetchedEOF) {
+    return 0;
+  }
+  for (var i = 0; i < n; i++) {
+    var t = this.tokenSource.nextToken();
+    t.tokenIndex = this.tokens.length;
+    this.tokens.push(t);
+    if (t.type === Token.EOF) {
+      this.fetchedEOF = true;
+      return i + 1;
+    }
+  }
+  return n;
 };
 
 // Get all tokens from start..stop inclusively///
 BufferedTokenStream.prototype.getTokens = function(start, stop, types) {
-	if (types === undefined) {
-		types = null;
-	}
-	if (start < 0 || stop < 0) {
-		return null;
-	}
-	this.lazyInit();
-	var subset = [];
-	if (stop >= this.tokens.length) {
-		stop = this.tokens.length - 1;
-	}
-	for (var i = start; i < stop; i++) {
-		var t = this.tokens[i];
-		if (t.type === Token.EOF) {
-			break;
-		}
-		if (types === null || types.contains(t.type)) {
-			subset.push(t);
-		}
-	}
-	return subset;
+  if (types === undefined) {
+    types = null;
+  }
+  if (start < 0 || stop < 0) {
+    return null;
+  }
+  this.lazyInit();
+  var subset = [];
+  if (stop >= this.tokens.length) {
+    stop = this.tokens.length - 1;
+  }
+  for (var i = start; i < stop; i++) {
+    var t = this.tokens[i];
+    if (t.type === Token.EOF) {
+      break;
+    }
+    if (types === null || types.contains(t.type)) {
+      subset.push(t);
+    }
+  }
+  return subset;
 };
 
 BufferedTokenStream.prototype.LA = function(i) {
-	return this.LT(i).type;
+  return this.LT(i).type;
 };
 
 BufferedTokenStream.prototype.LB = function(k) {
-	if (this.index - k < 0) {
-		return null;
-	}
-	return this.tokens[this.index - k];
+  if (this.index - k < 0) {
+    return null;
+  }
+  return this.tokens[this.index - k];
 };
 
 BufferedTokenStream.prototype.LT = function(k) {
-	this.lazyInit();
-	if (k === 0) {
-		return null;
-	}
-	if (k < 0) {
-		return this.LB(-k);
-	}
-	var i = this.index + k - 1;
-	this.sync(i);
-	if (i >= this.tokens.length) { // return EOF token
-		// EOF must be last token
-		return this.tokens[this.tokens.length - 1];
-	}
-	return this.tokens[i];
+  this.lazyInit();
+  if (k === 0) {
+    return null;
+  }
+  if (k < 0) {
+    return this.LB(-k);
+  }
+  var i = this.index + k - 1;
+  this.sync(i);
+  if (i >= this.tokens.length) { // return EOF token
+    // EOF must be last token
+    return this.tokens[this.tokens.length - 1];
+  }
+  return this.tokens[i];
 };
 
 // Allowed derived classes to modify the behavior of operations which change
@@ -11370,25 +11371,25 @@ BufferedTokenStream.prototype.LT = function(k) {
 // @return The adjusted target token index.
 
 BufferedTokenStream.prototype.adjustSeekIndex = function(i) {
-	return i;
+  return i;
 };
 
 BufferedTokenStream.prototype.lazyInit = function() {
-	if (this.index === -1) {
-		this.setup();
-	}
+  if (this.index === -1) {
+    this.setup();
+  }
 };
 
 BufferedTokenStream.prototype.setup = function() {
-	this.sync(0);
-	this.index = this.adjustSeekIndex(0);
+  this.sync(0);
+  this.index = this.adjustSeekIndex(0);
 };
 
 // Reset this token stream by setting its token source.///
 BufferedTokenStream.prototype.setTokenSource = function(tokenSource) {
-	this.tokenSource = tokenSource;
-	this.tokens = [];
-	this.index = -1;
+  this.tokenSource = tokenSource;
+  this.tokens = [];
+  this.index = -1;
 };
 
 
@@ -11397,135 +11398,135 @@ BufferedTokenStream.prototype.setTokenSource = function(tokenSource) {
 // on channel between i and EOF.
 // /
 BufferedTokenStream.prototype.nextTokenOnChannel = function(i, channel) {
-	this.sync(i);
-	if (i >= this.tokens.length) {
-		return -1;
-	}
-	var token = this.tokens[i];
-	while (token.channel !== this.channel) {
-		if (token.type === Token.EOF) {
-			return -1;
-		}
-		i += 1;
-		this.sync(i);
-		token = this.tokens[i];
-	}
-	return i;
+  this.sync(i);
+  if (i >= this.tokens.length) {
+    return -1;
+  }
+  var token = this.tokens[i];
+  while (token.channel !== this.channel) {
+    if (token.type === Token.EOF) {
+      return -1;
+    }
+    i += 1;
+    this.sync(i);
+    token = this.tokens[i];
+  }
+  return i;
 };
 
 // Given a starting index, return the index of the previous token on channel.
 // Return i if tokens[i] is on channel. Return -1 if there are no tokens
 // on channel between i and 0.
 BufferedTokenStream.prototype.previousTokenOnChannel = function(i, channel) {
-	while (i >= 0 && this.tokens[i].channel !== channel) {
-		i -= 1;
-	}
-	return i;
+  while (i >= 0 && this.tokens[i].channel !== channel) {
+    i -= 1;
+  }
+  return i;
 };
 
 // Collect all tokens on specified channel to the right of
 // the current token up until we see a token on DEFAULT_TOKEN_CHANNEL or
 // EOF. If channel is -1, find any non default channel token.
 BufferedTokenStream.prototype.getHiddenTokensToRight = function(tokenIndex,
-		channel) {
-	if (channel === undefined) {
-		channel = -1;
-	}
-	this.lazyInit();
-	if (this.tokenIndex < 0 || tokenIndex >= this.tokens.length) {
-		throw "" + tokenIndex + " not in 0.." + this.tokens.length - 1;
-	}
-	var nextOnChannel = this.nextTokenOnChannel(tokenIndex + 1,
-			Lexer.DEFAULT_TOKEN_CHANNEL);
-	var from_ = tokenIndex + 1;
-	// if none onchannel to right, nextOnChannel=-1 so set to = last token
-	var to = nextOnChannel === -1 ? this.tokens.length - 1 : nextOnChannel;
-	return this.filterForChannel(from_, to, channel);
+    channel) {
+  if (channel === undefined) {
+    channel = -1;
+  }
+  this.lazyInit();
+  if (this.tokenIndex < 0 || tokenIndex >= this.tokens.length) {
+    throw "" + tokenIndex + " not in 0.." + this.tokens.length - 1;
+  }
+  var nextOnChannel = this.nextTokenOnChannel(tokenIndex + 1,
+      Lexer.DEFAULT_TOKEN_CHANNEL);
+  var from_ = tokenIndex + 1;
+  // if none onchannel to right, nextOnChannel=-1 so set to = last token
+  var to = nextOnChannel === -1 ? this.tokens.length - 1 : nextOnChannel;
+  return this.filterForChannel(from_, to, channel);
 };
 
 // Collect all tokens on specified channel to the left of
 // the current token up until we see a token on DEFAULT_TOKEN_CHANNEL.
 // If channel is -1, find any non default channel token.
 BufferedTokenStream.prototype.getHiddenTokensToLeft = function(tokenIndex,
-		channel) {
-	if (channel === undefined) {
-		channel = -1;
-	}
-	this.lazyInit();
-	if (tokenIndex < 0 || tokenIndex >= this.tokens.length) {
-		throw "" + tokenIndex + " not in 0.." + this.tokens.length - 1;
-	}
-	var prevOnChannel = this.previousTokenOnChannel(tokenIndex - 1,
-			Lexer.DEFAULT_TOKEN_CHANNEL);
-	if (prevOnChannel === tokenIndex - 1) {
-		return null;
-	}
-	// if none on channel to left, prevOnChannel=-1 then from=0
-	var from_ = prevOnChannel + 1;
-	var to = tokenIndex - 1;
-	return this.filterForChannel(from_, to, channel);
+    channel) {
+  if (channel === undefined) {
+    channel = -1;
+  }
+  this.lazyInit();
+  if (tokenIndex < 0 || tokenIndex >= this.tokens.length) {
+    throw "" + tokenIndex + " not in 0.." + this.tokens.length - 1;
+  }
+  var prevOnChannel = this.previousTokenOnChannel(tokenIndex - 1,
+      Lexer.DEFAULT_TOKEN_CHANNEL);
+  if (prevOnChannel === tokenIndex - 1) {
+    return null;
+  }
+  // if none on channel to left, prevOnChannel=-1 then from=0
+  var from_ = prevOnChannel + 1;
+  var to = tokenIndex - 1;
+  return this.filterForChannel(from_, to, channel);
 };
 
 BufferedTokenStream.prototype.filterForChannel = function(left, right, channel) {
-	var hidden = [];
-	for (var i = left; i < right + 1; i++) {
-		var t = this.tokens[i];
-		if (channel === -1) {
-			if (t.channel !== Lexer.DEFAULT_TOKEN_CHANNEL) {
-				hidden.push(t);
-			}
-		} else if (t.channel === channel) {
-			hidden.push(t);
-		}
-	}
-	if (hidden.length === 0) {
-		return null;
-	}
-	return hidden;
+  var hidden = [];
+  for (var i = left; i < right + 1; i++) {
+    var t = this.tokens[i];
+    if (channel === -1) {
+      if (t.channel !== Lexer.DEFAULT_TOKEN_CHANNEL) {
+        hidden.push(t);
+      }
+    } else if (t.channel === channel) {
+      hidden.push(t);
+    }
+  }
+  if (hidden.length === 0) {
+    return null;
+  }
+  return hidden;
 };
 
 BufferedTokenStream.prototype.getSourceName = function() {
-	return this.tokenSource.getSourceName();
+  return this.tokenSource.getSourceName();
 };
 
 // Get the text of all tokens in this buffer.///
 BufferedTokenStream.prototype.getText = function(interval) {
-	this.lazyInit();
-	this.fill();
-	if (interval === undefined || interval === null) {
-		interval = new Interval(0, this.tokens.length - 1);
-	}
-	var start = interval.start;
-	if (start instanceof Token) {
-		start = start.tokenIndex;
-	}
-	var stop = interval.stop;
-	if (stop instanceof Token) {
-		stop = stop.tokenIndex;
-	}
-	if (start === null || stop === null || start < 0 || stop < 0) {
-		return "";
-	}
-	if (stop >= this.tokens.length) {
-		stop = this.tokens.length - 1;
-	}
-	var s = "";
-	for (var i = start; i < stop + 1; i++) {
-		var t = this.tokens[i];
-		if (t.type === Token.EOF) {
-			break;
-		}
-		s = s + t.text;
-	}
-	return s;
+  this.lazyInit();
+  this.fill();
+  if (interval === undefined || interval === null) {
+    interval = new Interval(0, this.tokens.length - 1);
+  }
+  var start = interval.start;
+  if (start instanceof Token) {
+    start = start.tokenIndex;
+  }
+  var stop = interval.stop;
+  if (stop instanceof Token) {
+    stop = stop.tokenIndex;
+  }
+  if (start === null || stop === null || start < 0 || stop < 0) {
+    return "";
+  }
+  if (stop >= this.tokens.length) {
+    stop = this.tokens.length - 1;
+  }
+  var s = "";
+  for (var i = start; i < stop + 1; i++) {
+    var t = this.tokens[i];
+    if (t.type === Token.EOF) {
+      break;
+    }
+    s = s + t.text;
+  }
+  return s;
 };
 
 // Get all tokens from lexer until EOF///
 BufferedTokenStream.prototype.fill = function() {
-	this.lazyInit();
-	while (this.fetch(1000) === 1000) {
-		continue;
-	}
+  this.lazyInit();
+  while (this.fetch(1000) === 1000) {
+    continue;
+  }
 };
 
 exports.BufferedTokenStream = BufferedTokenStream;
@@ -11591,7 +11592,7 @@ var Token = cachedModules[155].exports.Token;
 var BufferedTokenStream = cachedModules[1092].exports.BufferedTokenStream;
 
 function CommonTokenStream(lexer, channel) {
-	BufferedTokenStream.call(this, lexer);
+  BufferedTokenStream.call(this, lexer);
     this.channel = channel===undefined ? Token.DEFAULT_CHANNEL : channel;
     return this;
 }
@@ -11697,57 +11698,57 @@ var ATNDeserializer = cachedModules[5419].exports.ATNDeserializer;
 var ATNDeserializationOptions = cachedModules[5522].exports.ATNDeserializationOptions;
 
 function TraceListener(parser) {
-	ParseTreeListener.call(this);
+  ParseTreeListener.call(this);
     this.parser = parser;
-	return this;
+  return this;
 }
 
 TraceListener.prototype = Object.create(ParseTreeListener);
 TraceListener.prototype.constructor = TraceListener;
 
 TraceListener.prototype.enterEveryRule = function(ctx) {
-	console.log("enter   " + this.parser.ruleNames[ctx.ruleIndex] + ", LT(1)=" + this.parser._input.LT(1).text);
+  console.log("enter   " + this.parser.ruleNames[ctx.ruleIndex] + ", LT(1)=" + this.parser._input.LT(1).text);
 };
 
 TraceListener.prototype.visitTerminal = function( node) {
-	console.log("consume " + node.symbol + " rule " + this.parser.ruleNames[this.parser._ctx.ruleIndex]);
+  console.log("consume " + node.symbol + " rule " + this.parser.ruleNames[this.parser._ctx.ruleIndex]);
 };
 
 TraceListener.prototype.exitEveryRule = function(ctx) {
-	console.log("exit    " + this.parser.ruleNames[ctx.ruleIndex] + ", LT(1)=" + this.parser._input.LT(1).text);
+  console.log("exit    " + this.parser.ruleNames[ctx.ruleIndex] + ", LT(1)=" + this.parser._input.LT(1).text);
 };
 
 // this is all the parsing support code essentially; most of it is error
 // recovery stuff.//
 function Parser(input) {
-	Recognizer.call(this);
-	// The input stream.
-	this._input = null;
-	// The error handling strategy for the parser. The default value is a new
-	// instance of {@link DefaultErrorStrategy}.
-	this._errHandler = new DefaultErrorStrategy();
-	this._precedenceStack = [];
-	this._precedenceStack.push(0);
-	// The {@link ParserRuleContext} object for the currently executing rule.
-	// this is always non-null during the parsing process.
-	this._ctx = null;
-	// Specifies whether or not the parser should construct a parse tree during
-	// the parsing process. The default value is {@code true}.
-	this.buildParseTrees = true;
-	// When {@link //setTrace}{@code (true)} is called, a reference to the
-	// {@link TraceListener} is stored here so it can be easily removed in a
-	// later call to {@link //setTrace}{@code (false)}. The listener itself is
-	// implemented as a parser listener so this field is not directly used by
-	// other parser methods.
-	this._tracer = null;
-	// The list of {@link ParseTreeListener} listeners registered to receive
-	// events during the parse.
-	this._parseListeners = null;
-	// The number of syntax errors reported during parsing. this value is
-	// incremented each time {@link //notifyErrorListeners} is called.
-	this._syntaxErrors = 0;
-	this.setInputStream(input);
-	return this;
+  Recognizer.call(this);
+  // The input stream.
+  this._input = null;
+  // The error handling strategy for the parser. The default value is a new
+  // instance of {@link DefaultErrorStrategy}.
+  this._errHandler = new DefaultErrorStrategy();
+  this._precedenceStack = [];
+  this._precedenceStack.push(0);
+  // The {@link ParserRuleContext} object for the currently executing rule.
+  // this is always non-null during the parsing process.
+  this._ctx = null;
+  // Specifies whether or not the parser should construct a parse tree during
+  // the parsing process. The default value is {@code true}.
+  this.buildParseTrees = true;
+  // When {@link //setTrace}{@code (true)} is called, a reference to the
+  // {@link TraceListener} is stored here so it can be easily removed in a
+  // later call to {@link //setTrace}{@code (false)}. The listener itself is
+  // implemented as a parser listener so this field is not directly used by
+  // other parser methods.
+  this._tracer = null;
+  // The list of {@link ParseTreeListener} listeners registered to receive
+  // events during the parse.
+  this._parseListeners = null;
+  // The number of syntax errors reported during parsing. this value is
+  // incremented each time {@link //notifyErrorListeners} is called.
+  this._syntaxErrors = 0;
+  this.setInputStream(input);
+  return this;
 }
 
 Parser.prototype = Object.create(Recognizer.prototype);
@@ -11763,18 +11764,18 @@ Parser.bypassAltsAtnCache = {};
 
 // reset the parser's state//
 Parser.prototype.reset = function() {
-	if (this._input !== null) {
-		this._input.seek(0);
-	}
-	this._errHandler.reset(this);
-	this._ctx = null;
-	this._syntaxErrors = 0;
-	this.setTrace(false);
-	this._precedenceStack = [];
-	this._precedenceStack.push(0);
-	if (this._interp !== null) {
-		this._interp.reset();
-	}
+  if (this._input !== null) {
+    this._input.seek(0);
+  }
+  this._errHandler.reset(this);
+  this._ctx = null;
+  this._syntaxErrors = 0;
+  this.setTrace(false);
+  this._precedenceStack = [];
+  this._precedenceStack.push(0);
+  if (this._interp !== null) {
+    this._interp.reset();
+  }
 };
 
 // Match current input symbol against {@code ttype}. If the symbol type
@@ -11795,20 +11796,20 @@ Parser.prototype.reset = function() {
 // mismatched symbol
 
 Parser.prototype.match = function(ttype) {
-	var t = this.getCurrentToken();
-	if (t.type === ttype) {
-		this._errHandler.reportMatch(this);
-		this.consume();
-	} else {
-		t = this._errHandler.recoverInline(this);
-		if (this.buildParseTrees && t.tokenIndex === -1) {
-			// we must have conjured up a new token during single token
-			// insertion
-			// if it's not the current symbol
-			this._ctx.addErrorNode(t);
-		}
-	}
-	return t;
+  var t = this.getCurrentToken();
+  if (t.type === ttype) {
+    this._errHandler.reportMatch(this);
+    this.consume();
+  } else {
+    t = this._errHandler.recoverInline(this);
+    if (this.buildParseTrees && t.tokenIndex === -1) {
+      // we must have conjured up a new token during single token
+      // insertion
+      // if it's not the current symbol
+      this._ctx.addErrorNode(t);
+    }
+  }
+  return t;
 };
 // Match current input symbol as a wildcard. If the symbol type matches
 // (i.e. has a value greater than 0), {@link ANTLRErrorStrategy//reportMatch}
@@ -11827,24 +11828,24 @@ Parser.prototype.match = function(ttype) {
 // symbol
 
 Parser.prototype.matchWildcard = function() {
-	var t = this.getCurrentToken();
-	if (t.type > 0) {
-		this._errHandler.reportMatch(this);
-		this.consume();
-	} else {
-		t = this._errHandler.recoverInline(this);
-		if (this._buildParseTrees && t.tokenIndex === -1) {
-			// we must have conjured up a new token during single token
-			// insertion
-			// if it's not the current symbol
-			this._ctx.addErrorNode(t);
-		}
-	}
-	return t;
+  var t = this.getCurrentToken();
+  if (t.type > 0) {
+    this._errHandler.reportMatch(this);
+    this.consume();
+  } else {
+    t = this._errHandler.recoverInline(this);
+    if (this._buildParseTrees && t.tokenIndex === -1) {
+      // we must have conjured up a new token during single token
+      // insertion
+      // if it's not the current symbol
+      this._ctx.addErrorNode(t);
+    }
+  }
+  return t;
 };
 
 Parser.prototype.getParseListeners = function() {
-	return this._parseListeners || [];
+  return this._parseListeners || [];
 };
 
 // Registers {@code listener} to receive events during the parsing process.
@@ -11876,13 +11877,13 @@ Parser.prototype.getParseListeners = function() {
 // @throws NullPointerException if {@code} listener is {@code null}
 //
 Parser.prototype.addParseListener = function(listener) {
-	if (listener === null) {
-		throw "listener";
-	}
-	if (this._parseListeners === null) {
-		this._parseListeners = [];
-	}
-	this._parseListeners.push(listener);
+  if (listener === null) {
+    throw "listener";
+  }
+  if (this._parseListeners === null) {
+    this._parseListeners = [];
+  }
+  this._parseListeners.push(listener);
 };
 
 //
@@ -11893,31 +11894,31 @@ Parser.prototype.addParseListener = function(listener) {
 // @param listener the listener to remove
 //
 Parser.prototype.removeParseListener = function(listener) {
-	if (this._parseListeners !== null) {
-		var idx = this._parseListeners.indexOf(listener);
-		if (idx >= 0) {
-			this._parseListeners.splice(idx, 1);
-		}
-		if (this._parseListeners.length === 0) {
-			this._parseListeners = null;
-		}
-	}
+  if (this._parseListeners !== null) {
+    var idx = this._parseListeners.indexOf(listener);
+    if (idx >= 0) {
+      this._parseListeners.splice(idx, 1);
+    }
+    if (this._parseListeners.length === 0) {
+      this._parseListeners = null;
+    }
+  }
 };
 
 // Remove all parse listeners.
 Parser.prototype.removeParseListeners = function() {
-	this._parseListeners = null;
+  this._parseListeners = null;
 };
 
 // Notify any parse listeners of an enter rule event.
 Parser.prototype.triggerEnterRuleEvent = function() {
-	if (this._parseListeners !== null) {
+  if (this._parseListeners !== null) {
         var ctx = this._ctx;
-		this._parseListeners.map(function(listener) {
-			listener.enterEveryRule(ctx);
-			ctx.enterRule(listener);
-		});
-	}
+    this._parseListeners.map(function(listener) {
+      listener.enterEveryRule(ctx);
+      ctx.enterRule(listener);
+    });
+  }
 };
 
 //
@@ -11926,23 +11927,23 @@ Parser.prototype.triggerEnterRuleEvent = function() {
 // @see //addParseListener
 //
 Parser.prototype.triggerExitRuleEvent = function() {
-	if (this._parseListeners !== null) {
-		// reverse order walk of listeners
+  if (this._parseListeners !== null) {
+    // reverse order walk of listeners
         var ctx = this._ctx;
-		this._parseListeners.slice(0).reverse().map(function(listener) {
-			ctx.exitRule(listener);
-			listener.exitEveryRule(ctx);
-		});
-	}
+    this._parseListeners.slice(0).reverse().map(function(listener) {
+      ctx.exitRule(listener);
+      listener.exitEveryRule(ctx);
+    });
+  }
 };
 
 Parser.prototype.getTokenFactory = function() {
-	return this._input.tokenSource._factory;
+  return this._input.tokenSource._factory;
 };
 
 // Tell our token source and error strategy about a new way to create tokens.//
 Parser.prototype.setTokenFactory = function(factory) {
-	this._input.tokenSource._factory = factory;
+  this._input.tokenSource._factory = factory;
 };
 
 // The ATN with bypass alternatives is expensive to create so we create it
@@ -11952,19 +11953,19 @@ Parser.prototype.setTokenFactory = function(factory) {
 // implement the {@link //getSerializedATN()} method.
 //
 Parser.prototype.getATNWithBypassAlts = function() {
-	var serializedAtn = this.getSerializedATN();
-	if (serializedAtn === null) {
-		throw "The current parser does not support an ATN with bypass alternatives.";
-	}
-	var result = this.bypassAltsAtnCache[serializedAtn];
-	if (result === null) {
-		var deserializationOptions = new ATNDeserializationOptions();
-		deserializationOptions.generateRuleBypassTransitions = true;
-		result = new ATNDeserializer(deserializationOptions)
-				.deserialize(serializedAtn);
-		this.bypassAltsAtnCache[serializedAtn] = result;
-	}
-	return result;
+  var serializedAtn = this.getSerializedATN();
+  if (serializedAtn === null) {
+    throw "The current parser does not support an ATN with bypass alternatives.";
+  }
+  var result = this.bypassAltsAtnCache[serializedAtn];
+  if (result === null) {
+    var deserializationOptions = new ATNDeserializationOptions();
+    deserializationOptions.generateRuleBypassTransitions = true;
+    result = new ATNDeserializer(deserializationOptions)
+        .deserialize(serializedAtn);
+    this.bypassAltsAtnCache[serializedAtn] = result;
+  }
+  return result;
 };
 
 // The preferred method of getting a tree pattern. For example, here's a
@@ -11981,59 +11982,59 @@ Parser.prototype.getATNWithBypassAlts = function() {
 var Lexer = cachedModules[7061].exports.Lexer;
 
 Parser.prototype.compileParseTreePattern = function(pattern, patternRuleIndex, lexer) {
-	lexer = lexer || null;
-	if (lexer === null) {
-		if (this.getTokenStream() !== null) {
-			var tokenSource = this.getTokenStream().tokenSource;
-			if (tokenSource instanceof Lexer) {
-				lexer = tokenSource;
-			}
-		}
-	}
-	if (lexer === null) {
-		throw "Parser can't discover a lexer to use";
-	}
-	var m = new ParseTreePatternMatcher(lexer, this);
-	return m.compile(pattern, patternRuleIndex);
+  lexer = lexer || null;
+  if (lexer === null) {
+    if (this.getTokenStream() !== null) {
+      var tokenSource = this.getTokenStream().tokenSource;
+      if (tokenSource instanceof Lexer) {
+        lexer = tokenSource;
+      }
+    }
+  }
+  if (lexer === null) {
+    throw "Parser can't discover a lexer to use";
+  }
+  var m = new ParseTreePatternMatcher(lexer, this);
+  return m.compile(pattern, patternRuleIndex);
 };
 
 Parser.prototype.getInputStream = function() {
-	return this.getTokenStream();
+  return this.getTokenStream();
 };
 
 Parser.prototype.setInputStream = function(input) {
-	this.setTokenStream(input);
+  this.setTokenStream(input);
 };
 
 Parser.prototype.getTokenStream = function() {
-	return this._input;
+  return this._input;
 };
 
 // Set the token stream and reset the parser.//
 Parser.prototype.setTokenStream = function(input) {
-	this._input = null;
-	this.reset();
-	this._input = input;
+  this._input = null;
+  this.reset();
+  this._input = input;
 };
 
 // Match needs to return the current input symbol, which gets put
 // into the label for the associated token ref; e.g., x=ID.
 //
 Parser.prototype.getCurrentToken = function() {
-	return this._input.LT(1);
+  return this._input.LT(1);
 };
 
 Parser.prototype.notifyErrorListeners = function(msg, offendingToken, err) {
-	offendingToken = offendingToken || null;
-	err = err || null;
-	if (offendingToken === null) {
-		offendingToken = this.getCurrentToken();
-	}
-	this._syntaxErrors += 1;
-	var line = offendingToken.line;
-	var column = offendingToken.column;
-	var listener = this.getErrorListenerDispatch();
-	listener.syntaxError(this, offendingToken, line, column, msg, err);
+  offendingToken = offendingToken || null;
+  err = err || null;
+  if (offendingToken === null) {
+    offendingToken = this.getCurrentToken();
+  }
+  this._syntaxErrors += 1;
+  var line = offendingToken.line;
+  var column = offendingToken.column;
+  var listener = this.getErrorListenerDispatch();
+  listener.syntaxError(this, offendingToken, line, column, msg, err);
 };
 
 //
@@ -12058,70 +12059,70 @@ Parser.prototype.notifyErrorListeners = function(msg, offendingToken, err) {
 // listeners.
 //
 Parser.prototype.consume = function() {
-	var o = this.getCurrentToken();
-	if (o.type !== Token.EOF) {
-		this.getInputStream().consume();
-	}
-	var hasListener = this._parseListeners !== null && this._parseListeners.length > 0;
-	if (this.buildParseTrees || hasListener) {
-		var node;
-		if (this._errHandler.inErrorRecoveryMode(this)) {
-			node = this._ctx.addErrorNode(o);
-		} else {
-			node = this._ctx.addTokenNode(o);
-		}
+  var o = this.getCurrentToken();
+  if (o.type !== Token.EOF) {
+    this.getInputStream().consume();
+  }
+  var hasListener = this._parseListeners !== null && this._parseListeners.length > 0;
+  if (this.buildParseTrees || hasListener) {
+    var node;
+    if (this._errHandler.inErrorRecoveryMode(this)) {
+      node = this._ctx.addErrorNode(o);
+    } else {
+      node = this._ctx.addTokenNode(o);
+    }
         node.invokingState = this.state;
-		if (hasListener) {
-			this._parseListeners.map(function(listener) {
-				listener.visitTerminal(node);
-			});
-		}
-	}
-	return o;
+    if (hasListener) {
+      this._parseListeners.map(function(listener) {
+        listener.visitTerminal(node);
+      });
+    }
+  }
+  return o;
 };
 
 Parser.prototype.addContextToParseTree = function() {
-	// add current context to parent if we have a parent
-	if (this._ctx.parentCtx !== null) {
-		this._ctx.parentCtx.addChild(this._ctx);
-	}
+  // add current context to parent if we have a parent
+  if (this._ctx.parentCtx !== null) {
+    this._ctx.parentCtx.addChild(this._ctx);
+  }
 };
 
 // Always called by generated parsers upon entry to a rule. Access field
 // {@link //_ctx} get the current context.
 
 Parser.prototype.enterRule = function(localctx, state, ruleIndex) {
-	this.state = state;
-	this._ctx = localctx;
-	this._ctx.start = this._input.LT(1);
-	if (this.buildParseTrees) {
-		this.addContextToParseTree();
-	}
-	if (this._parseListeners !== null) {
-		this.triggerEnterRuleEvent();
-	}
+  this.state = state;
+  this._ctx = localctx;
+  this._ctx.start = this._input.LT(1);
+  if (this.buildParseTrees) {
+    this.addContextToParseTree();
+  }
+  if (this._parseListeners !== null) {
+    this.triggerEnterRuleEvent();
+  }
 };
 
 Parser.prototype.exitRule = function() {
-	this._ctx.stop = this._input.LT(-1);
-	// trigger event on _ctx, before it reverts to parent
-	if (this._parseListeners !== null) {
-		this.triggerExitRuleEvent();
-	}
-	this.state = this._ctx.invokingState;
-	this._ctx = this._ctx.parentCtx;
+  this._ctx.stop = this._input.LT(-1);
+  // trigger event on _ctx, before it reverts to parent
+  if (this._parseListeners !== null) {
+    this.triggerExitRuleEvent();
+  }
+  this.state = this._ctx.invokingState;
+  this._ctx = this._ctx.parentCtx;
 };
 
 Parser.prototype.enterOuterAlt = function(localctx, altNum) {
-	// if we have new localctx, make sure we replace existing ctx
-	// that is previous child of parse tree
-	if (this.buildParseTrees && this._ctx !== localctx) {
-		if (this._ctx.parentCtx !== null) {
-			this._ctx.parentCtx.removeLastChild();
-			this._ctx.parentCtx.addChild(localctx);
-		}
-	}
-	this._ctx = localctx;
+  // if we have new localctx, make sure we replace existing ctx
+  // that is previous child of parse tree
+  if (this.buildParseTrees && this._ctx !== localctx) {
+    if (this._ctx.parentCtx !== null) {
+      this._ctx.parentCtx.removeLastChild();
+      this._ctx.parentCtx.addChild(localctx);
+    }
+  }
+  this._ctx = localctx;
 };
 
 // Get the precedence level for the top-most precedence rule.
@@ -12130,84 +12131,84 @@ Parser.prototype.enterOuterAlt = function(localctx, altNum) {
 // the parser context is not nested within a precedence rule.
 
 Parser.prototype.getPrecedence = function() {
-	if (this._precedenceStack.length === 0) {
-		return -1;
-	} else {
-		return this._precedenceStack[this._precedenceStack.length-1];
-	}
+  if (this._precedenceStack.length === 0) {
+    return -1;
+  } else {
+    return this._precedenceStack[this._precedenceStack.length-1];
+  }
 };
 
 Parser.prototype.enterRecursionRule = function(localctx, state, ruleIndex,
-		precedence) {
-	this.state = state;
-	this._precedenceStack.push(precedence);
-	this._ctx = localctx;
-	this._ctx.start = this._input.LT(1);
-	if (this._parseListeners !== null) {
-		this.triggerEnterRuleEvent(); // simulates rule entry for
-										// left-recursive rules
-	}
+    precedence) {
+  this.state = state;
+  this._precedenceStack.push(precedence);
+  this._ctx = localctx;
+  this._ctx.start = this._input.LT(1);
+  if (this._parseListeners !== null) {
+    this.triggerEnterRuleEvent(); // simulates rule entry for
+                    // left-recursive rules
+  }
 };
 
 //
 // Like {@link //enterRule} but for recursive rules.
 
 Parser.prototype.pushNewRecursionContext = function(localctx, state, ruleIndex) {
-	var previous = this._ctx;
-	previous.parentCtx = localctx;
-	previous.invokingState = state;
-	previous.stop = this._input.LT(-1);
+  var previous = this._ctx;
+  previous.parentCtx = localctx;
+  previous.invokingState = state;
+  previous.stop = this._input.LT(-1);
 
-	this._ctx = localctx;
-	this._ctx.start = previous.start;
-	if (this.buildParseTrees) {
-		this._ctx.addChild(previous);
-	}
-	if (this._parseListeners !== null) {
-		this.triggerEnterRuleEvent(); // simulates rule entry for
-										// left-recursive rules
-	}
+  this._ctx = localctx;
+  this._ctx.start = previous.start;
+  if (this.buildParseTrees) {
+    this._ctx.addChild(previous);
+  }
+  if (this._parseListeners !== null) {
+    this.triggerEnterRuleEvent(); // simulates rule entry for
+                    // left-recursive rules
+  }
 };
 
 Parser.prototype.unrollRecursionContexts = function(parentCtx) {
-	this._precedenceStack.pop();
-	this._ctx.stop = this._input.LT(-1);
-	var retCtx = this._ctx; // save current ctx (return value)
-	// unroll so _ctx is as it was before call to recursive method
-	if (this._parseListeners !== null) {
-		while (this._ctx !== parentCtx) {
-			this.triggerExitRuleEvent();
-			this._ctx = this._ctx.parentCtx;
-		}
-	} else {
-		this._ctx = parentCtx;
-	}
-	// hook into tree
-	retCtx.parentCtx = parentCtx;
-	if (this.buildParseTrees && parentCtx !== null) {
-		// add return ctx into invoking rule's tree
-		parentCtx.addChild(retCtx);
-	}
+  this._precedenceStack.pop();
+  this._ctx.stop = this._input.LT(-1);
+  var retCtx = this._ctx; // save current ctx (return value)
+  // unroll so _ctx is as it was before call to recursive method
+  if (this._parseListeners !== null) {
+    while (this._ctx !== parentCtx) {
+      this.triggerExitRuleEvent();
+      this._ctx = this._ctx.parentCtx;
+    }
+  } else {
+    this._ctx = parentCtx;
+  }
+  // hook into tree
+  retCtx.parentCtx = parentCtx;
+  if (this.buildParseTrees && parentCtx !== null) {
+    // add return ctx into invoking rule's tree
+    parentCtx.addChild(retCtx);
+  }
 };
 
 Parser.prototype.getInvokingContext = function(ruleIndex) {
-	var ctx = this._ctx;
-	while (ctx !== null) {
-		if (ctx.ruleIndex === ruleIndex) {
-			return ctx;
-		}
-		ctx = ctx.parentCtx;
-	}
-	return null;
+  var ctx = this._ctx;
+  while (ctx !== null) {
+    if (ctx.ruleIndex === ruleIndex) {
+      return ctx;
+    }
+    ctx = ctx.parentCtx;
+  }
+  return null;
 };
 
 Parser.prototype.precpred = function(localctx, precedence) {
-	return precedence >= this._precedenceStack[this._precedenceStack.length-1];
+  return precedence >= this._precedenceStack[this._precedenceStack.length-1];
 };
 
 Parser.prototype.inContext = function(context) {
-	// TODO: useful in parser?
-	return false;
+  // TODO: useful in parser?
+  return false;
 };
 
 //
@@ -12225,30 +12226,30 @@ Parser.prototype.inContext = function(context) {
 // the ATN, otherwise {@code false}.
 
 Parser.prototype.isExpectedToken = function(symbol) {
-	var atn = this._interp.atn;
-	var ctx = this._ctx;
-	var s = atn.states[this.state];
-	var following = atn.nextTokens(s);
-	if (following.contains(symbol)) {
-		return true;
-	}
-	if (!following.contains(Token.EPSILON)) {
-		return false;
-	}
-	while (ctx !== null && ctx.invokingState >= 0 && following.contains(Token.EPSILON)) {
-		var invokingState = atn.states[ctx.invokingState];
-		var rt = invokingState.transitions[0];
-		following = atn.nextTokens(rt.followState);
-		if (following.contains(symbol)) {
-			return true;
-		}
-		ctx = ctx.parentCtx;
-	}
-	if (following.contains(Token.EPSILON) && symbol === Token.EOF) {
-		return true;
-	} else {
-		return false;
-	}
+  var atn = this._interp.atn;
+  var ctx = this._ctx;
+  var s = atn.states[this.state];
+  var following = atn.nextTokens(s);
+  if (following.contains(symbol)) {
+    return true;
+  }
+  if (!following.contains(Token.EPSILON)) {
+    return false;
+  }
+  while (ctx !== null && ctx.invokingState >= 0 && following.contains(Token.EPSILON)) {
+    var invokingState = atn.states[ctx.invokingState];
+    var rt = invokingState.transitions[0];
+    following = atn.nextTokens(rt.followState);
+    if (following.contains(symbol)) {
+      return true;
+    }
+    ctx = ctx.parentCtx;
+  }
+  if (following.contains(Token.EPSILON) && symbol === Token.EOF) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
 // Computes the set of input symbols which could follow the current parser
@@ -12258,23 +12259,23 @@ Parser.prototype.isExpectedToken = function(symbol) {
 // @see ATN//getExpectedTokens(int, RuleContext)
 //
 Parser.prototype.getExpectedTokens = function() {
-	return this._interp.atn.getExpectedTokens(this.state, this._ctx);
+  return this._interp.atn.getExpectedTokens(this.state, this._ctx);
 };
 
 Parser.prototype.getExpectedTokensWithinCurrentRule = function() {
-	var atn = this._interp.atn;
-	var s = atn.states[this.state];
-	return atn.nextTokens(s);
+  var atn = this._interp.atn;
+  var s = atn.states[this.state];
+  return atn.nextTokens(s);
 };
 
 // Get a rule's index (i.e., {@code RULE_ruleName} field) or -1 if not found.//
 Parser.prototype.getRuleIndex = function(ruleName) {
-	var ruleIndex = this.getRuleIndexMap()[ruleName];
-	if (ruleIndex !== null) {
-		return ruleIndex;
-	} else {
-		return -1;
-	}
+  var ruleIndex = this.getRuleIndexMap()[ruleName];
+  if (ruleIndex !== null) {
+    return ruleIndex;
+  } else {
+    return -1;
+  }
 };
 
 // Return List&lt;String&gt; of the rule names in your parser instance
@@ -12285,69 +12286,69 @@ Parser.prototype.getRuleIndex = function(ruleName) {
 // this is very useful for error messages.
 //
 Parser.prototype.getRuleInvocationStack = function(p) {
-	p = p || null;
-	if (p === null) {
-		p = this._ctx;
-	}
-	var stack = [];
-	while (p !== null) {
-		// compute what follows who invoked us
-		var ruleIndex = p.ruleIndex;
-		if (ruleIndex < 0) {
-			stack.push("n/a");
-		} else {
-			stack.push(this.ruleNames[ruleIndex]);
-		}
-		p = p.parentCtx;
-	}
-	return stack;
+  p = p || null;
+  if (p === null) {
+    p = this._ctx;
+  }
+  var stack = [];
+  while (p !== null) {
+    // compute what follows who invoked us
+    var ruleIndex = p.ruleIndex;
+    if (ruleIndex < 0) {
+      stack.push("n/a");
+    } else {
+      stack.push(this.ruleNames[ruleIndex]);
+    }
+    p = p.parentCtx;
+  }
+  return stack;
 };
 
 // For debugging and other purposes.//
 Parser.prototype.getDFAStrings = function() {
-	return this._interp.decisionToDFA.toString();
+  return this._interp.decisionToDFA.toString();
 };
 // For debugging and other purposes.//
 Parser.prototype.dumpDFA = function() {
-	var seenOne = false;
-	for (var i = 0; i < this._interp.decisionToDFA.length; i++) {
-		var dfa = this._interp.decisionToDFA[i];
-		if (dfa.states.length > 0) {
-			if (seenOne) {
-				console.log();
-			}
-			this.printer.println("Decision " + dfa.decision + ":");
-			this.printer.print(dfa.toString(this.literalNames, this.symbolicNames));
-			seenOne = true;
-		}
-	}
+  var seenOne = false;
+  for (var i = 0; i < this._interp.decisionToDFA.length; i++) {
+    var dfa = this._interp.decisionToDFA[i];
+    if (dfa.states.length > 0) {
+      if (seenOne) {
+        console.log();
+      }
+      this.printer.println("Decision " + dfa.decision + ":");
+      this.printer.print(dfa.toString(this.literalNames, this.symbolicNames));
+      seenOne = true;
+    }
+  }
 };
 
 /*
-"			printer = function() {\r\n" +
-"				this.println = function(s) { document.getElementById('output') += s + '\\n'; }\r\n" +
-"				this.print = function(s) { document.getElementById('output') += s; }\r\n" +
-"			};\r\n" +
+"     printer = function() {\r\n" +
+"       this.println = function(s) { document.getElementById('output') += s + '\\n'; }\r\n" +
+"       this.print = function(s) { document.getElementById('output') += s; }\r\n" +
+"     };\r\n" +
 */
 
 Parser.prototype.getSourceName = function() {
-	return this._input.sourceName;
+  return this._input.sourceName;
 };
 
 // During a parse is sometimes useful to listen in on the rule entry and exit
 // events as well as token matches. this is for quick and dirty debugging.
 //
 Parser.prototype.setTrace = function(trace) {
-	if (!trace) {
-		this.removeParseListener(this._tracer);
-		this._tracer = null;
-	} else {
-		if (this._tracer !== null) {
-			this.removeParseListener(this._tracer);
-		}
-		this._tracer = new TraceListener(this);
-		this.addParseListener(this._tracer);
-	}
+  if (!trace) {
+    this.removeParseListener(this._tracer);
+    this._tracer = null;
+  } else {
+    if (this._tracer !== null) {
+      this.removeParseListener(this._tracer);
+    }
+    this._tracer = new TraceListener(this);
+    this.addParseListener(this._tracer);
+  }
 };
 
 exports.Parser = Parser;}).call(this,cachedModules[444],cachedModules[444].exports);exports.atn = cachedModules[3663].exports;

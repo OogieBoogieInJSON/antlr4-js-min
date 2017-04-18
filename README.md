@@ -1,10 +1,8 @@
-### antlr4 minified javascript
-
-This repository only has the minified files of [antlr4](https://github.com/antlr/antlr4). The original repo uses a custom module loader that introduces a lot of issues.
+The minified [antlr4](https://github.com/antlr/antlr4) package
 
 ## Installation
 ```
-$ npm install antlr4-js-min --save
+$ npm install antlr4-js-min
 ```
 
 ## License
